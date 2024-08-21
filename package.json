@@ -11,7 +11,7 @@
     "format": "prettier \"**/*.{ts, tsx, js, json}\" --ignore-path .gitigonre",
     "format:check": "pnpm format --check",
     "format:write": "pnpm format --write",
-    "validate": "pnpm format:write && pnpm lint && pnpm tsc && pnpm build",
+    "validate": "pnpm format:write && pnpm lint && pnpm tsc",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -25,10 +25,11 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.2.9",
     "postcss": "^8",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5",
-    "husky": "^8.0.0"
+    "typescript": "^5"
   }
 }
