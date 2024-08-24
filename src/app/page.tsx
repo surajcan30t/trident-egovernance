@@ -26,7 +26,7 @@ export default async function Home() {
         <div className="absolute inset-0 flex flex-col justify-around items-center z-10">
           <div className="flex flex-col items-center text-center">
             <h1 className="text-3xl mb-9 font-bold md:text-3xl lg:text-3xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
-              Teach Me
+              Tell Me
             </h1>
             <h1 className="text-3xl font-semibold md:text-5xl lg:text-3xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
               I will Forget
@@ -35,7 +35,7 @@ export default async function Home() {
               Explain Me
             </h1>
             <h1 className="text-3xl font-semibold md:text-5xl lg:text-3xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
-              I will remember
+              I may remember
             </h1>
             <h1 className="text-7xl mb-9 font-bold md:text-7xl lg:text-7xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
               Involve Me
