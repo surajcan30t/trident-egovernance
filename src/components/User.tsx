@@ -111,27 +111,27 @@ const User: React.FC<CardProps> = ({ className, ...props }) => {
               <h1 className="text-xl font-bold">Personal Information</h1>
               <table className="w-full">
                 <tbody>
-                  <tr>
+                  <tr className='border-b border-gray-400'>
                     <td className="text-left font-normal">Mother&apos;s Name:</td>
                     <td className="text-right font-semibold">{mother[Math.floor(Math.random() * mother.length)]}</td>
                   </tr>
-                  <tr>
+                  <tr className='border-b border-gray-400'>
                     <td className="text-left font-normal">Father&apos;s Name:</td>
                     <td className="text-right font-semibold">{father[Math.floor(Math.random() * father.length)]}</td>
                   </tr>
-                  <tr>
+                  <tr className='border-b border-gray-400'>
                     <td className="text-left font-normal">Local Guardian:</td>
                     <td className="text-right font-semibold">{locg[Math.floor(Math.random() * locg.length)]}</td>
                   </tr>
-                  <tr>
+                  <tr className='border-b border-gray-400'>
                     <td className="text-left font-normal">Phone:</td>
                     <td className="text-right font-semibold">{phone[Math.floor(Math.random() * phone.length)]}</td>
                   </tr>
-                  <tr>
+                  <tr className='border-b border-gray-400'>
                     <td className="text-left font-normal">E-mail:</td>
                     <td className="text-right font-semibold">{mail[Math.floor(Math.random() * mail.length)]}</td>
                   </tr>
-                  <tr>
+                  <tr className='border-b border-gray-400'>
                     <td className="text-left font-normal">DOB:</td>
                     <td className="text-right font-semibold">{dob[Math.floor(Math.random() * dob.length)]}</td>
                   </tr>

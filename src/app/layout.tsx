@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Chakra_Petch, Exo_2 } from 'next/font/google';
 import './globals.css';
+import SessionWrapper from '@/components/SessionWrapper';
 
 const exo2 = Exo_2({ subsets: ['latin'] });
 
@@ -16,7 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={exo2.className}>{children}</body>
+      <body className={exo2.className}>
+        <SessionWrapper>
+          {children}
+        </SessionWrapper>
+      </body>
     </html>
   );
 }

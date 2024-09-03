@@ -1,18 +1,33 @@
 'use client'
 import React from 'react'
 import { Button } from './ui/button'
-import { useRouter } from 'next/navigation'
-
-
+import { signIn, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import { fetchDataFromBackend } from '@/backend'
 
 const Login = () => {
-    const router = useRouter()
-    const onLogin = () => {
-        router.push('https://google.com')
+
+    const { data: session } = useSession() 
+
+    
+
+    // return (
+    //     {session} ? <Button className='bg-blue-500 rounded-full font-bold lg:px-10' onClick={signOut()} variant='outline'>Sign Out</Button> :
+    //     <Button className='bg-blue-500 rounded-full font-bold lg:px-10' onClick={signIn} variant='outline'>Sign In</Button>
+    // )
+    if (session) {
+        return (
+            <>
+            <Button className='bg-blue-500 rounded-full font-bold lg:px-10' onClick={() => signOut()} variant='outline'>Sign Out</Button>
+            <Button className='bg-blue-500 rounded-full font-bold lg:px-10' onClick={() => fetchDataFromBackend()} variant='outline'>User Detail</Button>
+            </>
+            
+        )
+    } else {
+        return (
+            <Button className='bg-blue-500 rounded-full font-bold lg:px-10' onClick={() => signIn()} variant='outline'>Sign In</Button>
+        )
     }
-    return (
-        <Button className='bg-blue-500 rounded-full font-bold lg:px-10' onClick={onLogin} variant='outline'>Login</Button>
-    )
 }
 
 export default Login
