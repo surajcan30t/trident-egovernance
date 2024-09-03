@@ -1,40 +1,44 @@
-'use server'
-import { User, getServerSession } from 'next-auth'
-import { getToken } from 'next-auth/jwt'
-import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
-import { NextRequest } from 'next/server'
+'use server';
+import { User, getServerSession } from 'next-auth';
+import { getToken } from 'next-auth/jwt';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 export const session = async ({ session, token }: any) => {
-  session.user.id = token.id
-  return session
-}
-
+  session.user.id = token.id;
+  return session;
+};
 
 export const fetchDataFromBackend = async () => {
-  const req: NextRequest = new NextRequest('http://192.168.34.173:8080/api/get-job-information')
+  const req: NextRequest = new NextRequest(
+    'http://192.168.34.173:8080/api/get-job-information',
+  );
   try {
-    console.log('hello from backend')
-    const session = await getToken({ req })
-    console.log('Token', session)
+    console.log('hello from backend');
+    const session = await getToken({ req });
+    console.log('Token', session);
 
     if (session) {
       // const accessToken = session;
-    
-      const response = await fetch("http://192.168.34.173:8080/api/get-job-information", {
-        method: "GET",
-        headers: {
-          // "Authorization": `Bearer ${session.accessToken}`,
+
+      const response = await fetch(
+        'http://192.168.34.173:8080/api/get-job-information',
+        {
+          method: 'GET',
+          headers: {
+            // "Authorization": `Bearer ${session.accessToken}`,
+          },
         },
-      });
+      );
 
       const data = await response.json();
       console.log(data);
     } else {
-      console.log("No session found");
+      console.log('No session found');
     }
   } catch (error) {
-    console.log('ERROR IN COMPONENT PAGE', error)
+    console.log('ERROR IN COMPONENT PAGE', error);
   }
 };
 
@@ -43,26 +47,10 @@ export const getUserSession = async (): Promise<User> => {
     callbacks: {
       session,
     },
-  })
+  });
   // if (!authUserSession) throw new Error('unauthorized')
-  return authUserSession?.user
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  return authUserSession?.user;
+};
 
 // 'use server'
 // import { cookies } from "next/headers";
@@ -88,15 +76,15 @@ export const getUserSession = async (): Promise<User> => {
 // export async function usRole(){
 //   try{
 
-//     const getrole = await fetch('http://localhost:8080/usertype', { 
+//     const getrole = await fetch('http://localhost:8080/usertype', {
 //       method: "POST",
 //       headers: {
 //         "Content-Type": "application/json"
 //       },
 //       credentials: 'include'
 //    })
-   
-//    const role = await getrole.json(); 
+
+//    const role = await getrole.json();
 //    console.log(role.user)
 //    if(role.user === 'admin'){
 //      return true
@@ -106,7 +94,6 @@ export const getUserSession = async (): Promise<User> => {
 //     console.log(e)
 //   }
 // }
-
 
 // export async function checkUserRole(roled: string) {
 //   // console.log("Session is this",cookies().get("session"))

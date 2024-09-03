@@ -1,7 +1,6 @@
 
 import Navbar from '@/components/Navbar';
 import Image from 'next/image';
-import { login, logout } from '@/backend';
 
 export default async function Home() {
   return (

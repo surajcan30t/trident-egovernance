@@ -1,14 +1,12 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
-import AzureADProvider from "next-auth/providers/azure-ad";
-import { JWT } from "next-auth/jwt";
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import AzureADProvider from 'next-auth/providers/azure-ad';
+import { JWT } from 'next-auth/jwt';
 
-
-const AZURE_AD_CLIENT_ID = process.env.AZURE_AD_CLIENT_ID!
-const AZURE_AD_CLIENT_SECRET = process.env.AZURE_AD_CLIENT_SECRET!
-const AZURE_AD_TENANT_ID = process.env.AZURE_AD_TENANT_ID!
-const AZURE_AD_SCOPE = process.env.AZURE_AD_SCOPE!
-const AZURE_AD_ISSUER = process.env.AZURE_AD_ISSUER!
-
+const AZURE_AD_CLIENT_ID = process.env.AZURE_AD_CLIENT_ID!;
+const AZURE_AD_CLIENT_SECRET = process.env.AZURE_AD_CLIENT_SECRET!;
+const AZURE_AD_TENANT_ID = process.env.AZURE_AD_TENANT_ID!;
+const AZURE_AD_SCOPE = process.env.AZURE_AD_SCOPE!;
+const AZURE_AD_ISSUER = process.env.AZURE_AD_ISSUER!;
 
 const options: NextAuthOptions = {
   providers: [
@@ -25,7 +23,7 @@ const options: NextAuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     maxAge: 60 * 60, // 1 hour
   },
   callbacks: {
@@ -35,7 +33,6 @@ const options: NextAuthOptions = {
       }
       return token;
     },
-    
   },
 };
 
