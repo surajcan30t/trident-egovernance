@@ -11,9 +11,8 @@ export const session = async ({ session, token }: any) => {
 };
 
 export const fetchDataFromBackend = async () => {
-  const req: NextRequest = new NextRequest(
-    'http://192.168.34.173:8080/api/get-job-information',
-  );
+  const req = new NextRequest('http://192.168.34.173:8080/api/get-job-information')
+  console.log('req=',req)
   try {
     console.log('hello from backend');
     const session = await getToken({ req });
