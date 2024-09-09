@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, account }): Promise<JWT> {
       if (account) {
         token.accessToken = account.access_token;
-        try{
+        try {
           const userType = await fetch(
             'http://localhost:8080/api/get-job-information',
             {
@@ -42,10 +42,9 @@ export const authOptions: NextAuthOptions = {
             },
           );
           token.userType = await userType.json();
-        }catch(error){
-          console.log('Error during fetch ',error)
+        } catch (error) {
+          console.log('Error during fetch ', error);
         }
-
       }
       return token;
     },

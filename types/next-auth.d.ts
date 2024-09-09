@@ -10,7 +10,7 @@ declare module 'next-auth' {
       userType?: object | null;
     } & DefaultSession['user'];
   }
-  interface JWT{
+  interface JWT {
     accessToken: string;
     userType: object | null;
   }
