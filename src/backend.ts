@@ -117,16 +117,15 @@ export const getUserSession = async (): Promise<User> => {
 //   return true
 // }
 
-
 export const handleNewStudent = async (formData: any) => {
-  console.log(formData)
-  try{
-    
-    const request = await axios.post('http://192.168.83.173:8080/NSR/post', 
-      formData
-    )
-    console.log('Backend Request', request)
-  }catch(error){
-    console.log(error)
+  console.log(formData);
+  try {
+    const request = await axios.post(
+      'http://192.168.83.173:8080/NSR/post',
+      formData,
+    );
+    console.log('Backend Request', request);
+  } catch (error) {
+    console.log(error);
   }
-}
+};
