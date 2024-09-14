@@ -14,3 +14,10 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
   return NextResponse.json({ message: 'Hello, Next.js!' });
 }
+
+
+export async function POST(req: NextRequest, res: NextResponse) {
+  const data = await req.json();
+  console.log('API route data',data)
+  return NextResponse.json({ message: 'Hello, Next.js!' });
+}

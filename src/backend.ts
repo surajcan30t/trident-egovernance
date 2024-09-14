@@ -4,6 +4,7 @@ import { getToken } from 'next-auth/jwt';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
+import axios from 'axios';
 
 export const session = async ({ session, token }: any) => {
   session.user.id = token.id;
@@ -115,3 +116,17 @@ export const getUserSession = async (): Promise<User> => {
 //   console.log('is an admin')
 //   return true
 // }
+
+
+export const handleNewStudent = async (formData: any) => {
+  console.log(formData)
+  try{
+    
+    const request = await axios.post('http://192.168.83.173:8080/NSR/post', 
+      formData
+    )
+    console.log('Backend Request', request)
+  }catch(error){
+    console.log(error)
+  }
+}
