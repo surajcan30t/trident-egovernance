@@ -17,16 +17,19 @@ export const newStudentLogin = async (formData: any) => {
     });
     if (response.status === 200) {
       const status = response.status;
-      const getStudentDetails = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND}/NSR/get`, {
-        headers: {
-          'NSR-Authorization': `Bearer ${token}`,
+      const getStudentDetails = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/get`,
+        {
+          headers: {
+            'NSR-Authorization': `Bearer ${token}`,
+          },
         },
-      })
-      const step = getStudentDetails.data.step
+      );
+      const step = getStudentDetails.data.step;
       const resp = {
         status: status,
-        step: step
-      }
+        step: step,
+      };
       return resp;
     }
   } catch (error) {
@@ -39,33 +42,33 @@ const initialStudentData = async (formData: any) => {
     jeeApplicationNo: string | null;
     regdNo: string | null;
     admissionDate: Date | null;
-    ojeeCouncellingFeePaid: string | null;  // It was BooleanString in Java but used string due to mismatch in given example
+    ojeeCouncellingFeePaid: string | null; // It was BooleanString in Java but used string due to mismatch in given example
     studentName: string;
-    gender: string | null;  // Gender enum type in Java
+    gender: string | null; // Gender enum type in Java
     branchCode: string | null;
     admissionYear: string | null;
-    degree_yop: number | null;  // Integer in Java
-    phNo: string;  // Phone number as string to handle leading zeroes
+    degree_yop: number | null; // Integer in Java
+    phNo: string; // Phone number as string to handle leading zeroes
     email: string;
     rollNo: string;
-    hostelier: string | null;  // BooleanString type in Java
-    hostelOption: string | null;  // BooleanString type in Java
-    hostelChoice: string | null;  // Assuming this as a string
-    transportAvailed: string | null;  // BooleanString type in Java
+    hostelier: string | null; // BooleanString type in Java
+    hostelOption: string | null; // BooleanString type in Java
+    hostelChoice: string | null; // Assuming this as a string
+    transportAvailed: string | null; // BooleanString type in Java
     status: string | null;
     batchId: string | null;
-    currentYear: number | null;  // Integer in Java
-    aadhaarNo: number;  // Long in Java
-    indortrng: string | null;  // BooleanString type in Java
-    plpoolm: string | null;  // BooleanString type in Java
-    cfPayMode: string | null;  // CfPaymentMode type in Java, using string for simplicity
-    religion: string | null;  // Enum type in Java, keeping string for simplicity
-    rank: number | null;  // Long in Java
-    rankType: string | null;  // RankType in Java, assuming string here
-    course: string;  // Enum in Java, keeping string
-    tfw: string | null;  // Enum in Java
-    admissionType: string | null;  // Enum in Java
-    studentType: string | null;  // Enum in Java
+    currentYear: number | null; // Integer in Java
+    aadhaarNo: number; // Long in Java
+    indortrng: string | null; // BooleanString type in Java
+    plpoolm: string | null; // BooleanString type in Java
+    cfPayMode: string | null; // CfPaymentMode type in Java, using string for simplicity
+    religion: string | null; // Enum type in Java, keeping string for simplicity
+    rank: number | null; // Long in Java
+    rankType: string | null; // RankType in Java, assuming string here
+    course: string; // Enum in Java, keeping string
+    tfw: string | null; // Enum in Java
+    admissionType: string | null; // Enum in Java
+    studentType: string | null; // Enum in Java
 
     tenthPercentage: number | null;
     tenthYOP: number | null;
@@ -76,14 +79,14 @@ const initialStudentData = async (formData: any) => {
     graduationPercentage: number | null;
     graduationYOP: number | null;
 
-    fname: string;  // Father's name
-    mname: string;  // Mother's name
-    lgName: string;  // Legal guardian's name
+    fname: string; // Father's name
+    mname: string; // Mother's name
+    lgName: string; // Legal guardian's name
     permanentAddress: string;
     permanentCity: string;
     permanentState: string;
-    permanentPincode: number;  // Number type in Java
-    parentContact: string;  // Phone numbers as strings
+    permanentPincode: number; // Number type in Java
+    parentContact: string; // Phone numbers as strings
     parentEmailId: string;
     presentAddress: string | null;
     district: string;
@@ -98,30 +101,33 @@ const initialStudentData = async (formData: any) => {
     categoryRank: number | null;
     allotmentId: string;
 
-    transportOpted: string | null;  // BooleanString in Java
+    transportOpted: string | null; // BooleanString in Java
     pickUpPoint: string | null;
     step: number | null;
   }
   try {
-    const NSR_token = cookies().get("NSR-Authorization");
-    const response: AxiosResponse<Student> = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND}/NSR/get`, {
-      headers: {
-        'NSR-Authorization': `Bearer ${NSR_token?.value}`,
+    const NSR_token = cookies().get('NSR-Authorization');
+    const response: AxiosResponse<Student> = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/get`,
+      {
+        headers: {
+          'NSR-Authorization': `Bearer ${NSR_token?.value}`,
+        },
       },
-    },
     );
     if (response.status !== 200) {
       return null;
     }
-    const data = response.data
-    console.log("Data in initialStudentData function",data)
+    const data = response.data;
+    console.log('Data in initialStudentData function', data);
     const initData = {
       jeeApplicationNo: formData.jeeApplicationNo || data.jeeApplicationNo,
-      regdNo: formData.regdNo || data.regdNo ,
+      regdNo: formData.regdNo || data.regdNo,
       admissionDate: formData.admissionDate || data.admissionDate,
-      ojeeCouncellingFeePaid: formData.ojeeCouncellingFeePaid || data.ojeeCouncellingFeePaid,
-      studentName:formData.studentName || data.studentName,
-      gender: formData.gender || data.gender ,
+      ojeeCouncellingFeePaid:
+        formData.ojeeCouncellingFeePaid || data.ojeeCouncellingFeePaid,
+      studentName: formData.studentName || data.studentName,
+      gender: formData.gender || data.gender,
       branchCode: formData.branchCode || data.branchCode,
       admissionYear: formData.admissionYear || data.admissionYear,
       degree_yop: formData.degree_yop || data.degree_yop,
@@ -152,7 +158,8 @@ const initialStudentData = async (formData: any) => {
       twelvthYOP: formData.twelvthYOP || data.twelvthYOP,
       diplomaPercentage: formData.diplomaPercentage || data.diplomaPercentage,
       diplomaYOP: formData.diplomaYOP || data.diplomaYOP,
-      graduationPercentage: formData.graduationPercentage || data.graduationPercentage,
+      graduationPercentage:
+        formData.graduationPercentage || data.graduationPercentage,
       graduationYOP: formData.graduationYOP || data.graduationYOP,
       lgName: formData.lgName || data.lgName,
       permanentAddress: formData.permanentAddress || data.permanentAddress,
@@ -163,7 +170,8 @@ const initialStudentData = async (formData: any) => {
       parentEmailId: formData.parentEmailId || data.parentEmailId,
       presentAddress: formData.presentAddress || data.presentAddress,
       district: formData.district || data.district,
-      ojeeCounsellingFeePaid: formData.ojeeCounsellingFeePaid || data.ojeeCounsellingFeePaid,
+      ojeeCounsellingFeePaid:
+        formData.ojeeCounsellingFeePaid || data.ojeeCounsellingFeePaid,
       ojeeRollNo: formData.ojeeRollNo || data.ojeeRollNo,
       ojeeRank: formData.ojeeRank || data.ojeeRank,
       aieeeRank: formData.aieeeRank || data.aieeeRank,
@@ -176,13 +184,13 @@ const initialStudentData = async (formData: any) => {
       pickUpPoint: formData.pickUpPoint || data.pickUpPoint,
       step: formData.step || data.step,
       fname: formData.fname || data.fname,
-      mname: formData.mname || data.mname
-    }
-    return initData
+      mname: formData.mname || data.mname,
+    };
+    return initData;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 export const nsrSendAllotmentID = async (formData: any) => {
   // const data = {
@@ -200,20 +208,24 @@ export const nsrSendAllotmentID = async (formData: any) => {
   //   allotmentId: initial.allotId
   // }
   // console.log(data)
-  const data = await initialStudentData(formData)
-  console.log("Data in nsrSendAllotmentID",data)
+  const data = await initialStudentData(formData);
+  console.log('Data in nsrSendAllotmentID', data);
   try {
     const authToken = cookies().get('NSR-Authorization');
-    const request = axios.post(`${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`, data, {
-      headers: {
-        'NSR-Authorization': `Bearer ${authToken?.value}`,
+    const request = axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
+      data,
+      {
+        headers: {
+          'NSR-Authorization': `Bearer ${authToken?.value}`,
+        },
       },
-    })
-    return (await request).status
+    );
+    return (await request).status;
   } catch (error) {
     // console.log(error)
   }
-}
+};
 
 // export const handleNsPersonal = async (formData: any, initial: any) => {
 //   const data = {
@@ -270,17 +282,20 @@ export const handleNsPersonal = async (formData: any) => {
     }
 
     // Merge initial data with formData (user input data)
-    
 
-    console.log("data in handleNsPersonal",data); // Log merged data for debugging
+    console.log('data in handleNsPersonal', data); // Log merged data for debugging
 
     // Send data to API
     const authToken = cookies().get('NSR-Authorization');
-    const request = axios.post(`${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`, data, {
-      headers: {
-        'NSR-Authorization': `Bearer ${authToken?.value}`,
+    const request = axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
+      data,
+      {
+        headers: {
+          'NSR-Authorization': `Bearer ${authToken?.value}`,
+        },
       },
-    });
+    );
 
     // console.log((await request).data);
     return (await request).status;
@@ -288,7 +303,6 @@ export const handleNsPersonal = async (formData: any) => {
     console.log(error);
   }
 };
-
 
 export const handleNsAcademic = async (formData: any) => {
   try {
@@ -301,17 +315,20 @@ export const handleNsAcademic = async (formData: any) => {
     }
 
     // Merge initial data with formData (user input data)
-    
 
-    console.log("data in handleNsAcademic",data); // Log merged data for debugging
+    console.log('data in handleNsAcademic', data); // Log merged data for debugging
 
     // Send data to API
     const authToken = cookies().get('NSR-Authorization');
-    const request = axios.post(`${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`, data, {
-      headers: {
-        'NSR-Authorization': `Bearer ${authToken?.value}`,
+    const request = axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
+      data,
+      {
+        headers: {
+          'NSR-Authorization': `Bearer ${authToken?.value}`,
+        },
       },
-    });
+    );
 
     // console.log((await request).data);
     return (await request).status;
