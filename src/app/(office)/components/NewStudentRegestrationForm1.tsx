@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -34,7 +33,7 @@ const FormSchema = z.object({
   studentName: z.string().min(1, {
     message: "Please enter your name",
   }),
-  rollNo: z.string().min(8, {
+  regdNo: z.string().min(8, {
     message: "Please enter your roll number",
   }),
   rank: z
@@ -49,7 +48,7 @@ const FormSchema = z.object({
   course: z.enum(["BBA", "MBA", "BCA", "MCA", "BTECH", "MTECH"], {
     required_error: "You need to select a course.",
   }),
-  TFW: z.string().min(2, {
+  tfw: z.string().min(2, {
       message: "You need to select TFW.",
     }),
   admissionType: z.enum(["MQ", "COLLEGE", "JEEMAIN", "OJEE"], {
@@ -61,6 +60,9 @@ const FormSchema = z.object({
   gender: z.enum(["MALE", "FEMALE", "OTHER"], {
     required_error: "You need to select the gender.",
   }),
+  branchCode: z.enum(["CSE", "CST", "CSAIML"], {
+    required_error: "You need to select the gender.",
+  }),
   step: z.number().default(1),
 })
 
@@ -70,13 +72,14 @@ const NewStudentRegestrationForm1 = () => {
     defaultValues: {
       jeeApplicationNo: "",
       studentName: "",
-      rollNo: "",
+      regdNo: "",
       rank: 0,
     },
   })
 
   const { toast } = useToast()
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log(data)
     handleNewStudent(data)
     toast({
       variant: "success",
@@ -126,14 +129,14 @@ const NewStudentRegestrationForm1 = () => {
         {/* Gender */}
         <FormField
           control={form.control}
-          name="rankType"
+          name="gender"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Gender</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select the Rank Type" />
+                    <SelectValue placeholder="Select the gender" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -150,7 +153,7 @@ const NewStudentRegestrationForm1 = () => {
         {/* Roll Number */}
         <FormField
           control={form.control}
-          name="rollNo"
+          name="regdNo"
           render={({ field }) => (
             <FormItem>
               <FormLabel>JEE/OJEE Roll Number</FormLabel>
@@ -178,7 +181,6 @@ const NewStudentRegestrationForm1 = () => {
         />
 
         {/* Rank Type */}
-
         <FormField
           control={form.control}
           name="rankType"
@@ -203,7 +205,6 @@ const NewStudentRegestrationForm1 = () => {
 
 
         {/* Course Type */}
-
         <FormField
           control={form.control}
           name="course"
@@ -229,10 +230,33 @@ const NewStudentRegestrationForm1 = () => {
           )}
         />
 
+        {/* Branch Code */}
+        <FormField
+          control={form.control}
+          name="branchCode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Branch</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select the branch" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="CSE">CSE</SelectItem>
+                  <SelectItem value="CST">CST</SelectItem>
+                  <SelectItem value="CSAIML">CSAIML</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormItem>
+          )}
+        />
+
         {/* TFW */}
         <FormField
           control={form.control}
-          name="TFW"
+          name="tfw"
           render={({ field }) => (
             <FormItem className="space-y-3">
               <FormLabel>TFW Status</FormLabel>
@@ -244,7 +268,7 @@ const NewStudentRegestrationForm1 = () => {
                 >
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
-                      <RadioGroupItem value="YES" />
+                      <RadioGroupItem value="TFW" />
                     </FormControl>
                     <FormLabel className="font-normal">
                       Yes
@@ -252,7 +276,7 @@ const NewStudentRegestrationForm1 = () => {
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
                     <FormControl>
-                      <RadioGroupItem value="NO" />
+                      <RadioGroupItem value="NTFW" />
                     </FormControl>
                     <FormLabel className="font-normal">
                       No
@@ -311,7 +335,7 @@ const NewStudentRegestrationForm1 = () => {
           )}
         />
 
-        <Button variant={"trident"} size="lg" className="font-bold" type="submit">Submit</Button>
+        <Button variant={"trident"} size="lg" type="submit">Submit</Button>
       </form>
     </Form>
     // </Card>

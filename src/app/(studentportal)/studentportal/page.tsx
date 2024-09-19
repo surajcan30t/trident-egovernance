@@ -1,4 +1,4 @@
-import EnterApplicationNumber from '@/components/NSR/EnterApplicationNumber'
+import EnterApplicationNumber from '@/app/(studentportal)/components/NSR/EnterApplicationNumber'
 import React from 'react'
 
 const page = () => {

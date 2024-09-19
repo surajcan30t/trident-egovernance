@@ -1,9 +1,8 @@
 // 'use client'
-import NewStudentRegistrationData from '@/components/NSR/NewStudentRegistrationData';
-import { Card, CardContent } from '@/components/ui/card';
+import NewStudentRegistrationData from '@/app/(studentportal)/components/NSR/NewStudentRegistrationData';
 import axios, { AxiosResponse } from 'axios';
 import { cookies } from 'next/headers';
-import React, { cache } from 'react';
+import React from 'react';
 
 // Define the structure of the student data returned by the API
 interface Student {
@@ -14,6 +13,7 @@ interface Student {
   rank: number;
   phNo: string;
   status: string;
+  step: number;
 }
 
 // Define the structure of the API response
@@ -22,7 +22,7 @@ interface Student {
 const studentData = async (): Promise<Student | null> => {
   try {
     const NSR_token = cookies().get("NSR-Authorization");
-    const response: AxiosResponse<Student> = await axios.get('http://172.16.16.48:8080/NSR/get', {
+    const response: AxiosResponse<Student> = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND}/NSR/get`, {
       headers: {
         'NSR-Authorization': `Bearer ${NSR_token?.value}`,
       },
@@ -34,11 +34,7 @@ const studentData = async (): Promise<Student | null> => {
     if (response.status !== 200) {
       return null;
     }
-    if(typeof window !== 'undefined') {
-      console.log('storing in ls')
-      localStorage.setItem('student', JSON.stringify(response.data));
-      console.log('stored in ls')
-    }
+    
     return response.data; // Return the student data
   } catch (error) {
     console.error(error);
@@ -49,13 +45,11 @@ const studentData = async (): Promise<Student | null> => {
 // The page component
 const Page: React.FC = async () => {
   const data = await studentData(); // Fetch the student data
-  // console.log(data)
   return (
     <div>
-      {/* {data && ( */}
+      {data&&
         <NewStudentRegistrationData {...data} />
-        
-      {/*  )} */}
+      }
     </div>
   );
 };
