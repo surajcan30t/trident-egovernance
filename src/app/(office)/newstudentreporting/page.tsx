@@ -1,13 +1,14 @@
 import React from 'react'
-import NewStudentRegestrationForm1 from '../components/NewStudentRegestrationForm1'
+import NewStudentRegestrationForm from '../components/NewStudentRegestrationForm'
 
-const singleNSR = async () => {
-  const response = await fetch('http://localhost:8080/NSR/getByRollNo', )
-}
+// const singleNSR = async () => {
+//   const response = await fetch('http://localhost:8080/NSR/getByRollNo',)
+// }
 const page = async () => {
   return (
-    <div className='w-screen h-full my-5 p-0 flex flex-col justify-center items-center'>
-        <NewStudentRegestrationForm1 />
+    <div className='w-screen h-screen p-0 flex flex-col items-center'>
+      <h1 className='text-2xl text-slate-600 font-bold'>New Student Registration Form</h1>
+      <NewStudentRegestrationForm />
     </div>
   )
 }

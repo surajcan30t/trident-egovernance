@@ -1,6 +1,5 @@
 'use client'
-import React, { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useEffect, useState } from 'react'
 import { GraduationCap, IdCard, User, BookUser, PersonStanding, Award } from 'lucide-react'
 import { FaVenusMars } from "react-icons/fa";
 import { PiRankingBold, PiStudentBold } from "react-icons/pi";
@@ -11,13 +10,15 @@ import { useRouter } from 'next/navigation';
 const NewStudentRegistrationData = (data: any) => {
   // Dummy data (replace with actual data from school)
 
-  if (typeof window !== 'undefined') {
-    console.log('storing in ls')
-    localStorage.setItem('student', JSON.stringify(data));
-    console.log('stored in ls')
-  }
   const router = useRouter()
   const [statusMessage, setStatusMessage] = useState('')
+  const [inputData, setInputData] = useState({ allotmentId: '' });
+
+  useEffect(() => {
+    if (data?.allotmentId) {
+      setInputData({ allotmentId: data.allotmentId });
+    }
+  }, [data?.allotmentId]);
 
   const DataField = ({ icon, label, value }: any) => (
     <div className="flex items-center px-1 py-1 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 group">
@@ -30,6 +31,24 @@ const NewStudentRegistrationData = (data: any) => {
       </div>
     </div>
   );
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const payload = {
+      allotmentId: inputData.allotmentId,
+      step: 2,
+    };
+    try {
+      const response = await nsrSendAllotmentID(payload);
+      if (response !== 200) {
+        setStatusMessage('Allotment ID not found');
+      } else {
+        router.push('/studentportal/newstudentpersonaldetails');
+      }
+    } catch (error) {
+      setStatusMessage('An error occurred. Please try again.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 py-5 px-4 sm:px-6 lg:px-8">
@@ -72,31 +91,24 @@ const NewStudentRegistrationData = (data: any) => {
           <DataField icon={<User />} label="Name" value={data.studentName} />
           <DataField icon={<FaVenusMars />} label="Gender" value={data.gender} />
           <DataField icon={<GraduationCap />} label="Course" value={data.course} />
-          <DataField icon={<Award />} label="Branch" value={data.branch} />
+          <DataField icon={<Award />} label="Branch" value={data.branchCode} />
           <DataField icon={<PersonStanding />} label="TFW Status" value={data.tfw} />
           <DataField icon={<GraduationCap />} label="Admitted Through" value={data.admissionType} />
           <DataField icon={<PiStudentBold />} label="Student Type" value={data.studentType} />
         </div>
 
         <div className="flex justify-center m-5">
-          <form action={
-            async(form) => {
-              const payload = {
-                allotId:form.get('allotmentID'),
-                step: 2,
-              };
-              const response = await nsrSendAllotmentID(payload);
-              if(response !== 200){
-                setStatusMessage('Allotment ID not found')
-              }
-              if(response === 200){
-                router.push('/studentportal/newstudentpersonaldetails')
-              }
-            }
-          } className='flex flex-col gap-3 justify-center'>
+          <form onSubmit={handleSubmit} className='flex flex-col gap-3 justify-center'>
             <div className='flex flex-row gap-3 justify-center items-center'>
               <label htmlFor="allotmentID">Allotment Id:-</label>
-              <input value={data?.allotmentId} name='allotmentID' type="text" placeholder='Enter your JEE/OJEE allotment ID' className='w-2/3 px-4 py-1 border border-gray-300 rounded-md ring-1' />
+              <input
+                value={inputData.allotmentId}
+                onChange={(e) => setInputData({ ...inputData, allotmentId: e.target.value })}
+                name='allotmentID'
+                type="text"
+                placeholder='Enter your JEE/OJEE allotment ID'
+                className='w-2/3 px-4 py-1 border border-gray-300 rounded-md ring-1'
+              />
             </div>
             <p className='after:content text-red-500 text-sm text-center'>Please refer to JEE allotment letter</p>
             <Button variant='trident'>Save & Next</Button>

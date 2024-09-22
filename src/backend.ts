@@ -118,13 +118,16 @@ export const getUserSession = async (): Promise<User> => {
 // }
 
 export const handleNewStudent = async (formData: any) => {
+  formData.admissionYear = new Date().getFullYear();
+  formData.degree_yop = formData.admissionYear + 4;
+  formData.status = 'CONTINUING';
   console.log(formData);
   try {
     const request = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND}/NSR/post`,
       formData,
     );
-    console.log('Backend Request', request);
+    return request.status;
   } catch (error) {
     console.log(error);
   }

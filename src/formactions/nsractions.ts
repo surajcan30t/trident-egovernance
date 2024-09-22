@@ -15,6 +15,11 @@ export const newStudentLogin = async (formData: any) => {
       httpOnly: true,
       secure: true,
     });
+    cookies().set('applicationNo', formData.applicationNo, {
+      sameSite: 'lax',
+      httpOnly: true,
+      secure: true,
+    })
     if (response.status === 200) {
       const status = response.status;
       const getStudentDetails = await axios.get(
@@ -37,6 +42,7 @@ export const newStudentLogin = async (formData: any) => {
   }
 };
 
+// function to get initial student data if exist and update with user input
 const initialStudentData = async (formData: any) => {
   interface Student {
     jeeApplicationNo: string | null;
@@ -119,7 +125,7 @@ const initialStudentData = async (formData: any) => {
       return null;
     }
     const data = response.data;
-    console.log('Data in initialStudentData function', data);
+    // console.log('Data in initialStudentData function', data);
     const initData = {
       jeeApplicationNo: formData.jeeApplicationNo || data.jeeApplicationNo,
       regdNo: formData.regdNo || data.regdNo,
@@ -158,8 +164,7 @@ const initialStudentData = async (formData: any) => {
       twelvthYOP: formData.twelvthYOP || data.twelvthYOP,
       diplomaPercentage: formData.diplomaPercentage || data.diplomaPercentage,
       diplomaYOP: formData.diplomaYOP || data.diplomaYOP,
-      graduationPercentage:
-        formData.graduationPercentage || data.graduationPercentage,
+      graduationPercentage: formData.graduationPercentage || data.graduationPercentage,
       graduationYOP: formData.graduationYOP || data.graduationYOP,
       lgName: formData.lgName || data.lgName,
       permanentAddress: formData.permanentAddress || data.permanentAddress,
@@ -192,25 +197,17 @@ const initialStudentData = async (formData: any) => {
   }
 };
 
+
+// function to send allotment id
 export const nsrSendAllotmentID = async (formData: any) => {
-  // const data = {
-  //   jeeApplicationNo: initial.jeeApplicationNo,
-  //   studentName: initial.studentName,
-  //   gender: initial.gender,
-  //   course: initial.course,
-  //   branch: initial.branch,
-  //   tfw: initial.tfw,
-  //   admissionType: initial.admissionType,
-  //   studentType: initial.studentType,
-  //   rollNo: initial.rollNo,
-  //   rank: initial.rank,
-  //   step: 2,
-  //   allotmentId: initial.allotId
-  // }
-  // console.log(data)
-  const data = await initialStudentData(formData);
-  console.log('Data in nsrSendAllotmentID', data);
   try {
+    const data = await initialStudentData(formData);
+
+    if (!data) {
+      console.log('No initial data found.');
+      return;
+    }
+    console.log('Data in NSRALLOTMENTID function', data);
     const authToken = cookies().get('NSR-Authorization');
     const request = axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
@@ -223,7 +220,7 @@ export const nsrSendAllotmentID = async (formData: any) => {
     );
     return (await request).status;
   } catch (error) {
-    // console.log(error)
+    console.log(error)
   }
 };
 
@@ -304,7 +301,49 @@ export const handleNsPersonal = async (formData: any) => {
   }
 };
 
-export const handleNsAcademic = async (formData: any) => {
+export const handleNsrAcademic = async (formData: any) => {
+  console.log('Acad form data',formData)
+  try {
+    // Fetch initial student data
+    const data = await initialStudentData(formData);
+    // const data = formData
+
+    if (!data) {
+      console.log('No initial data found.');
+      return;
+    }
+
+    // Merge initial data with formData (user input data)
+
+    console.log('data in handleNsAcademic', data); // Log merged data for debugging
+
+    // Send data to API
+    const authToken = cookies().get('NSR-Authorization');
+    const request = axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
+      data,
+      {
+        headers: {
+          'NSR-Authorization': `Bearer ${authToken?.value}`,
+        },
+      },
+    );
+
+    // console.log((await request).data);
+    return (await request).status;
+  } catch (error: any) {
+    // console.log(error.message);
+    const response = {
+      status: error.status,
+      message: error.message,
+    }
+    console.log(response);
+    return response;
+  }
+};
+
+
+export const handleNsrOptionalFacility = async (formData: any) => {
   try {
     // Fetch initial student data
     const data = await initialStudentData(formData);
@@ -334,5 +373,23 @@ export const handleNsAcademic = async (formData: any) => {
     return (await request).status;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const nsrFinalSubmit = async () => {
+  try {
+    const applicationNo = cookies().get('applicationNo');
+    const authToken = cookies().get('NSR-Authorization');
+    const request = axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent/${applicationNo?.value}`,
+      {
+        headers: {
+          'NSR-Authorization': `Bearer ${authToken?.value}`,
+        },
+      },
+    );
+    return (await request).status;
+  } catch (error) {
+    console.log(error)
   }
 };

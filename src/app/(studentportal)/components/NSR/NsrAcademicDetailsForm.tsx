@@ -24,7 +24,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { handleNsAcademic } from "@/formactions/nsractions"
+import { handleNsrAcademic } from "@/formactions/nsractions"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -37,24 +37,12 @@ const FormSchema = z.object({
     tenthYOP: z.string().min(1, {
         message: "Please enter your mother's name",
     }),
-    twelvthPercentage: z.string().min(1, {
-        message: "Please enter your local guardian name",
-    }).optional(),
-    twelvthYOP: z.string().min(1, {
-        message: "Please enter your present address",
-    }).optional(),
-    diplomaPercentage: z.string().min(1, {
-        message: "Please enter your city",
-    }).optional(),
-    diplomaYOP: z.string().min(1,    {
-        message: "Please enter your state",
-    }).optional(),
-    graduationPercentage: z.string().min(1, {
-        // message: "Please enter your address",
-    }).optional(),
-    graduationYOP: z.string().min(1, {
-        // message: "Please enter your district",
-    }).optional(),
+    twelvthPercentage: z.string().optional(),
+    twelvthYOP: z.string().optional(),
+    diplomaPercentage: z.string().optional(),
+    diplomaYOP: z.string().optional(),
+    graduationPercentage: z.string().optional(),
+    graduationYOP: z.string().optional(),
     educationType: z.enum(["INTER", "DIP"]),
     step: z.number().default(4),
 })
@@ -80,7 +68,7 @@ const NsrAcademicDetailsForm = (initial: any) => {
 
     const { toast } = useToast()
     async function onSubmit(data: z.infer<typeof FormSchema>) {
-        const status = await handleNsAcademic(data)
+        const status = await handleNsrAcademic(data)
         if (status !== 200) {
             toast({
                 variant: "destructive",
@@ -88,11 +76,14 @@ const NsrAcademicDetailsForm = (initial: any) => {
                 description: "Please try again later.",
             })
         }
-        toast({
-            variant: "success",
-            title: "Your registration has been successfully submitted.",
-        })
-        router.push("/studentportal/newstudentfacilities")
+        else{
+
+            toast({
+                variant: "success",
+                title: "Your registration has been successfully submitted.",
+            })
+            router.push("/studentportal/newstudentfacilities")
+        }
     }
 
     return (

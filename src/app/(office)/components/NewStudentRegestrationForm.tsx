@@ -63,10 +63,13 @@ const FormSchema = z.object({
   branchCode: z.enum(["CSE", "CST", "CSAIML"], {
     required_error: "You need to select the gender.",
   }),
+  ojeeCounsellingFeePaid: z.enum(["YES", "NO"], {
+    required_error: "You need to select fee paid or not.",
+  }),
   step: z.number().default(1),
 })
 
-const NewStudentRegestrationForm1 = () => {
+const NewStudentRegestrationForm = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -79,23 +82,29 @@ const NewStudentRegestrationForm1 = () => {
 
   const { toast } = useToast()
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data)
-    handleNewStudent(data)
-    toast({
-      variant: "success",
-      title: "Your registration has been successfully submitted.",
-      description: (
-        <code>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </code>
-      )
-    })
+    const status = await handleNewStudent(data)
+    if (status !== 200) {
+      toast({
+          variant: "destructive",
+          title: "Something went wrong.",
+          description: "Please try again later.",
+      })
+  }
+  else{
+
+      toast({
+          variant: "success",
+          title: "Your registration has been successfully submitted.",
+      })
+  }
   }
 
   return (
     // <Card>
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 lg:grid lg:grid-cols-2 lg:gap-2 lg:gap-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 my-10 flex flex-col items-center gap-3">
+
+      <div className="w-full lg:grid lg:grid-cols-2 lg:gap-2 lg:gap-y-1">
         {/* Application Number */}
         <FormField
           control={form.control}
@@ -165,21 +174,6 @@ const NewStudentRegestrationForm1 = () => {
           )}
         />
 
-        {/* Rank Number */}
-        <FormField
-          control={form.control}
-          name="rank"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Student Rank</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter you rank" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         {/* Rank Type */}
         <FormField
           control={form.control}
@@ -202,7 +196,20 @@ const NewStudentRegestrationForm1 = () => {
           )}
         />
 
-
+        {/* Rank Number */}
+        <FormField
+          control={form.control}
+          name="rank"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Student Rank</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter you rank" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         {/* Course Type */}
         <FormField
@@ -271,7 +278,7 @@ const NewStudentRegestrationForm1 = () => {
                       <RadioGroupItem value="TFW" />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      Yes
+                      TFW
                     </FormLabel>
                   </FormItem>
                   <FormItem className="flex items-center space-x-3 space-y-0">
@@ -279,7 +286,43 @@ const NewStudentRegestrationForm1 = () => {
                       <RadioGroupItem value="NTFW" />
                     </FormControl>
                     <FormLabel className="font-normal">
-                      No
+                      NTFW
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Counselling Fee Status */}
+        <FormField
+          control={form.control}
+          name="ojeeCounsellingFeePaid"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Counselling Fee Status</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value?.toString()}
+                  className="flex flex-row space-x-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="YES" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Paid
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="NO" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Not Paid
                     </FormLabel>
                   </FormItem>
                 </RadioGroup>
@@ -334,11 +377,12 @@ const NewStudentRegestrationForm1 = () => {
             </FormItem>
           )}
         />
+      </div>
 
-        <Button variant={"trident"} size="lg" type="submit">Submit</Button>
+        <Button variant={"trident"} className="w-1/3 m-3" size="lg" type="submit">Submit</Button>
       </form>
     </Form>
     // </Card>
   )
 }
-export default NewStudentRegestrationForm1
+export default NewStudentRegestrationForm

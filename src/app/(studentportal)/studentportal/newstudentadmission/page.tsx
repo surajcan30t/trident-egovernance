@@ -16,9 +16,6 @@ interface Student {
   step: number;
 }
 
-// Define the structure of the API response
-
-// Fetch student data asynchronously
 const studentData = async (): Promise<Student | null> => {
   try {
     const NSR_token = cookies().get("NSR-Authorization");
@@ -26,9 +23,6 @@ const studentData = async (): Promise<Student | null> => {
       headers: {
         'NSR-Authorization': `Bearer ${NSR_token?.value}`,
       },
-      params: {
-        cache: ''
-      }
     },
   );
     if (response.status !== 200) {
