@@ -19,7 +19,7 @@ export const newStudentLogin = async (formData: any) => {
       sameSite: 'lax',
       httpOnly: true,
       secure: true,
-    })
+    });
     if (response.status === 200) {
       const status = response.status;
       const getStudentDetails = await axios.get(
@@ -164,7 +164,8 @@ const initialStudentData = async (formData: any) => {
       twelvthYOP: formData.twelvthYOP || data.twelvthYOP,
       diplomaPercentage: formData.diplomaPercentage || data.diplomaPercentage,
       diplomaYOP: formData.diplomaYOP || data.diplomaYOP,
-      graduationPercentage: formData.graduationPercentage || data.graduationPercentage,
+      graduationPercentage:
+        formData.graduationPercentage || data.graduationPercentage,
       graduationYOP: formData.graduationYOP || data.graduationYOP,
       lgName: formData.lgName || data.lgName,
       permanentAddress: formData.permanentAddress || data.permanentAddress,
@@ -197,7 +198,6 @@ const initialStudentData = async (formData: any) => {
   }
 };
 
-
 // function to send allotment id
 export const nsrSendAllotmentID = async (formData: any) => {
   try {
@@ -220,7 +220,7 @@ export const nsrSendAllotmentID = async (formData: any) => {
     );
     return (await request).status;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
@@ -302,7 +302,7 @@ export const handleNsPersonal = async (formData: any) => {
 };
 
 export const handleNsrAcademic = async (formData: any) => {
-  console.log('Acad form data',formData)
+  console.log('Acad form data', formData);
   try {
     // Fetch initial student data
     const data = await initialStudentData(formData);
@@ -336,12 +336,11 @@ export const handleNsrAcademic = async (formData: any) => {
     const response = {
       status: error.status,
       message: error.message,
-    }
+    };
     console.log(response);
     return response;
   }
 };
-
 
 export const handleNsrOptionalFacility = async (formData: any) => {
   try {
@@ -390,6 +389,6 @@ export const nsrFinalSubmit = async () => {
     );
     return (await request).status;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
