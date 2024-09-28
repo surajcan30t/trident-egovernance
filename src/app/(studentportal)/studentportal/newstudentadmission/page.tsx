@@ -41,9 +41,9 @@ const Page: React.FC = async () => {
   const data = await studentData(); // Fetch the student data
   return (
     <div>
-      {data&&
+      {/* {data&& */}
         <NewStudentRegistrationData {...data} />
-      }
+      {/* } */}
     </div>
   );
 };

@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { handleNsrOptionalFacility } from "@/formactions/nsractions"
+import { handleNsrOptionalFacility } from '../../nsractions/nsractions';
 import { useRouter } from 'next/navigation';
 
 const FormSchema = z.object({
@@ -55,27 +55,25 @@ const NsrOptionalFacilityForm = (initial: any) => {
 
   const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log('submitting')
-    const status = await handleNsrOptionalFacility(data)
+    console.log('submitting');
+    const status = await handleNsrOptionalFacility(data);
     if (status !== 200) {
       toast({
-        variant: "destructive",
-        title: "Something went wrong.",
-        description: "Please try again later.",
-      })
+        variant: 'destructive',
+        title: 'Something went wrong.',
+        description: 'Please try again later.',
+      });
     }
     toast({
-      variant: "success",
-      title: "Your registration has been successfully submitted.",
-    })
-    router.push("/studentportal/newstudentfinalregister")
+      variant: 'success',
+      title: 'Your registration has been successfully submitted.',
+    });
+    router.push('/studentportal/newstudentfinalregister');
   }
 
   return (
     // <Card>
     <Form {...form}>
-
-
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-2/3 flex flex-col items-center gap-3"
@@ -168,7 +166,9 @@ const NsrOptionalFacilityForm = (initial: any) => {
                       <FormControl>
                         <RadioGroupItem value="SEMESTER" />
                       </FormControl>
-                      <FormLabel className="font-normal">Semesterwise</FormLabel>
+                      <FormLabel className="font-normal">
+                        Semesterwise
+                      </FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>
@@ -184,7 +184,10 @@ const NsrOptionalFacilityForm = (initial: any) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Transport Pickup Point</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your pickup point" />
@@ -200,9 +203,14 @@ const NsrOptionalFacilityForm = (initial: any) => {
             )}
           />
         </div>
-      <Button variant={'trident'} className="w-1/3 m-3" size="lg" type="submit">
-        Submit
-      </Button>
+        <Button
+          variant={'trident'}
+          className="w-1/3 m-3"
+          size="lg"
+          type="submit"
+        >
+          Submit
+        </Button>
       </form>
     </Form>
     // </Card>
