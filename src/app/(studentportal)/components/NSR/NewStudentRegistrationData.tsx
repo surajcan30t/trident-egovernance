@@ -13,6 +13,7 @@ import { PiRankingBold, PiStudentBold } from 'react-icons/pi';
 import { Button } from '../../../../components/ui/button';
 import { nsrSendAllotmentID } from '../../nsractions/nsractions';
 import { useRouter } from 'next/navigation';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 const NewStudentRegistrationData = (data: any) => {
   // Dummy data (replace with actual data from school)
@@ -20,6 +21,7 @@ const NewStudentRegistrationData = (data: any) => {
   const router = useRouter();
   const [statusMessage, setStatusMessage] = useState('');
   const [inputData, setInputData] = useState({ allotmentId: '' });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (data?.allotmentId) {
@@ -46,7 +48,9 @@ const NewStudentRegistrationData = (data: any) => {
       step: 2,
     };
     try {
+      setLoading(true);
       const response = await nsrSendAllotmentID(payload);
+      setLoading(false);
       if (response !== 200) {
         setStatusMessage('Allotment ID not found');
       } else {
@@ -54,6 +58,8 @@ const NewStudentRegistrationData = (data: any) => {
       }
     } catch (error) {
       setStatusMessage('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -159,7 +165,13 @@ const NewStudentRegistrationData = (data: any) => {
             <p className="after:content text-red-500 text-sm text-center">
               Please refer to JEE allotment letter
             </p>
-            <Button variant="trident">Save & Next</Button>
+            <Button variant="trident">
+              {loading ? (<PulseLoader
+                color="#ffffff"
+                size={5}
+              />) :
+                'Save & Next'}
+            </Button>
             {statusMessage && (
               <p className="text-red-500 text-sm text-center">
                 {statusMessage}

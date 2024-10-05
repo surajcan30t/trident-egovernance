@@ -26,6 +26,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { handleNsPersonal } from '../../nsractions/nsractions';
 import { useRouter } from 'next/navigation';
+import PulseLoader from 'react-spinners/PulseLoader';
+import { useState } from 'react';
 
 const capitalizeWords = (str: string) =>
   str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -64,9 +66,18 @@ const FormSchema = z.object({
   parentEmailId: z.string().toLowerCase().min(1, {
     message: 'Please enter your parent email ID',
   }),
-  caste: z.string().toUpperCase().min(1, {
-    message: 'Please enter your caste',
-  }),
+  caste: z.enum(
+    [
+      'GENERAL',
+      'SC',
+      'ST',
+      'OBC',
+      'OTHERS',
+    ],
+    {
+      required_error: 'You need to select the religion.',
+    },
+  ),
   permanentPincode: z
     .string() // Expect a string from the input
     .transform((val) => parseInt(val, 10)) // Convert it to a number
@@ -99,6 +110,7 @@ const FormSchema = z.object({
 
 const NsrPersonalDetailsForm = (initial: any) => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   // console.log(initial)
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -124,19 +136,31 @@ const NsrPersonalDetailsForm = (initial: any) => {
 
   const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const status = await handleNsPersonal(data);
-    if (status !== 200) {
+    try {
+      setLoading(true)
+      const status = await handleNsPersonal(data);
+      setLoading(false)
+      if (status !== 200) {
+        toast({
+          variant: 'destructive',
+          title: 'Something went wrong.',
+          description: 'Please try again later.',
+        });
+      }
+      toast({
+        variant: 'success',
+        title: 'Your registration has been successfully submitted.',
+      });
+      router.push('/studentportal/newstudentacademicdetails');
+    } catch (err) {
       toast({
         variant: 'destructive',
         title: 'Something went wrong.',
         description: 'Please try again later.',
       });
+    } finally {
+      setLoading(false)
     }
-    toast({
-      variant: 'success',
-      title: 'Your registration has been successfully submitted.',
-    });
-    router.push('/studentportal/newstudentacademicdetails');
   }
 
   return (
@@ -403,14 +427,23 @@ const NsrPersonalDetailsForm = (initial: any) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Caste</FormLabel>
-                <FormControl>
-                  <Input
-                    className="uppercase"
-                    placeholder="Enter your caste"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your religion" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="GENERAL">General</SelectItem>
+                    <SelectItem value="SC">SC</SelectItem>
+                    <SelectItem value="ST">ST</SelectItem>
+                    <SelectItem value="OBC">OBC</SelectItem>
+                    <SelectItem value="OTHERS">Others</SelectItem>
+                  </SelectContent>
+                </Select>
               </FormItem>
             )}
           />
@@ -448,10 +481,14 @@ const NsrPersonalDetailsForm = (initial: any) => {
         </div>
 
         <Button variant={'trident'} className="w-1/3" size="lg" type="submit">
-          Save and Next
+          {loading ? (<PulseLoader
+            color="#ffffff"
+            size={5}
+          />) :
+            'Save & Next'}
         </Button>
       </form>
     </Form>
   );
-};
+}
 export default NsrPersonalDetailsForm;

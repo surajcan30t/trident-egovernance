@@ -1,11 +1,11 @@
-
-import Navbar from '@/components/Navbar';
+'use client';
 import Image from 'next/image';
+import TypewriterComponent from 'typewriter-effect';
 
-export default async function Home() {
+export default function Home() {
   return (
-    <main className="relative flex-col w-full h-screen">
-      <div className="absolute top-0 left-0 w-full h-full">
+    <main className="absolute top-0 flex-col w-full h-screen">
+      <div className="w-full h-full">
 
         <div className="relative w-full h-full">
           <Image
@@ -15,32 +15,62 @@ export default async function Home() {
             fill
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+          <div className="absolute inset-0 bg-black bg-opacity-40"></div>
         </div>
 
-        <div className="absolute top-0 left-0 w-full z-50">
+        {/* <div className="absolute top-0 left-0 w-full z-50">
           <Navbar />
-        </div>
+        </div> */}
 
         <div className="absolute inset-0 flex flex-col justify-around items-center z-10">
-          <div className="flex flex-col items-center text-center">
-            <h1 className="text-3xl mb-9 font-bold md:text-3xl lg:text-3xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
-              Tell Me
+          <div className="flex flex-col items-start text-start">
+
+            <h1 className="text-3xl mb-9 font-semibold md:text-5xl lg:text-5xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
+              <TypewriterComponent
+                onInit={(typewriter) => {
+                  typewriter
+                    .typeString('Tell Me')
+                    .pauseFor(1000)
+                    .deleteAll()
+                    .typeString('Explain Me')
+                    .pauseFor(1000)
+                    .deleteAll()
+                    .typeString('Involve Me')
+                    .pauseFor(1000)
+                    .deleteAll()
+                    .start();
+                }}
+                options={{
+                  loop: true,
+                  delay: 100,  // Typing speed
+                  deleteSpeed: 50,  // Deleting speed
+
+                }}
+              />
             </h1>
-            <h1 className="text-3xl font-semibold md:text-5xl lg:text-3xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
-              I will Forget
-            </h1>
-            <h1 className="text-5xl mb-9 font-bold md:text-5xl lg:text-5xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
-              Explain Me
-            </h1>
-            <h1 className="text-3xl font-semibold md:text-5xl lg:text-3xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
-              I may remember
-            </h1>
-            <h1 className="text-7xl mb-9 font-bold md:text-7xl lg:text-7xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
-              Involve Me
-            </h1>
-            <h1 className="text-3xl font-semibold md:text-5xl lg:text-3xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
-              I will understand
+
+            <h1 className="flex flex-row gap-5 text-3xl font-semibold md:text-5xl lg:text-7xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
+              I will{'  '}  <TypewriterComponent
+                onInit={(typewriter) => {
+                  typewriter
+                    .typeString('Forget')
+                    .pauseFor(1000)
+                    .deleteAll()
+                    .typeString('Remember')
+                    .pauseFor(1600)
+                    .deleteAll()
+                    .typeString('Understand')
+                    .pauseFor(1000)
+                    .deleteAll()
+                    .start();
+                }}
+                options={{
+                  loop: true,
+
+                  delay: 100,  // Typing speed
+                  deleteSpeed: 50,  // Deleting speed
+                }}
+              />
             </h1>
           </div>
         </div>

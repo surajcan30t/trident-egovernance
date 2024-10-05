@@ -8,25 +8,24 @@ interface User {
   name: string
   email: string
   image: string
-  userType: {userType: string}
+  userType: { jobTitle: string }
 }
 const page = async () => {
-  const userRole = await getServerSession(authOptions) as { user : User }
-  console.log('Userrole in student page -- \n',userRole?.user?.userType?.userType)
-  if(userRole?.user?.userType?.userType !== 'job_student')
-  {
+  const userRole = await getServerSession(authOptions) as { user: User }
+  // console.log('Userrole in student page -- \n', userRole)
+  if (userRole?.user?.userType?.jobTitle !== 'job_student') {
     return <Unauthorized />
   }
-  return(
+  return (
     <div className='m-0 p-2 flex flex-row gap-4 justify-end'>
-        <div>
-          <StudentAttendance />
-        </div>
-        <div className=''>
-          <User />
-        </div>
+      <div>
+        <StudentAttendance />
       </div>
-    
+      <div className=''>
+        <User />
+      </div>
+    </div>
+
   )
 }
 

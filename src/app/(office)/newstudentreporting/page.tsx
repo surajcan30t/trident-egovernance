@@ -6,7 +6,7 @@ import NewStudentRegestrationForm from '../components/NewStudentRegestrationForm
 // }
 const page = async () => {
   return (
-    <div className='w-screen h-screen p-0 flex flex-col items-center'>
+    <div className='w-screen min-h-full flex flex-col items-center'>
       <h1 className='text-2xl text-slate-600 font-bold'>New Student Registration Form</h1>
       <NewStudentRegestrationForm />
     </div>

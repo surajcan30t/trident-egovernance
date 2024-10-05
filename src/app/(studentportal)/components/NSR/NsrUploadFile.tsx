@@ -18,6 +18,9 @@ import { singleUpload, saveDocumentToDB } from '../../nsractions/nsractions';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
+import Link from 'next/link';
+import { FileText } from 'lucide-react';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 const ACCEPTED_FILE_TYPES = ['image/jpg', 'image/png', 'image/jpeg'];
 const MAX_FILE_SIZE = 4000000; // 4MB
@@ -68,29 +71,27 @@ const FormSchema = z.object({
         message: 'File must be a PDF and less than 4MB.',
       },
     ),
-  step: z.number().default(5),
+  step: z.number().default(6),
 });
 
-const NsrUploadFile = () => {
-  const [progress, setProgress] = useState<number[]>([0, 0, 0, 0, 0]); // progress for each file
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadStatus, setUploadStatus] = useState<string[]>([
-    '',
-    '',
-    '',
-    '',
-    '',
-  ]); // upload status for each file
+const NsrUploadFile = (initial: any) => {
+  // const NsrUploadFile = () => {
+  const [isUploading, setIsUploading] = useState<boolean[]>([false, false, false, false, false, false]);// upload status for each file
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {},
-  });
+
+  }
+  );
   const router = useRouter();
 
   const handleSingleUpload = async (file: File, index: number) => {
     if (!file) return;
     try {
       // Start simulating progress
+      const newUploadingState = [...isUploading];
+      newUploadingState[index] = true;
+      setIsUploading(newUploadingState);
 
       // Create form data and call the server-side singleUpload function
       const formData = new FormData();
@@ -104,17 +105,6 @@ const NsrUploadFile = () => {
           variant: 'success',
           title: 'Document uploaded successfully.',
         });
-        setUploadStatus((prev) => {
-          const updatedStatus = [...prev];
-          updatedStatus[index] = 'File uploaded successfully';
-          console.log(resp);
-          return updatedStatus;
-        });
-        setProgress((prev) => {
-          const updatedProgress = [...prev];
-          updatedProgress[index] = 100; // Ensure it's 100% on success
-          return updatedProgress;
-        });
 
       } else {
         toast({
@@ -124,43 +114,47 @@ const NsrUploadFile = () => {
         })
       }
     } catch (error: any) {
-      setUploadStatus((prev) => {
-        const updatedStatus = [...prev];
-        updatedStatus[index] = 'Error during upload';
-        return updatedStatus;
-      });
-      setProgress((prev) => {
-        const updatedProgress = [...prev];
-        updatedProgress[index] = 0; // Reset progress on error
-        return updatedProgress;
-      });
       toast({
         variant: 'destructive',
         title: 'Something went wrong.',
         description: `Error: ${error.message}`,
       })
     } finally {
-      setIsUploading(false);
+      const updatedUploadingState = [...isUploading];
+      updatedUploadingState[index] = false;
+      setIsUploading(updatedUploadingState);
     }
   };
 
   async function handleFinalSubmit() {
-    const response = await saveDocumentToDB(1);
-    if (response === 200) {
-      toast({
-        variant: 'success',
-        title: 'Documents uploaded successfully.',
-      });
-      // router.push('/nsractions');
+    try {
+      const newUploadingState = [...isUploading];
+      newUploadingState[5] = true;
+      setIsUploading(newUploadingState);
+      const response = await saveDocumentToDB(1);
+      if (response === 200) {
+        toast({
+          variant: 'success',
+          title: 'Documents uploaded successfully.',
+        });
+        router.push('/studentportal/newstudentfinalregister');
+      }
+      else {
+        toast({
+          variant: 'destructive',
+          title: 'Something went wrong.',
+          description: 'Please try again later.',
+        });
+      }
+    } catch (err) {
+
+    } finally {
+      const newUploadingState = [...isUploading];
+      newUploadingState[5] = false;
+      setIsUploading(newUploadingState);
     }
-    else {
-      toast({
-        variant: 'destructive',
-        title: 'Something went wrong.',
-        description: 'Please try again later.',
-      });
-    }   
   }
+  console.log("Value", form.getValues());
 
   return (
     <>
@@ -187,14 +181,25 @@ const NsrUploadFile = () => {
                       }
                     />
                   </FormControl>
+
                   <div className="flex justify-between items-center">
                     <Button
                       variant="trident"
                       className="mt-2"
                       onClick={() => handleSingleUpload(value, 0)}
                     >
-                      Upload
+                      {isUploading[0] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
                     </Button>
+                    {initial?.studentDocsData?.length > 0 && initial?.studentDocsData[0]?.docLink && (
+                      <Link
+                        href={initial?.studentDocsData[0]?.docLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 underline ml-2"
+                      >
+                        <FileText />
+                      </Link>
+                    )}
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -205,6 +210,49 @@ const NsrUploadFile = () => {
             <FormField
               control={form.control}
               name="file2"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel>
+                    Upload 10<sup>th</sup> Marksheet
+                    <span className="text-red-500 font-bold text-lg">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      type="file"
+                      onChange={(event) =>
+                        onChange(event.target.files && event.target.files[0])
+                      }
+                    />
+                  </FormControl>
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="trident"
+                      className="mt-2"
+                      onClick={() => handleSingleUpload(value, 1)}
+                    >
+                      {isUploading[1] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
+                    </Button>
+                    {initial?.studentDocsData?.length > 1 && initial?.studentDocsData[1]?.docLink && (
+                      <Link
+                        href={initial?.studentDocsData[1]?.docLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 underline ml-2"
+                      >
+                        <FileText />
+                      </Link>
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* File 3 with Upload Button */}
+            <FormField
+              control={form.control}
+              name="file3"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
                   <FormLabel>
@@ -224,43 +272,20 @@ const NsrUploadFile = () => {
                     <Button
                       variant="trident"
                       className="mt-2"
-                      onClick={() => handleSingleUpload(value, 1)}
-                    >
-                      Upload
-                    </Button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* File 3 with Upload Button */}
-            <FormField
-              control={form.control}
-              name="file3"
-              render={({ field: { value, onChange, ...fieldProps } }) => (
-                <FormItem>
-                  <FormLabel>
-                    Upload Graduation Certificate
-                    <span className="text-red-500 font-bold text-lg">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...fieldProps}
-                      type="file"
-                      onChange={(event) =>
-                        onChange(event.target.files && event.target.files[0])
-                      }
-                    />
-                  </FormControl>
-                  <div className="flex justify-between items-center">
-                    <Button
-                      variant="trident"
-                      className="mt-2"
                       onClick={() => handleSingleUpload(value, 2)}
                     >
-                      Upload
+                      {isUploading[2] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
                     </Button>
+                    {initial?.studentDocsData?.length > 2 && initial?.studentDocsData[2]?.docLink && (
+                      <Link
+                        href={initial?.studentDocsData[2]?.docLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 underline ml-2"
+                      >
+                        <FileText />
+                      </Link>
+                    )}
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -274,7 +299,7 @@ const NsrUploadFile = () => {
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
                   <FormLabel>
-                    Upload Post-Graduation Certificate
+                    Upload 12<sup>th</sup> Marksheet
                     <span className="text-red-500 font-bold text-lg">*</span>
                   </FormLabel>
                   <FormControl>
@@ -292,8 +317,18 @@ const NsrUploadFile = () => {
                       className="mt-2"
                       onClick={() => handleSingleUpload(value, 3)}
                     >
-                      Upload
+                      {isUploading[3] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
                     </Button>
+                    {initial?.studentDocsData?.length > 3 && initial?.studentDocsData[3]?.docLink && (
+                      <Link
+                        href={initial?.studentDocsData[3]?.docLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 underline ml-2"
+                      >
+                        <FileText />
+                      </Link>
+                    )}
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -307,7 +342,7 @@ const NsrUploadFile = () => {
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
                   <FormLabel>
-                    Upload Other Certificate
+                    Upload College Leaving Certificate or TC
                     <span className="text-red-500 font-bold text-lg">*</span>
                   </FormLabel>
                   <FormControl>
@@ -325,8 +360,18 @@ const NsrUploadFile = () => {
                       className="mt-2"
                       onClick={() => handleSingleUpload(value, 4)}
                     >
-                      Upload
+                      {isUploading[4] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
                     </Button>
+                    {initial?.studentDocsData?.length > 4 && initial?.studentDocsData[4]?.docLink && (
+                      <Link
+                        href={initial?.studentDocsData[4]?.docLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 underline ml-2"
+                      >
+                        <FileText />
+                      </Link>
+                    )}
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -340,9 +385,8 @@ const NsrUploadFile = () => {
             className="w-1/3 mt-4"
             size="lg"
             onClick={handleFinalSubmit}
-            // onClick={() => router.push('/studentportal/newstudentfinalregister	')}
           >
-            Review and Submit
+            {isUploading[5] ? (<PulseLoader color="white" size={5} />) : 'Review and Submit'}
           </Button>
         </div>
       </Form>

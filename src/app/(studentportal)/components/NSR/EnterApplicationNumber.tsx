@@ -1,10 +1,11 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import PulseLoader from 'react-spinners/PulseLoader'
 import {
   Form,
   FormControl,
@@ -24,6 +25,8 @@ const FormSchema = z.object({
   rank: z.coerce.number(),
 });
 const EnterApplicationNumber = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -32,24 +35,49 @@ const EnterApplicationNumber = () => {
     },
   });
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const response = await newStudentLogin(data);
-    if (response?.status === 200) {
-      const step = response.step;
-      switch (step) {
-        case 1:
-          router.push('/studentportal/newstudentadmission');
-          break;
-        case 2:
-          router.push('/studentportal/newstudentpersonaldetails');
-          break;
-        case 3:
-          router.push('/studentportal/newstudentacademicdetails');
-          break;
-        case 4:
-          router.push('/studentportal/newstudentfacilities');
-          break;
+    try {
+      setError('');
+      setLoading(true);
+      interface Response {
+        status?: number;
+        step?: number;
+        message?: string;
       }
+      const response: Response | undefined = await newStudentLogin(data);
+      if (response?.status === 200) {
+        const step = response?.step;
+        switch (step) {
+          case 1:
+            router.push('/studentportal/newstudentadmission');
+            break;
+          case 2:
+            router.push('/studentportal/newstudentpersonaldetails');
+            break;
+          case 3:
+            router.push('/studentportal/newstudentacademicdetails');
+            break;
+          case 4:
+            router.push('/studentportal/newstudentfacilities');
+            break;
+          case 5:
+            router.push('/studentportal/newstudentdocs');
+            break;
+          case 6:
+            router.push('/studentportal/newstudentfinalregister');
+            break;
+          default:
+            break;
+        }
+
+      }
+      setError(response?.message || 'An error occurred during login');
+    } catch (error: any) {
+      console.log(error);
+      // setError(error);
+    } finally {
+      setLoading(false);
     }
+
   }
 
   return (
@@ -90,11 +118,15 @@ const EnterApplicationNumber = () => {
                 </FormItem>
               )}
             />
-            <Button variant="trident" type="submit">
-              Submit
+            <Button size={'lg'} variant="trident" type="submit" >
+              {loading ? (<PulseLoader
+                color="#ffffff"
+                size={5}
+              />) : 'Submit'}
             </Button>
           </form>
         </Form>
+        {error && <p className="text-red-600 font-semibold">{error}</p>}
       </div>
     </>
   );

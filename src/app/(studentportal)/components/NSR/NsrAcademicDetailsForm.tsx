@@ -28,6 +28,7 @@ import { handleNsrAcademic } from '../../nsractions/nsractions';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 const FormSchema = z.object({
   tenthPercentage: z.string().min(1, {
@@ -42,13 +43,13 @@ const FormSchema = z.object({
   diplomaYOP: z.string().optional(),
   graduationPercentage: z.string().optional(),
   graduationYOP: z.string().optional(),
-  educationType: z.enum(['INTER', 'DIP']),
   step: z.number().default(4),
 });
 
 const NsrAcademicDetailsForm = (initial: any) => {
   const [statusMessage, setStatusMessage] = useState('');
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -61,25 +62,36 @@ const NsrAcademicDetailsForm = (initial: any) => {
       diplomaYOP: initial?.diplomaYOP?.toString() || '',
       graduationPercentage: initial?.graduationPercentage?.toString() || '',
       graduationYOP: initial?.graduationYOP?.toString() || '',
-      educationType: 'INTER',
     },
   });
 
   const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const status = await handleNsrAcademic(data);
-    if (status !== 200) {
+    try {
+      setLoading(true)
+      const status = await handleNsrAcademic(data);
+      setLoading(false)
+      if (status !== 200) {
+        toast({
+          variant: 'destructive',
+          title: 'Something went wrong.',
+          description: 'Please try again later.',
+        });
+      } else {
+        toast({
+          variant: 'success',
+          title: 'Your registration has been successfully submitted.',
+        });
+        router.push('/studentportal/newstudentfacilities');
+      }
+    } catch (err) {
       toast({
         variant: 'destructive',
         title: 'Something went wrong.',
         description: 'Please try again later.',
       });
-    } else {
-      toast({
-        variant: 'success',
-        title: 'Your registration has been successfully submitted.',
-      });
-      router.push('/studentportal/newstudentfacilities');
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -127,118 +139,85 @@ const NsrAcademicDetailsForm = (initial: any) => {
             )}
           />
 
+
+
+          {/* Inter Year */}
+
           <FormField
             control={form.control}
-            name="educationType"
+            name="twelvthYOP"
             render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Graduation Type</FormLabel>
+              <FormItem>
+                <FormLabel>+2 or Inter Year of passing</FormLabel>
                 <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value?.toString()}
-                    className="flex flex-row space-x-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="INTER" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        12<sup>th</sup>
-                      </FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="DIP" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Diploma</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
+                  <Input
+                    placeholder="Enter your +2 or Inter passing year"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Inter Year */}
-          {form.watch('educationType') === 'INTER' && (
-            <>
-              <FormField
-                control={form.control}
-                name="twelvthYOP"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>+2 or Inter Year of passing</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your +2 or Inter passing year"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* Inter Percentage */}
+          <FormField
+            control={form.control}
+            name="twelvthPercentage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>+2 or Inter percentage</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter your +2 or Inter percentage"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              {/* Inter Percentage */}
-              <FormField
-                control={form.control}
-                name="twelvthPercentage"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>+2 or Inter percentage</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your +2 or Inter percentage"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          )}
+
 
           {/* Diploma Year */}
-          {form.watch('educationType') === 'DIP' && (
-            <>
-              <FormField
-                control={form.control}
-                name="diplomaYOP"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Diploma year of passing</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter you Diploma passing year"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              {/* Diploma Percentage */}
-              <FormField
-                control={form.control}
-                name="diplomaPercentage"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Diploma percentage</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your Diploma percentage"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </>
-          )}
+          <FormField
+            control={form.control}
+            name="diplomaYOP"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Diploma year of passing</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter you Diploma passing year"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Diploma Percentage */}
+          <FormField
+            control={form.control}
+            name="diplomaPercentage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Diploma percentage</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter your Diploma percentage"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+
 
           {/* Graduation Year */}
           <FormField
@@ -277,13 +256,12 @@ const NsrAcademicDetailsForm = (initial: any) => {
           />
         </div>
 
-        <Button
-          variant={'trident'}
-          className="w-1/6 m-3 rounded-full"
-          size="lg"
-          type="submit"
-        >
-          Save & Next
+        <Button variant={'trident'} className="w-1/3" size="lg" type="submit">
+          {loading ? (<PulseLoader
+            color="#ffffff"
+            size={5}
+          />) :
+            'Save & Next'}
         </Button>
       </form>
     </Form>

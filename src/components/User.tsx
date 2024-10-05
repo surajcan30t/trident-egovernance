@@ -27,6 +27,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Image from 'next/image';
+import { Sheet, SheetClose } from './ui/sheet';
 
 
 const student: boolean = true;
@@ -54,8 +55,10 @@ const User: React.FC<CardProps> = ({ className, ...props }) => {
   const mail: string[] = ['wYwJZ@example.com', 'wYwJZ@example.com', 'wYwJZ@example.com', 'wYwJZ@example.com', 'wYwJZ@example.com', 'wYwJZ@example.com'];
 
   return (
-    <Card className={cn('w-[300px]', className)} {...props}>
-      <CardContent className="grid gap-4 py-2 bg-indigo-200 shadow-md shadow-gray-600 rounded-lg">
+
+
+    <Card className={cn('w-full h-full', className)} {...props}>
+      <CardContent className=" w-full h-full grid gap-4 bg-indigo-200 shadow-md shadow-gray-600 rounded-lg">
         <div className="flex space-x-4 items-center">
           <div className="relative w-[100px] h-[100px] rounded-full overflow-hidden shrink-0">
             <Image
@@ -143,6 +146,8 @@ const User: React.FC<CardProps> = ({ className, ...props }) => {
         )}
       </CardContent>
     </Card>
+
+
   );
 };
 

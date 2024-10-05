@@ -24,6 +24,8 @@ import {
 } from '@/components/ui/select';
 import { handleNsrOptionalFacility } from '../../nsractions/nsractions';
 import { useRouter } from 'next/navigation';
+import PulseLoader from 'react-spinners/PulseLoader';
+import { useState } from 'react';
 
 const FormSchema = z.object({
   cfPayMode: z.enum(['YEARLY', 'SEMESTER'], {
@@ -43,6 +45,7 @@ const FormSchema = z.object({
 
 const NsrOptionalFacilityForm = (initial: any) => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -55,20 +58,31 @@ const NsrOptionalFacilityForm = (initial: any) => {
 
   const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log('submitting');
-    const status = await handleNsrOptionalFacility(data);
-    if (status !== 200) {
+    try {
+      setLoading(true)
+      const status = await handleNsrOptionalFacility(data);
+      setLoading(false)
+      if (status !== 200) {
+        toast({
+          variant: 'destructive',
+          title: 'Something went wrong.',
+          description: 'Please try again later.',
+        });
+      }
+      toast({
+        variant: 'success',
+        title: 'Your registration has been successfully submitted.',
+      });
+      router.push('/studentportal/newstudentdocs');
+    } catch (err) {
       toast({
         variant: 'destructive',
         title: 'Something went wrong.',
         description: 'Please try again later.',
       });
+    } finally {
+      setLoading(false)
     }
-    toast({
-      variant: 'success',
-      title: 'Your registration has been successfully submitted.',
-    });
-    router.push('/studentportal/newstudentfinalregister');
   }
 
   return (
@@ -203,13 +217,12 @@ const NsrOptionalFacilityForm = (initial: any) => {
             )}
           />
         </div>
-        <Button
-          variant={'trident'}
-          className="w-1/3 m-3"
-          size="lg"
-          type="submit"
-        >
-          Submit
+        <Button variant={'trident'} className="w-1/3" size="lg" type="submit">
+          {loading ? (<PulseLoader
+            color="#ffffff"
+            size={5}
+          />) :
+            'Save & Next'}
         </Button>
       </form>
     </Form>

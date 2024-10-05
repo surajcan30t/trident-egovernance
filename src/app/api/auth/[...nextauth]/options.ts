@@ -1,6 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import AzureADProvider from 'next-auth/providers/azure-ad';
-import { JWT } from 'next-auth/jwt';
+import { JWT, getToken } from 'next-auth/jwt';
 
 const AZURE_AD_CLIENT_ID = process.env.AZURE_AD_CLIENT_ID!;
 const AZURE_AD_CLIENT_SECRET = process.env.AZURE_AD_CLIENT_SECRET!;
@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
         try {
           const userType = await fetch(
-            'http://localhost:8080/api/get-job-information',
+            `${process.env.NEXT_PUBLIC_BACKEND}/api/get-job-information`,
             {
               method: 'GET',
               headers: {
@@ -42,6 +42,7 @@ export const authOptions: NextAuthOptions = {
             },
           );
           token.userType = await userType.json();
+          console.log('token \n\n\n\n\n', token)
         } catch (error) {
           console.log('Error during fetch ', error);
         }
@@ -55,12 +56,5 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-
-    // async redirect({ url, baseUrl}) {
-    //   const token = await getSession();
-    //   console.log('Token inside callback redirect', token);
-    //   if(token === 'job_admin')
-    //   return url.startsWith(baseUrl) ? url : baseUrl;
-    // },
   },
 };
