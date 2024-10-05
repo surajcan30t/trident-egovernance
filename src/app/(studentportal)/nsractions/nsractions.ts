@@ -44,7 +44,7 @@ export const newStudentLogin = async (formData: any) => {
     console.log(error);
     const resp = {
       status: error?.response?.data?.status || 500,
-      message: error?.response?.data?.detail || 'Unable to process'
+      message: error?.response?.data?.detail || 'Unable to process',
     };
     return resp;
   }
@@ -460,7 +460,8 @@ const globalMap = new Map<String, Map<Number, String>>();
 const urlMapSetter = (
   uniqueApplicationNo: String,
   innerKey: Number,
-  value: String) => {
+  value: String,
+) => {
   if (!globalMap.has(uniqueApplicationNo)) {
     const innerMap = new Map<Number, String>();
     innerMap.set(innerKey, value);

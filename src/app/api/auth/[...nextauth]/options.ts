@@ -42,7 +42,7 @@ export const authOptions: NextAuthOptions = {
             },
           );
           token.userType = await userType.json();
-          console.log('token \n\n\n\n\n', token)
+          console.log('token \n\n\n\n\n', token);
         } catch (error) {
           console.log('Error during fetch ', error);
         }
