@@ -95,7 +95,7 @@ const FeeDataGrid = () => {
               </thead>
               <tbody>
                 <tr>
-                  <td className="border">Industry ready training fee</td>
+                  <td className="border">Industry ready training fee 1</td>
                   <td className="border">2500.00</td>
                   <td className="border">2500.00</td>
                   <td className="border">0.00</td>

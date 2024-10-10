@@ -1,5 +1,5 @@
 // 'use client'
-import NewStudentRegistrationData from '@/app/(studentportal)/components/NSR/NewStudentRegistrationData';
+import NewStudentRegistrationData from '../../components/NSR/NewStudentRegistrationData';
 import axios, { AxiosResponse } from 'axios';
 import { cookies } from 'next/headers';
 import React from 'react';
@@ -24,11 +24,11 @@ const studentData = async (): Promise<Student | null> => {
         'NSR-Authorization': `Bearer ${NSR_token?.value}`,
       },
     },
-  );
+    );
     if (response.status !== 200) {
       return null;
     }
-    
+
     return response.data; // Return the student data
   } catch (error) {
     console.error(error);
@@ -42,7 +42,7 @@ const Page: React.FC = async () => {
   return (
     <div>
       {/* {data&& */}
-        <NewStudentRegistrationData {...data} />
+      <NewStudentRegistrationData {...data} />
       {/* } */}
     </div>
   );

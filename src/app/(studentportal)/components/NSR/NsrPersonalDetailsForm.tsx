@@ -42,6 +42,9 @@ const FormSchema = z.object({
   lgName: z.string().toUpperCase().min(1, {
     message: 'Please enter your local guardian name',
   }),
+  dob: z.string().min(1, {
+    message: 'Please enter your date of birth',
+  }),
   permanentCity: z.string().toUpperCase().min(1, {
     message: 'Please enter your city',
   }),
@@ -118,6 +121,7 @@ const NsrPersonalDetailsForm = (initial: any) => {
       fname: initial?.fname || '',
       mname: initial?.mname || '',
       lgName: initial?.lgName || '',
+      dob: initial?.dob || '',
       permanentCity: initial?.permanentCity || '',
       permanentState: initial?.permanentState || '',
       permanentAddress: initial?.permanentAddress || '',
@@ -228,6 +232,24 @@ const NsrPersonalDetailsForm = (initial: any) => {
           />
 
           {/* Date of Birth */}
+          <FormField
+            control={form.control}
+            name="dob"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date of Birth</FormLabel>
+                <FormControl>
+                  <Input
+                    type='date'
+                    className=""
+                    placeholder="Enter your date of birth"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* Aadhaar Number */}
           <FormField

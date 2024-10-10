@@ -1,13 +1,14 @@
 'use client';
+import Navbar from '@/components/LandingNavbar';
 import Image from 'next/image';
 import TypewriterComponent from 'typewriter-effect';
 
 export default function Home() {
   return (
-    <main className="absolute top-0 flex-col w-full h-screen">
+    <main className="flex-col w-full h-full">
       <div className="w-full h-full">
-
-        <div className="relative w-full h-full">
+        <Navbar />
+        <div className="absolute top-0 w-full h-full">
           <Image
             src="/tricol.jpg"
             className="object-cover opacity-100"

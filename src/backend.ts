@@ -119,7 +119,7 @@ export const getUserSession = async (): Promise<User> => {
 
 export const handleNewStudent = async (formData: any) => {
   formData.admissionYear = new Date().getFullYear();
-  formData.degree_yop = formData.admissionYear + 4;
+  formData.degreeYop = formData.admissionYear + 4;
   formData.status = 'CONTINUING';
   console.log(formData);
   try {

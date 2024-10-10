@@ -18,5 +18,5 @@ export async function GET(req: NextRequest, res: NextResponse) {
 export async function POST(req: NextRequest, res: NextResponse) {
   const data = await req.json();
   console.log('API route data', data);
-  return NextResponse.json({ message: 'Hello, Next.js!' });
+  return NextResponse.json({ message: 'Hello, from Next.js!' });
 }

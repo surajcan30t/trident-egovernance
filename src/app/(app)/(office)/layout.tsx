@@ -14,7 +14,7 @@ interface RootlayoutProps {
 
 export default async function RootLayout({ children }: RootlayoutProps) {
   return (
-    <div className='flex flex-col min-h-full'>
+    <div className='flex flex-col'>
       <Toaster />
       {children}
     </div>

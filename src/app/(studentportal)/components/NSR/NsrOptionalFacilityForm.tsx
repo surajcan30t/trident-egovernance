@@ -25,7 +25,7 @@ import {
 import { handleNsrOptionalFacility } from '../../nsractions/nsractions';
 import { useRouter } from 'next/navigation';
 import PulseLoader from 'react-spinners/PulseLoader';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const FormSchema = z.object({
   cfPayMode: z.enum(['YEARLY', 'SEMESTER'], {
@@ -37,8 +37,12 @@ const FormSchema = z.object({
   transportOpted: z.enum(['YES', 'NO'], {
     required_error: 'You need to select the transport option.',
   }),
-  pickUpPoint: z.enum(['BBSR', 'PURI', 'CTCK'], {
-    required_error: 'You need to select the pickup point.',
+  pickUpPoint: z.enum(['BBSR', 'PURI', 'CTCK']).optional(),
+  plpoolm: z.enum(['YES', 'NO'], {
+    required_error: 'You need to select the pool option.',
+  }),
+  indortrng: z.enum(['YES', 'NO'], {
+    required_error: 'You need to select the indoor option.',
   }),
   step: z.number().default(5),
 });
@@ -46,6 +50,7 @@ const FormSchema = z.object({
 const NsrOptionalFacilityForm = (initial: any) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showPickupPoint, setShowPickupPoint] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -53,10 +58,24 @@ const NsrOptionalFacilityForm = (initial: any) => {
       hostelOption: initial?.hostelOption || '',
       transportOpted: initial?.transportOpted || '',
       pickUpPoint: initial?.pickUpPoint || '',
+      plpoolm: initial?.plpoolm || '',
+      indortrng: initial?.indortrng || '',
     },
   });
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    const transportSelected = form.watch('transportOpted');
+    if (transportSelected === 'YES') {
+      setShowPickupPoint(true);
+      form.setValue('pickUpPoint', form.getValues('pickUpPoint') || 'BBSR');
+    } else {
+      setShowPickupPoint(false);
+      form.setValue('pickUpPoint', undefined); // Clear the value if transport is NO
+    }
+  }, [form]);
+
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       setLoading(true)
@@ -192,30 +211,97 @@ const NsrOptionalFacilityForm = (initial: any) => {
           />
 
           {/* Pickup Point */}
+          {showPickupPoint && (
+            <FormField
+              control={form.control}
+              name="pickUpPoint"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Transport Pickup Point</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your pickup point" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="BBSR">Bhubaneswar</SelectItem>
+                      <SelectItem value="PURI">Puri</SelectItem>
+                      <SelectItem value="CTCK">Cuttuck</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          )}
+
+          {/* Placement Pool Option */}
           <FormField
             control={form.control}
-            name="pickUpPoint"
+            name="plpoolm"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Transport Pickup Point</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your pickup point" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="BBSR">Bhubaneswar</SelectItem>
-                    <SelectItem value="PURI">Puri</SelectItem>
-                    <SelectItem value="CTCK">Cuttuck</SelectItem>
-                  </SelectContent>
-                </Select>
+              <FormItem className="space-y-3">
+                <FormLabel>Do you want to opt for Placement Pool</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value?.toString()}
+                    className="flex flex-row space-x-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="YES" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Yes</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="NO" />
+                      </FormControl>
+                      <FormLabel className="font-normal">No</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
+
+          {/* Industiral Training Option */}
+          <FormField
+            control={form.control}
+            name="indortrng"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel>Do you want to opt for Industrial Training</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={field.value?.toString()}
+                    className="flex flex-row space-x-1"
+                  >
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="YES" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Yes</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="NO" />
+                      </FormControl>
+                      <FormLabel className="font-normal">No</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
         </div>
         <Button variant={'trident'} className="w-1/3" size="lg" type="submit">
           {loading ? (<PulseLoader

@@ -2,8 +2,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { cookies } from 'next/headers';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { object } from 'zod';
-import { json } from 'stream/consumers';
 
 export const newStudentLogin = async (formData: any) => {
   // console.log(formData);
@@ -66,9 +64,10 @@ const initialStudentData = async (formData: any) => {
     gender: string | null; // Gender enum type in Java
     branchCode: string | null;
     admissionYear: string | null;
-    degree_yop: number | null; // Integer in Java
+    degreeYop: number | null; // Integer in Java
     phNo: string; // Phone number as string to handle leading zeroes
     email: string;
+    dob: string | null;
     rollNo: string;
     hostelier: string | null; // BooleanString type in Java
     hostelOption: string | null; // BooleanString type in Java
@@ -154,9 +153,10 @@ const initialStudentData = async (formData: any) => {
       gender: formData.gender || data.gender,
       branchCode: formData.branchCode || data.branchCode,
       admissionYear: formData.admissionYear || data.admissionYear,
-      degree_yop: formData.degree_yop || data.degree_yop,
+      degreeYop: formData.degreeYop || data.degreeYop,
       phNo: formData.phNo || data.phNo,
       email: formData.email || data.email,
+      dob: formData.dob || data.dob,
       rollNo: formData.rollNo || data.rollNo,
       hostelier: formData.hostelier || data.hostelier,
       hostelOption: formData.hostelOption || data.hostelOption,

@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { FaVenusMars } from 'react-icons/fa';
 import { PiRankingBold, PiStudentBold } from 'react-icons/pi';
-import { Button } from '../../../../components/ui/button';
+import { Button } from '@/components/ui/button';
 import { nsrSendAllotmentID } from '../../nsractions/nsractions';
 import { useRouter } from 'next/navigation';
 import PulseLoader from 'react-spinners/PulseLoader';

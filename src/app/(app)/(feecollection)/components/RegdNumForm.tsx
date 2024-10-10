@@ -46,7 +46,7 @@ export function RegdNumForm() {
           name="regdNo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Enter Registration Number</FormLabel>
+              <FormLabel>Enter Registration Number <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <Input placeholder="Registration Number" {...field} />
               </FormControl>
