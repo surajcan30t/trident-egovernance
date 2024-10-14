@@ -21,14 +21,14 @@ const TotoalAlum: React.FC = () => {
   ]
   return (
     <>
-      <Card className='bg-lime-200'>
+      <Card className='bg-amber-600 text-white'>
         <CardHeader>
           <CardTitle>Total Alumni</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='flex flex-row gap-3 text-black'>
-            {studentData.map((data, index) => (console.log(index, data),
-              <div key={data.id} className={`flex flex-row items-center border border-gray-500 rounded-md px-2`}>
+          <div className='flex flex-row gap-3 flex-wrap'>
+            {studentData.map((data, index) => (
+              <div key={data.id} className={`flex flex-row items-center border border-gray-100 rounded-md px-2`}>
                 <div className="flex flex-col gap-0" >
                   <div className='uppercase'>{data.branch}</div>
                   <span className="text-xl font-bold">{data.value}</span>

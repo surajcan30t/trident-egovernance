@@ -50,40 +50,43 @@ export const studentcolumns: ColumnDef<Students>[] = [
   },
   {
     accessorKey: "regdNo",
-    header: "Regd No.",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("regdNo")}</div>
-    ),
-  },
-  {
-    accessorKey: "email",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Email
+          Regd No.
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("regdNo")}</div>
+    ),
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
-
-      return <div className="text-right font-medium">{formatted}</div>
+    accessorKey: "name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
     },
+    cell: ({ row }) => <div className="normal-case">{row.getValue("name")}</div>,
+  },
+  {
+    accessorKey: "email",
+    header: () => <div className="">Email</div>,
+    cell: ({ row }) =>
+
+      <div className="">{row.getValue("email")}</div>
+
   },
   {
     id: "actions",

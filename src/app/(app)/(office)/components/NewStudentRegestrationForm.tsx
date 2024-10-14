@@ -1,11 +1,11 @@
-"use client"
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { useToast } from "@/hooks/use-toast"
-import { Button } from "@/components/ui/button"
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,97 +13,95 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { handleNewStudent } from "@/backend"
-
+} from '@/components/ui/select';
+import { handleNewStudent } from '@/backend';
 
 const FormSchema = z.object({
   jeeApplicationNo: z.string().min(8, {
-    message: "Please enter 12 digit application number",
+    message: 'Please enter 12 digit application number',
   }),
   studentName: z.string().min(1, {
-    message: "Please enter your name",
+    message: 'Please enter your name',
   }),
   regdNo: z.string().min(8, {
-    message: "Please enter your roll number",
+    message: 'Please enter your roll number',
   }),
   rank: z
     .string() // Expect a string from the input
     .transform((val) => parseInt(val, 10)) // Convert it to a number
     .refine((val) => !isNaN(val), {
-      message: "Please enter a valid number"
+      message: 'Please enter a valid number',
     }), // Ensure it's a valid number
-  rankType: z.enum(["JEE", "OJEE"], {
-    required_error: "You need to select the ranktype.",
+  rankType: z.enum(['JEE', 'OJEE'], {
+    required_error: 'You need to select the ranktype.',
   }),
-  course: z.enum(["BBA", "MBA", "BCA", "MCA", "BTECH", "MTECH"], {
-    required_error: "You need to select a course.",
+  course: z.enum(['BBA', 'MBA', 'BCA', 'MCA', 'BTECH', 'MTECH'], {
+    required_error: 'You need to select a course.',
   }),
   tfw: z.string().min(2, {
-    message: "You need to select TFW.",
+    message: 'You need to select TFW.',
   }),
-  admissionType: z.enum(["MQ", "COLLEGE", "JEEMAIN", "OJEE"], {
-    required_error: "You need to select admittedThrough.",
+  admissionType: z.enum(['MQ', 'COLLEGE', 'JEEMAIN', 'OJEE'], {
+    required_error: 'You need to select admittedThrough.',
   }),
-  studentType: z.enum(["REGULAR", "LE"], {
-    required_error: "You need to select the studentType.",
+  studentType: z.enum(['REGULAR', 'LE'], {
+    required_error: 'You need to select the studentType.',
   }),
-  gender: z.enum(["MALE", "FEMALE", "OTHERS"], {
-    required_error: "You need to select the gender.",
+  gender: z.enum(['MALE', 'FEMALE', 'OTHERS'], {
+    required_error: 'You need to select the gender.',
   }),
-  branchCode: z.enum(["CSE", "CST", "CSAIML"], {
-    required_error: "You need to select the gender.",
+  branchCode: z.enum(['CSE', 'CST', 'CSAIML'], {
+    required_error: 'You need to select the gender.',
   }),
-  ojeeCounsellingFeePaid: z.enum(["YES", "NO"], {
-    required_error: "You need to select fee paid or not.",
+  ojeeCounsellingFeePaid: z.enum(['YES', 'NO'], {
+    required_error: 'You need to select fee paid or not.',
   }),
   step: z.number().default(1),
-})
+});
 
 const NewStudentRegestrationForm = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      jeeApplicationNo: "",
-      studentName: "",
-      regdNo: "",
+      jeeApplicationNo: '',
+      studentName: '',
+      regdNo: '',
       rank: 0,
     },
-  })
+  });
 
-  const { toast } = useToast()
+  const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const status = await handleNewStudent(data)
+    const status = await handleNewStudent(data);
     if (status !== 200) {
       toast({
-        variant: "destructive",
-        title: "Something went wrong.",
-        description: "Please try again later.",
-      })
-    }
-    else {
-
+        variant: 'destructive',
+        title: 'Something went wrong.',
+        description: 'Please try again later.',
+      });
+    } else {
       toast({
-        variant: "success",
-        title: "Your registration has been successfully submitted.",
-      })
+        variant: 'success',
+        title: 'Your registration has been successfully submitted.',
+      });
     }
   }
 
   return (
-    // <Card>
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 my-10 flex flex-col items-center gap-3">
-
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-2/3 my-10 flex flex-col items-center gap-3"
+      >
         <div className="w-full lg:grid lg:grid-cols-2 lg:gap-2 lg:gap-y-1">
           {/* Application Number */}
           <FormField
@@ -142,7 +140,10 @@ const NewStudentRegestrationForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Gender</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select the gender" />
@@ -158,7 +159,6 @@ const NewStudentRegestrationForm = () => {
             )}
           />
 
-
           {/* Roll Number */}
           <FormField
             control={form.control}
@@ -167,7 +167,10 @@ const NewStudentRegestrationForm = () => {
               <FormItem>
                 <FormLabel>JEE/OJEE Roll Number</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your JEE or OJEE roll number" {...field} />
+                  <Input
+                    placeholder="Enter your JEE or OJEE roll number"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -181,7 +184,10 @@ const NewStudentRegestrationForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Rank Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select the Rank Type" />
@@ -218,7 +224,10 @@ const NewStudentRegestrationForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Course Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a Course" />
@@ -244,7 +253,10 @@ const NewStudentRegestrationForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Branch</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select the branch" />
@@ -277,17 +289,13 @@ const NewStudentRegestrationForm = () => {
                       <FormControl>
                         <RadioGroupItem value="TFW" />
                       </FormControl>
-                      <FormLabel className="font-normal">
-                        TFW
-                      </FormLabel>
+                      <FormLabel className="font-normal">TFW</FormLabel>
                     </FormItem>
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
                         <RadioGroupItem value="NTFW" />
                       </FormControl>
-                      <FormLabel className="font-normal">
-                        NTFW
-                      </FormLabel>
+                      <FormLabel className="font-normal">NTFW</FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>
@@ -313,17 +321,13 @@ const NewStudentRegestrationForm = () => {
                       <FormControl>
                         <RadioGroupItem value="YES" />
                       </FormControl>
-                      <FormLabel className="font-normal">
-                        Paid
-                      </FormLabel>
+                      <FormLabel className="font-normal">Paid</FormLabel>
                     </FormItem>
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
                         <RadioGroupItem value="NO" />
                       </FormControl>
-                      <FormLabel className="font-normal">
-                        Not Paid
-                      </FormLabel>
+                      <FormLabel className="font-normal">Not Paid</FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>
@@ -339,7 +343,10 @@ const NewStudentRegestrationForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Admitted Through</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a Admitted Through" />
@@ -363,7 +370,10 @@ const NewStudentRegestrationForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Student Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select Student Type" />
@@ -379,10 +389,16 @@ const NewStudentRegestrationForm = () => {
           />
         </div>
 
-        <Button variant={"trident"} className="w-1/3 m-3" size="lg" type="submit">Submit</Button>
+        <Button
+          variant={'trident'}
+          className="w-1/3 m-3"
+          size="lg"
+          type="submit"
+        >
+          Submit
+        </Button>
       </form>
     </Form>
-    // </Card>
-  )
-}
-export default NewStudentRegestrationForm
+  );
+};
+export default NewStudentRegestrationForm;

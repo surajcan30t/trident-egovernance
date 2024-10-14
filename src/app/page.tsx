@@ -25,7 +25,6 @@ export default function Home() {
 
         <div className="absolute inset-0 flex flex-col justify-around items-center z-10">
           <div className="flex flex-col items-start text-start">
-
             <h1 className="text-3xl mb-9 font-semibold md:text-5xl lg:text-5xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
               <TypewriterComponent
                 onInit={(typewriter) => {
@@ -43,15 +42,15 @@ export default function Home() {
                 }}
                 options={{
                   loop: true,
-                  delay: 100,  // Typing speed
-                  deleteSpeed: 50,  // Deleting speed
-
+                  delay: 100, // Typing speed
+                  deleteSpeed: 50, // Deleting speed
                 }}
               />
             </h1>
 
             <h1 className="flex flex-row gap-5 text-3xl font-semibold md:text-5xl lg:text-7xl text-yellow-200 drop-shadow-[0_3.2px_1.2px_rgb(0,0,0)]">
-              I will{'  '}  <TypewriterComponent
+              I will{'  '}{' '}
+              <TypewriterComponent
                 onInit={(typewriter) => {
                   typewriter
                     .typeString('Forget')
@@ -68,15 +67,14 @@ export default function Home() {
                 options={{
                   loop: true,
 
-                  delay: 100,  // Typing speed
-                  deleteSpeed: 50,  // Deleting speed
+                  delay: 100, // Typing speed
+                  deleteSpeed: 50, // Deleting speed
                 }}
               />
             </h1>
           </div>
         </div>
       </div>
-
     </main>
     // <>
     //   <section>
@@ -104,6 +102,5 @@ export default function Home() {
     // </>
   );
 }
-
 
 // password123admin
