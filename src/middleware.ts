@@ -32,7 +32,6 @@ async function fetchDynamicRoutes() {
       } else {
         console.error('No routes found in response: ', resp);
       }
-
     } catch (error) {
       console.error('Error fetching dynamic routes:', error);
     }
@@ -81,7 +80,7 @@ export default withAuth(
         return !!token; // Allow access if token exists
       },
     },
-  }
+  },
 );
 
 // interface UserType {
@@ -147,6 +146,6 @@ export default withAuth(
 export const config = {
   matcher: [
     // '/((?!api|_next/static|_next/image|.*\\.png$|favicon.ico|login|studentportal).*)',
-    '/abc'
+    '/abc',
   ],
 };
