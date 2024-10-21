@@ -1,11 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { IndianRupee, ReceiptIndianRupee } from 'lucide-react';
 import Image from 'next/image';
+import { createIcons, icons } from 'lucide'
 
 interface SecondaryLink {
   label: string;
@@ -26,19 +27,22 @@ interface Link {
 type LinksArray = Link[];
 
 export function SideBarMenu() {
+  useEffect(() => {
+    createIcons({ icons })
+  }, [])
   const links: LinksArray = [
     {
-      label: 'Admission Fee Collections hj bbvhgys uhuuh',
+      label: 'Admission Feesssssssssss sssssssss',
       href: '#',
       icon: (
-        <ReceiptIndianRupee className="text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <i data-lucide='receipt-indian-rupee' className='text-white' style={{ width: '20', height: '20' }}></i>
       ),
     },
     {
-      label: 'Other Fees Collection',
+      label: 'Other Fees Collection Collection Collection Collection',
       href: '#',
       icon: (
-        <ReceiptIndianRupee className="text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <i data-lucide='receipt-indian-rupee' className='text-white' style={{ width: '20', height: '20' }}></i>
       ),
     },
     {
@@ -49,19 +53,19 @@ export function SideBarMenu() {
           label: 'Adjustment 1',
           href: '/adjustments/1',
           icon: (
-            <ReceiptIndianRupee className="text-neutral-200 h-5 w-5 flex-shrink-0" />
+            <i data-lucide='receipt-indian-rupee' className='text-white' style={{ width: '20', height: '20' }}></i>
           ),
         },
         {
-          label: 'Adjustment 2sssssssssssssssssssssssssssssssssssssssssssss',
+          label: 'Adjustment 2',
           href: '/adjustments/2',
           icon: (
-            <ReceiptIndianRupee className="text-neutral-200 h-5 w-5 flex-shrink-0" />
+            <i data-lucide='receipt-indian-rupee' className='text-white' style={{ width: '20', height: '20' }}></i>
           ),
         },
       ],
       icon: (
-        <ReceiptIndianRupee className="text-neutral-200 h-5 w-5 flex-shrink-0" />
+        <i data-lucide='receipt-indian-rupee' className='text-white' style={{ width: '20', height: '20' }}></i>
       ),
     },
   ];
@@ -69,7 +73,6 @@ export function SideBarMenu() {
   const [open, setOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
 
-  // Function to toggle the dropdown for the specified link
 
   return (
     // <div
@@ -79,13 +82,9 @@ export function SideBarMenu() {
     //   )}
     // >
     <Sidebar open={open} setOpen={setOpen}>
-      <SidebarBody className="justify-between gap-10 bg-[#9a4207c3] rounded-br-md border-r border-slate-500">
+      <SidebarBody className="justify-between gap-10 bg-[#9a4207c3] rounded-br-md border-r border-slate-50 ">
         <div
-          className="flex flex-col flex-1 overflow-x-hidden"
-          // style={{
-          //   scrollbarWidth: open ? 'thin' : 'none', // For Firefox
-          //   msOverflowStyle: open ? 'scrollbar' : 'none', // For IE and Edge
-          // }}
+          className="flex flex-col flex-1"
         >
           <div className="flex justify-center items-center mb-7">
             <Image
@@ -117,15 +116,7 @@ export function SideBarMenu() {
   );
 }
 
-<style jsx>{`
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* For Chrome, Safari, and Opera */
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-`}</style>;
+
 
 export const Logo = () => {
   return (
