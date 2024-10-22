@@ -1,46 +1,120 @@
-import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import next from 'next';
 
 interface StudentData {
-  id: number
-  branch: string
-  value: number
-  color: string
+  branchCode: string;
+  branchStudentCount: number;
 }
-const TotalStudent: React.FC = () => {
-  const bgcolors = ['green', 'blue', 'yellow', 'orange', 'violet', 'sky', 'red', 'teal']
-  const studentData: StudentData[] = [
-    { id: 0, branch: 'CSE', value: 120, color: bgcolors[0] },
-    { id: 1, branch: 'CST', value: 300, color: bgcolors[1] },
-    { id: 2, branch: 'CSIT', value: 60, color: bgcolors[2] },
-    { id: 3, branch: 'CSAIML', value: 52, color: bgcolors[3] },
-    { id: 4, branch: 'MECH', value: 40, color: bgcolors[4] },
-    { id: 5, branch: 'CIVIL', value: 55, color: bgcolors[5] },
-    { id: 6, branch: 'BIOTECH', value: 45, color: bgcolors[6] },
+interface CourseWise {
+  course: string;
+  studentCount: number;
+  branches: StudentData[];
+}
+interface BranchWiseComponentProps {
+  branchWiseStudent: StudentData[];
+  course: string;
+}
 
-  ]
+//fetch(/office/grouped-continuing-student-count)
+const fetchStudentData = async () => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND}/office/grouped-student-count/CONTINUING`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      next: { revalidate: 10 },
+    },
+  );
+  const data = await response.json();
+  return data as CourseWise[];
+};
+
+const TotalStudent: React.FC = async () => {
+  const studentData: CourseWise[] = await fetchStudentData();
   return (
     <>
-      <Card className='bg-orange-700 text-white'>
+      <Card className="bg-orange-700 text-white">
         <CardHeader>
           <CardTitle>Total Student</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='flex flex-row gap-3 flex-wrap'>
+          <div className="flex flex-row gap-3 flex-wrap">
             {studentData.map((data, index) => (
-              <div key={data.id} className={`flex flex-row items-center gap-2 border border-gray-100 rounded-md px-2`}>
-                <div className="flex flex-col gap-0" >
-                  <div className='uppercase'>{data.branch}</div>
-                  <span className="text-xl font-bold">{data.value}</span>
-                </div>
+              <div
+                key={data.course}
+                className={`flex flex-row items-center gap-2 border border-gray-100 rounded-md px-2`}
+              >
+                <Dialog>
+                  <DialogTrigger>
+                    <div className="flex flex-col gap-0">
+                      <div className="uppercase">{data.course}</div>
+                      <span className="text-xl font-bold">
+                        {data.studentCount}
+                      </span>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="m-2 p-2">
+                    <BranchWiseComponent
+                      branchWiseStudent={data.branches}
+                      course={data.course}
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
             ))}
-
           </div>
         </CardContent>
       </Card>
     </>
-  )
-}
+  );
+};
 
-export default TotalStudent
+export default TotalStudent;
+
+const BranchWiseComponent = ({
+  branchWiseStudent,
+  course,
+}: BranchWiseComponentProps) => {
+  return (
+    <div>
+      <Card className="border-0 shadow-2xl bg-orange-700 text-white">
+        <CardHeader>
+          <CardTitle>{course}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-row flex-wrap text-white gap-2">
+            {branchWiseStudent.map((data, index) => (
+              <div
+                key={data.branchCode}
+                className={`flex flex-row items-center gap-2 rounded-md px-2 border border-gray-100`}
+              >
+                <div className="flex flex-col gap-0">
+                  <div className="uppercase">{data.branchCode}</div>
+                  <span className="text-xl font-bold">
+                    {data.branchStudentCount}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
