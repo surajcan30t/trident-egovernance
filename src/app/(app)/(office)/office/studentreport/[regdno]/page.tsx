@@ -1,26 +1,33 @@
 import React from 'react';
+import SingleStudentDetails from '../../../components/student-report/SingleStudentDetails';
+import { StudentReport } from '@/app/(app)/(office)/office-schemas/schema';
 
-//fetch ('get-student-by-regdNo/{})
 const getStudentByRegdNo = async (regdNo: string) => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND}/office/get-student-by-regdNo/${regdNo}`,
+      {
+        next: {
+          revalidate: 5,
+        },
+      },
     );
     const data = await res.json();
-    console.log('Data', data);
+    console.log(data)
     return data;
   } catch (e) {
     console.log('error', e);
   }
 };
 const page = async ({ params }: { params: { regdno: string } }) => {
-  // const studetData = await getStudentByRegdNo(params.regdno);
-  // console.log('component', studetData);
+  const studentData: StudentReport = await getStudentByRegdNo(params.regdno);
   return (
     <>
       <main className="w-full h-full flex flex-col justify-center items-center">
-        <h1 className="text-4xl font-bold">Hello, {params.regdno}!</h1>
-        <p className="text-lg text-gray-500">This is a dynamic route.</p>
+        <div className="flex flex-row bg-sky-400 rounded-t-lg justify-between w-full">
+          <h1 className="text-xl text-white font-bold px-2">Registration No. - {params.regdno}</h1>
+        </div>
+        <SingleStudentDetails studentData={studentData} />
       </main>
     </>
   );
