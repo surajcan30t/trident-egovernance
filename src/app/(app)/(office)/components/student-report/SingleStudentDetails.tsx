@@ -1,7 +1,9 @@
-import { StudentReport, StudentOnly, StudentAdmissionDetailsOnly, PersonalDetailsOnly, CareerOnly, HostelOnly, TransportOnly } from '@/app/(app)/(office)/office-schemas/schema';
+import { StudentReport, StudentOnly, StudentAdmissionDetailsOnly, PersonalDetailsOnly, CareerOnly, HostelOnly, TransportOnly, Documents } from '@/app/(app)/(office)/office-schemas/schema';
 import React from 'react';
-import { Home, IdCard, Mail, Phone, User } from 'lucide-react';
-import { FaAsterisk, FaCity, FaVenusMars } from 'react-icons/fa';
+import Link from 'next/link';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import StudentOnlyForm from '@/app/(app)/(office)/components/student-report/student-only-form';
 
 const SingleStudentDetails = ({ studentData }: { studentData: StudentReport }) => {
   return (
@@ -13,6 +15,7 @@ const SingleStudentDetails = ({ studentData }: { studentData: StudentReport }) =
         <CareerDetailComponent careerDetails={studentData?.studentCareerOnlyDTO}/>
         <HostelDetailComponent hostelDetails={studentData?.hostelOnlyDTO}/>
         <TransportDetailComponent transportDetails={studentData?.transportOnlyDTO}/>
+        <StudentDocumentsComponent documents={studentData?.studentDocsOnlyDTOS}/>
       </div>
     </>
   );
@@ -31,8 +34,16 @@ const DataField = ({ label, value }: any) => (
 const StudentComponent = ({studentOnly}: {studentOnly: StudentOnly}) =>{
   return (
     <>
-      <div>
+      <div className='flex flex-row justify-between p-1'>
         <h1 className="text-lg">Student Details</h1>
+        <Dialog>
+          <DialogTrigger>
+            <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
+          </DialogTrigger>
+          <DialogContent className="">
+            <StudentOnlyForm table={'student-only'} data={studentOnly}/>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
         <DataField label="Name" value={studentOnly?.studentName} />
@@ -60,77 +71,179 @@ const StudentComponent = ({studentOnly}: {studentOnly: StudentOnly}) =>{
   )
 }
 
-const PersonalDetailsComponent = ({ personalDetails }: { personalDetails: PersonalDetailsOnly }) => {
+const PersonalDetailsComponent = ({
+  personalDetails,
+}: {
+  personalDetails: PersonalDetailsOnly;
+}) => {
   return (
     <>
-      <div>
+      <div className="flex flex-row justify-between p-1">
         <h1 className="text-lg">Personal Details</h1>
+        <Dialog>
+          <DialogTrigger>
+            <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
+          </DialogTrigger>
+          <DialogContent className=""></DialogContent>
+        </Dialog>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
         <DataField label="Father Name" value={personalDetails?.fname} />
         <DataField label="Mother's Name" value={personalDetails?.mname} />
-        <DataField label="Legal Guardian's Name" value={personalDetails?.lgName} />
-        <DataField label="Parent Contact" value={personalDetails?.parentContact} />
-        <DataField label="Parent Email" value={personalDetails?.parentEmailId} />
-        <DataField label="Permanent Address" value={personalDetails?.permanentAddress} />
-        <DataField label="Permanent City" value={personalDetails?.permanentCity} />
-        <DataField label="Permanent State" value={personalDetails?.permanentState} />
-        <DataField label="Permanent Pincode" value={personalDetails?.permanentPincode} />
-        <DataField label="Present Address" value={personalDetails?.presentAddress} />
+        <DataField
+          label="Legal Guardian's Name"
+          value={personalDetails?.lgName}
+        />
+        <DataField
+          label="Parent Contact"
+          value={personalDetails?.parentContact}
+        />
+        <DataField
+          label="Parent Email"
+          value={personalDetails?.parentEmailId}
+        />
+        <DataField
+          label="Permanent Address"
+          value={personalDetails?.permanentAddress}
+        />
+        <DataField
+          label="Permanent City"
+          value={personalDetails?.permanentCity}
+        />
+        <DataField
+          label="Permanent State"
+          value={personalDetails?.permanentState}
+        />
+        <DataField
+          label="Permanent Pincode"
+          value={personalDetails?.permanentPincode}
+        />
+        <DataField
+          label="Present Address"
+          value={personalDetails?.presentAddress}
+        />
       </div>
     </>
-  )
-}
+  );
+};
 
-const AdmissionDetailsComponent = ({ admissionDetails }: { admissionDetails: StudentAdmissionDetailsOnly }) => {
+const AdmissionDetailsComponent = ({
+  admissionDetails,
+}: {
+  admissionDetails: StudentAdmissionDetailsOnly;
+}) => {
   return (
     <>
-      <div>
+      <div className="flex flex-row justify-between p-1">
         <h1 className="text-lg">Admission Details</h1>
+        <Dialog>
+          <DialogTrigger>
+            <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
+          </DialogTrigger>
+          <DialogContent className=""></DialogContent>
+        </Dialog>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
-        <DataField label="Admission Date" value={admissionDetails?.admissionDate} />
-        <DataField label="Ojee Counseling Fee Paid" value={admissionDetails?.ojeeCounsellingFeePaid} />
+        <DataField
+          label="Admission Date"
+          value={admissionDetails?.admissionDate}
+        />
+        <DataField
+          label="Ojee Counseling Fee Paid"
+          value={admissionDetails?.ojeeCounsellingFeePaid}
+        />
         <DataField label="TFW" value={admissionDetails?.tfw} />
-        <DataField label="Admission Type" value={admissionDetails?.admissionType} />
-        <DataField label="Ojee Roll No" value={admissionDetails?.ojeeRollNo} />
+        <DataField
+          label="Admission Type"
+          value={admissionDetails?.admissionType}
+        />
+        <DataField
+          label="JEE Application No"
+          value={admissionDetails?.jeeApplicationNo}
+        />
+        <DataField label="JEE MAIN Rank" value={admissionDetails?.aieeeRank} />
         <DataField label="Ojee Rank" value={admissionDetails?.ojeeRank} />
-        <DataField label="AIEEE Rank" value={admissionDetails?.aieeeRank} />
+        <DataField
+          label="Reporting Date"
+          value={admissionDetails?.reportingDate}
+        />
         <DataField label="Caste" value={admissionDetails?.caste} />
-        <DataField label="Reporting Date" value={admissionDetails?.reportingDate} />
-        <DataField label="Category Code" value={admissionDetails?.categoryCode} />
-        <DataField label="Category Rank" value={admissionDetails?.categoryRank} />
-        <DataField label="JEE Application No" value={admissionDetails?.jeeApplicationNo} />
+        <DataField
+          label="Category Code"
+          value={admissionDetails?.categoryCode}
+        />
+        <DataField
+          label="Category Rank"
+          value={admissionDetails?.categoryRank}
+        />
         <DataField label="Allotment ID" value={admissionDetails?.allotmentId} />
       </div>
     </>
-  )
-}
+  );
+};
 
-const CareerDetailComponent = ({ careerDetails }: { careerDetails: CareerOnly }) => {
+const CareerDetailComponent = ({
+  careerDetails,
+}: {
+  careerDetails: CareerOnly;
+}) => {
   return (
     <>
-      <div>
+      <div className="flex flex-row justify-between p-1">
         <h1 className="text-lg">Career Details</h1>
+        <Dialog>
+          <DialogTrigger>
+            <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
+          </DialogTrigger>
+          <DialogContent className=""></DialogContent>
+        </Dialog>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
-        <DataField label="Tenth Percentage" value={careerDetails?.tenthPercentage} />
-        <DataField label="Tenth Year of Passing" value={careerDetails?.tenthYOP} />
-        <DataField label="Twelfth Percentage" value={careerDetails?.twelvthPercentage} />
-        <DataField label="Twelfth Year of Passing" value={careerDetails?.twelvthYOP} />
-        <DataField label="Diploma Percentage" value={careerDetails?.diplomaPercentage} />
-        <DataField label="Diploma Year of Passing" value={careerDetails?.diplomaYOP} />
-        <DataField label="Graduation Percentage" value={careerDetails?.graduationPercentage} />
-        <DataField label="Graduation Year of Passing" value={careerDetails?.graduationYOP} />
+        <DataField
+          label="Tenth Percentage"
+          value={careerDetails?.tenthPercentage}
+        />
+        <DataField
+          label="Tenth Year of Passing"
+          value={careerDetails?.tenthYOP}
+        />
+        <DataField
+          label="Twelfth Percentage"
+          value={careerDetails?.twelvthPercentage}
+        />
+        <DataField
+          label="Twelfth Year of Passing"
+          value={careerDetails?.twelvthYOP}
+        />
+        <DataField
+          label="Diploma Percentage"
+          value={careerDetails?.diplomaPercentage}
+        />
+        <DataField
+          label="Diploma Year of Passing"
+          value={careerDetails?.diplomaYOP}
+        />
+        <DataField
+          label="Graduation Percentage"
+          value={careerDetails?.graduationPercentage}
+        />
+        <DataField
+          label="Graduation Year of Passing"
+          value={careerDetails?.graduationYOP}
+        />
       </div>
     </>
-  )
-}
+  );
+};
 
-const HostelDetailComponent = ({ hostelDetails }: { hostelDetails: HostelOnly }) => {
+const HostelDetailComponent = ({
+  hostelDetails,
+}: {
+  hostelDetails: HostelOnly;
+}) => {
   return (
     <>
-      <div>
+      <div className="flex flex-row justify-between p-1">
         <h1 className="text-lg">Hostel Details</h1>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
@@ -141,37 +254,68 @@ const HostelDetailComponent = ({ hostelDetails }: { hostelDetails: HostelOnly })
         <DataField label="Registration Year" value={hostelDetails?.regdyear} />
       </div>
     </>
-  )
-}
+  );
+};
 
-const TransportDetailComponent = ({ transportDetails }: { transportDetails: TransportOnly }) => {
+const TransportDetailComponent = ({
+  transportDetails,
+}: {
+  transportDetails: TransportOnly;
+}) => {
   return (
     <>
-      <div>
+      <div className="flex flex-row justify-between p-1">
         <h1 className="text-lg">Transport Details</h1>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
-        <DataField label="Transport Availed" value={transportDetails?.transportAvailed} />
-        <DataField label="Transport Opted" value={transportDetails?.transportOpted} />
+        <DataField
+          label="Transport Opted"
+          value={transportDetails?.transportOpted}
+        />
+        <DataField
+          label="Transport Availed"
+          value={transportDetails?.transportAvailed}
+        />
         <DataField label="Route" value={transportDetails?.route} />
-        <DataField label="Pick-Up Point" value={transportDetails?.pickUpPoint} />
-        <DataField label="Registration Year" value={transportDetails?.regdYear} />
+        <DataField
+          label="Pick-Up Point"
+          value={transportDetails?.pickUpPoint}
+        />
+        <DataField
+          label="Registration Year"
+          value={transportDetails?.regdYear}
+        />
       </div>
     </>
-  )
-}
+  );
+};
 
-const StudentDocumentsComponent = ({ documents }: { documents: StudentOnly }) => {
+const StudentDocumentsComponent = ({ documents }: { documents: Documents }) => {
   return (
     <>
-      <div>
+      <div className="flex flex-row justify-between p-1">
         <h1 className="text-lg">Uploaded Documents</h1>
+        <Dialog>
+          <DialogTrigger>
+            <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
+          </DialogTrigger>
+          <DialogContent className=""></DialogContent>
+        </Dialog>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
-
+        {documents?.map((data: any, index: number) => (
+          <Link
+            href={data.docLink}
+            key={index}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <DataField label={data.docType} value={data.docType} />
+          </Link>
+        ))}
       </div>
     </>
-  )
-}
+  );
+};
 
 export default SingleStudentDetails;

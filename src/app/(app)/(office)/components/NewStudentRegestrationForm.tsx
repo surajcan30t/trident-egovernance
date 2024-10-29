@@ -26,13 +26,13 @@ import {
 import { handleNewStudent } from '@/backend';
 
 const FormSchema = z.object({
-  jeeApplicationNo: z.string().min(8, {
+  jeeApplicationNo: z.string().min(10, {
     message: 'Please enter 12 digit application number',
   }),
   studentName: z.string().min(1, {
     message: 'Please enter your name',
   }),
-  regdNo: z.string().min(8, {
+  regdNo: z.string().min(10, {
     message: 'Please enter your roll number',
   }),
   rank: z

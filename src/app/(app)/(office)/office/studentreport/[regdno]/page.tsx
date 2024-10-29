@@ -23,9 +23,9 @@ const page = async ({ params }: { params: { regdno: string } }) => {
   const studentData: StudentReport = await getStudentByRegdNo(params.regdno);
   return (
     <>
-      <main className="w-full h-full flex flex-col justify-center items-center">
-        <div className="flex flex-row bg-sky-400 rounded-t-lg justify-between w-full">
-          <h1 className="text-xl text-white font-bold px-2">Registration No. - {params.regdno}</h1>
+      <main className="w-full h-full flex flex-col justify-center items-center relative">
+        <div className="flex flex-row bg-sky-400 rounded-t-lg justify-between w-full sticky top-[calc(0vh+3.5rem)]">
+          <h1 className="text-xl text-white font-semibold px-2">Registration No. - <span className='font-extrabold'>{params.regdno}</span></h1>
         </div>
         <SingleStudentDetails studentData={studentData} />
       </main>

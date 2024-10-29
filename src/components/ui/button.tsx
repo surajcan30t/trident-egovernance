@@ -22,6 +22,8 @@ const buttonVariants = cva(
         link: 'text-stone-900 underline-offset-4 hover:underline dark:text-stone-50',
         trident:
           'bg-[#39a3e5] text-stone-50 shadow hover:bg-sky-700 dark:bg-stone-50 dark:text-stone-950 dark:hover:bg-stone-50/90 font-bold',
+        modify: 'bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950' +
+          ' dark:hover:bg-[#f97316] font-bold',
       },
       size: {
         default: 'h-9 px-4 py-2',

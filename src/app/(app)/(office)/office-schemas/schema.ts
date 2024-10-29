@@ -12,6 +12,7 @@ export const documentSchema = z.object({
 });
 
 export const studentOnlySchema = z.object({
+  regdNo: z.string(),
   studentName: z.string(),
   gender: z.string().nullable(),
   dob: z.string().nullable(),
@@ -35,6 +36,7 @@ export const studentOnlySchema = z.object({
 });
 
 export const personalDetailsOnlySchema = z.object({
+  regdNo: z.string(),
   fname: z.string(), // Father's name
   mname: z.string(), // Mother's name
   lgName: z.string(), // Legal guardian's name
@@ -48,6 +50,7 @@ export const personalDetailsOnlySchema = z.object({
 });
 
 export const studentAdmissionDetailsOnlySchema = z.object({
+  regdNo: z.string(),
   admissionDate: z.date().nullable(), // Nullable to allow null values
   ojeeCounsellingFeePaid: z.string(), // Assuming "YES" or "NO" as string values
   tfw: z.string().nullable(), // Nullable to allow "NTFW" or similar values
@@ -64,6 +67,7 @@ export const studentAdmissionDetailsOnlySchema = z.object({
 });
 
 export const studentCareerOnlySchema = z.object({
+  regdNo: z.string(),
   tenthPercentage: z.number(), // Assuming this is a mandatory field
   tenthYOP: z.number(), // Year of Passing for 10th, assuming mandatory
   twelvthPercentage: z.number(), // 12th percentage, assuming mandatory
@@ -75,6 +79,7 @@ export const studentCareerOnlySchema = z.object({
 });
 
 export const hostelOnlySchema = z.object({
+  regdNo: z.string(),
   hostelier: z.string(), // Assuming values like "YES" or "NO"
   hostelOption: z.string(), // Assuming values like "YES" or "NO"
   hostelChoice: z.string(), // Choice of hostel, assuming it's a string
@@ -83,6 +88,7 @@ export const hostelOnlySchema = z.object({
 });
 
 export const transportOnlySchema = z.object({
+  regdNo: z.string(),
   transportAvailed: z.string(), // Assuming values like "YES" or "NO"
   transportOpted: z.string(), // Assuming values like "YES" or "NO"
   route: z.string(), // Route as a string, assuming values like "N/A" or specific routes
@@ -109,7 +115,8 @@ export type StudentAdmissionDetailsOnly = z.infer<
 export type CareerOnly = z.infer<typeof studentCareerOnlySchema>;
 export type HostelOnly = z.infer<typeof hostelOnlySchema>;
 export type TransportOnly = z.infer<typeof transportOnlySchema>;
-export type Documents = z.infer<typeof documentSchema>;
+export const documentsSchema = z.array(documentSchema);
+export type Documents = z.infer<typeof documentsSchema>;
 
 // jeeApplicationNo: z.string(),
 //   regdNo: z.string(),
