@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import React from 'react';
 import { Toaster } from '@/components/ui/toaster';
-import SideBarMenu from '../components/SideBarMenu';
 
 export const metadata: Metadata = {
   title: 'Trident E-Governance',

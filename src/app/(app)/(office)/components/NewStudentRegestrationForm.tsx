@@ -100,7 +100,7 @@ const NewStudentRegestrationForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-2/3 my-10 flex flex-col items-center gap-3"
+        className="w-full my-10 flex flex-col items-center gap-3"
       >
         <div className="w-full lg:grid lg:grid-cols-2 lg:gap-2 lg:gap-y-1">
           {/* Application Number */}

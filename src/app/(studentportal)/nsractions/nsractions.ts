@@ -227,7 +227,7 @@ export const nsrSendAllotmentID = async (formData: any) => {
     }
     console.log('Data in NSRALLOTMENTID function', data);
     const authToken = cookies().get('NSR-Authorization');
-    const request = axios.post(
+    const request = axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
       data,
       {
@@ -259,7 +259,7 @@ export const handleNsPersonal = async (formData: any) => {
 
     // Send data to API
     const authToken = cookies().get('NSR-Authorization');
-    const request = axios.post(
+    const request = axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
       data,
       {
@@ -295,7 +295,7 @@ export const handleNsrAcademic = async (formData: any) => {
 
     // Send data to API
     const authToken = cookies().get('NSR-Authorization');
-    const request = axios.post(
+    const request = axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
       data,
       {
@@ -335,7 +335,7 @@ export const handleNsrOptionalFacility = async (formData: any) => {
 
     // Send data to API
     const authToken = cookies().get('NSR-Authorization');
-    const request = axios.post(
+    const request = axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
       data,
       {
@@ -552,10 +552,10 @@ export const saveDocumentToDB = async (ind: Number) => {
   }
   console.log('Global Map: ', globalMap);
   const data = await initialStudentData({ studentDocsData: documents });
-  console.log('indise savetoDB after setting data', data);
+  console.log('inside savetoDB after setting data', data);
   try {
     const authToken = cookies().get('NSR-Authorization');
-    const request = await axios.post(
+    const request = await axios.put(
       `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
       data,
       {

@@ -4,6 +4,7 @@ import { getToken } from 'next-auth/jwt';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
+import Papa from 'papaparse';
 import axios from 'axios';
 
 export const session = async ({ session, token }: any) => {
@@ -130,5 +131,82 @@ export const handleNewStudent = async (formData: any) => {
     return request.status;
   } catch (error) {
     console.log(error);
+  }
+};
+
+interface StudentRecord {
+  jeeApplicationNo: string;
+  studentName: string;
+  rank: number;
+  rankType: string;
+  course: string;
+  tfw: string;
+  admissionType: string;
+  studentType: string;
+  gender: string;
+  branchCode: string;
+  ojeeCounsellingFeePaid: string;
+  admissionYear?: number; // This will be added later
+}
+
+// Function to convert CSV file to JSON
+// const convertCsvToJson = (csvFile: File): Promise<StudentRecord[]> => {
+//   return new Promise((resolve, reject) => {
+//     Papa.parse<StudentRecord>(csvFile, {
+//       header: true, // The CSV headers should match the keys in StudentRecord
+//       skipEmptyLines: true, // Skips any empty rows in the CSV
+//       complete: (result) => {
+//         console.log('Parsed CSV:', result.data);
+//         resolve(result.data); // Return the parsed CSV as JSON
+//       },
+//       error: (error) => {
+//         console.error('Error parsing CSV:', error);
+//         reject(error);
+//       },
+//     });
+//   });
+// };
+
+export const handleBulkStudentUpload = async (
+  formData: FormData,
+): Promise<object | void> => {
+  const jsonRecords = formData.get('data');
+  console.log('Formdata', formData);
+  console.log('Uploading FormData:', jsonRecords);
+
+  try {
+    // Get the CSV file from FormData using the correct key
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/bulk-post`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonRecords,
+      },
+    );
+    const response = await request.json();
+    console.log('Response:', response);
+    interface Response {
+      status: number;
+      message: string;
+      description: string;
+    }
+    if (response.status === 400 || response.status === 422) {
+      console.log('This block executed');
+      const serverResponse = {
+        status: response.status,
+        message: response.detail,
+        description: response.description,
+      } as Response;
+      return serverResponse;
+    }
+    const serverResponse = {
+      status: 200,
+      message: 'Upload Successful',
+    } as Response;
+    return serverResponse;
+  } catch (error) {
+    console.error('Error in handleBulkStudentUpload:', error);
+    // throw error; // Re-throw to be handled in the calling function
   }
 };

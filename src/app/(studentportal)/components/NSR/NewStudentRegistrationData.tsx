@@ -7,6 +7,7 @@ import {
   BookUser,
   PersonStanding,
   Award,
+  BookMarked,
 } from 'lucide-react';
 import { FaVenusMars } from 'react-icons/fa';
 import { PiRankingBold, PiStudentBold } from 'react-icons/pi';
@@ -106,9 +107,9 @@ const NewStudentRegistrationData = (data: any) => {
             value={data.jeeApplicationNo}
           />
           <DataField
-            icon={<IdCard />}
-            label="JEE/OJEE Roll No."
-            value={data.rollNo}
+            icon={<Award />}
+            label="Year of Passing"
+            value={data.degreeYop}
           />
           <DataField
             icon={<PiRankingBold />}
@@ -126,7 +127,11 @@ const NewStudentRegistrationData = (data: any) => {
             label="Course"
             value={data.course}
           />
-          <DataField icon={<Award />} label="Branch" value={data.branchCode} />
+          <DataField
+            icon={<BookMarked />}
+            label="Branch"
+            value={data.branchCode}
+          />
           <DataField
             icon={<PersonStanding />}
             label="TFW Status"
@@ -166,11 +171,11 @@ const NewStudentRegistrationData = (data: any) => {
               Please refer to JEE allotment letter
             </p>
             <Button variant="trident">
-              {loading ? (<PulseLoader
-                color="#ffffff"
-                size={5}
-              />) :
-                'Save & Next'}
+              {loading ? (
+                <PulseLoader color="#ffffff" size={5} />
+              ) : (
+                'Save & Next'
+              )}
             </Button>
             {statusMessage && (
               <p className="text-red-500 text-sm text-center">

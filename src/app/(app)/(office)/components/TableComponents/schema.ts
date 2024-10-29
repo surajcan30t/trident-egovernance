@@ -1,10 +1,14 @@
 import { z } from 'zod';
 
 export const taskSchema = z.object({
-  id: z.string(),
   regdNo: z.string(),
-  name: z.string(),
+  studentName: z.string(),
+  course: z.string(),
+  branchCode: z.string(),
+  phNo: z.string(),
   email: z.string(),
+  studentType: z.string(),
+  currentYear: z.string(),
 });
 
 export type Students = z.infer<typeof taskSchema>;

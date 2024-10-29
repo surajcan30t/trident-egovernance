@@ -1,11 +1,12 @@
 'use client';
+import { LandingFooter } from '@/components/Footer';
 import Navbar from '@/components/LandingNavbar';
 import Image from 'next/image';
 import TypewriterComponent from 'typewriter-effect';
 
 export default function Home() {
   return (
-    <main className="flex-col w-full h-full">
+    <main className="flex-col w-full h-screen overflow-y-hidden">
       <div className="w-full h-full">
         <Navbar />
         <div className="absolute top-0 w-full h-full">
@@ -74,7 +75,10 @@ export default function Home() {
             </h1>
           </div>
         </div>
+        <div>
+        </div>
       </div>
+      <LandingFooter />
     </main>
     // <>
     //   <section>

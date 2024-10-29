@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import React from 'react';
 import NSRNavbar from './components/NSR/NSRNavbar';
 import { Toaster } from '@/components/ui/toaster';
+import { LandingFooter } from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Trident E-Governance',
@@ -15,10 +16,11 @@ interface RootlayoutProps {
 
 export default async function RootLayout({ children }: RootlayoutProps) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Toaster />
       <NSRNavbar /> {/* NSRNavbar only for studentportal routes */}
       <main className="flex-grow">{children}</main>
+      <LandingFooter />
     </div>
   );
 }

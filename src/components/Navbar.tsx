@@ -96,9 +96,9 @@ export default function Navbar() {
               </div>
 
               {/* Desktop Logo */}
-              <div className="hidden md:block">
+              {/* <div className="hidden md:block">
                 <Image src="/tgi.png" alt="logo" width={150} height={150} />
-              </div>
+              </div> */}
 
               {/* Center Title */}
               <div className="text-xl md:text-3xl lg:text-4xl text-sky-500 drop-shadow-[0_1.2px_0.2px_rgb(0,0,0)] font-extrabold flex-grow-0">

@@ -7,7 +7,7 @@ const nextConfig = {
         hostname: 'assets.aceternity.com',
       },
     ],
-  }
+  },
 };
 
 export default nextConfig;
