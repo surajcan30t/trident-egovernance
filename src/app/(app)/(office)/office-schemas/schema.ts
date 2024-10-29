@@ -9,7 +9,7 @@ export const documentSchema = z.object({
   docLink: z.string(),
   docType: z.string(),
   uploadDate: z.date().nullable(),
-})
+});
 
 export const studentOnlySchema = z.object({
   studentName: z.string(),
@@ -32,7 +32,7 @@ export const studentOnlySchema = z.object({
   plpoolm: z.string().nullable(),
   cfPayMode: z.string().nullable(),
   religion: z.string().nullable(),
-})
+});
 
 export const personalDetailsOnlySchema = z.object({
   fname: z.string(), // Father's name
@@ -45,7 +45,7 @@ export const personalDetailsOnlySchema = z.object({
   parentContact: z.string(), // Phone number as a string to handle leading zeroes
   parentEmailId: z.string().email(), // Validates email format
   presentAddress: z.string().nullable(), // Nullable to allow null values
-})
+});
 
 export const studentAdmissionDetailsOnlySchema = z.object({
   admissionDate: z.date().nullable(), // Nullable to allow null values
@@ -61,7 +61,7 @@ export const studentAdmissionDetailsOnlySchema = z.object({
   categoryRank: z.number().nullable(),
   jeeApplicationNo: z.string(),
   allotmentId: z.string(),
-})
+});
 
 export const studentCareerOnlySchema = z.object({
   tenthPercentage: z.number(), // Assuming this is a mandatory field
@@ -72,7 +72,7 @@ export const studentCareerOnlySchema = z.object({
   diplomaYOP: z.number().nullable(), // Nullable for the Year of Passing of diploma
   graduationPercentage: z.number().nullable(), // Nullable to allow null values if graduation wasn't pursued
   graduationYOP: z.number().nullable(), // Nullable for the Year of Passing of graduation
-})
+});
 
 export const hostelOnlySchema = z.object({
   hostelier: z.string(), // Assuming values like "YES" or "NO"
@@ -80,7 +80,7 @@ export const hostelOnlySchema = z.object({
   hostelChoice: z.string(), // Choice of hostel, assuming it's a string
   lgName: z.string(), // Legal guardian's name
   regdyear: z.number(), // Registration year as a number
-})
+});
 
 export const transportOnlySchema = z.object({
   transportAvailed: z.string(), // Assuming values like "YES" or "NO"
@@ -88,7 +88,7 @@ export const transportOnlySchema = z.object({
   route: z.string(), // Route as a string, assuming values like "N/A" or specific routes
   pickUpPoint: z.string(), // Pickup location as a string
   regdYear: z.number(), // Registration year as a number
-})
+});
 
 export const studentreportSchema = z.object({
   studentOnlyDTO: studentOnlySchema,
@@ -98,17 +98,18 @@ export const studentreportSchema = z.object({
   hostelOnlyDTO: hostelOnlySchema,
   transportOnlyDTO: transportOnlySchema,
   studentDocsOnlyDTOS: z.array(documentSchema),
-})
+});
 
 export type StudentReport = z.infer<typeof studentreportSchema>;
 export type StudentOnly = z.infer<typeof studentOnlySchema>;
 export type PersonalDetailsOnly = z.infer<typeof personalDetailsOnlySchema>;
-export type StudentAdmissionDetailsOnly = z.infer<typeof studentAdmissionDetailsOnlySchema>;
+export type StudentAdmissionDetailsOnly = z.infer<
+  typeof studentAdmissionDetailsOnlySchema
+>;
 export type CareerOnly = z.infer<typeof studentCareerOnlySchema>;
 export type HostelOnly = z.infer<typeof hostelOnlySchema>;
 export type TransportOnly = z.infer<typeof transportOnlySchema>;
 export type Documents = z.infer<typeof documentSchema>;
-
 
 // jeeApplicationNo: z.string(),
 //   regdNo: z.string(),
