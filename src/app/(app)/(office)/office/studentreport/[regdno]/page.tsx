@@ -7,13 +7,11 @@ const getStudentByRegdNo = async (regdNo: string) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND}/office/get-student-by-regdNo/${regdNo}`,
       {
-        next: {
-          revalidate: 5,
-        },
+        cache: 'no-cache'
       },
     );
     const data = await res.json();
-    console.log(data)
+    // console.log(data)
     return data;
   } catch (e) {
     console.log('error', e);
