@@ -14,25 +14,26 @@ export const documentSchema = z.object({
 export const studentOnlySchema = z.object({
   regdNo: z.string(),
   studentName: z.string(),
-  gender: z.string().nullable(),
-  dob: z.string().nullable(),
+  gender: z.string(),
+  dob: z.string(),
   course: z.string(),
-  branchCode: z.string().nullable(),
-  admissionYear: z.string().nullable(),
-  degreeYop: z.number().nullable(),
+  branchCode: z.string(),
+  admissionYear: z.string(),
+  degreeYop: z.number(),
   phNo: z.string(),
   email: z.string().email(),
-  studentType: z.string().nullable(),
-  hostelier: z.string().nullable(),
-  transportAvailed: z.string().nullable(),
-  status: z.string().nullable(),
-  batchId: z.string().nullable(),
-  currentYear: z.number().nullable(),
+  studentType: z.string(),
+  hostelier: z.string(),
+  transportAvailed: z.string(),
+  status: z.string(),
+  batchId: z.string(),
+  currentYear: z.number(),
   aadhaarNo: z.number(),
-  indortrng: z.string().nullable(),
-  plpoolm: z.string().nullable(),
-  cfPayMode: z.string().nullable(),
-  religion: z.string().nullable(),
+  indortrng: z.string(),
+  plpoolm: z.string(),
+  cfPayMode: z.string(),
+  religion: z.string(),
+  section: z.string(),
 });
 
 export const personalDetailsOnlySchema = z.object({
@@ -43,25 +44,26 @@ export const personalDetailsOnlySchema = z.object({
   permanentAddress: z.string(),
   permanentCity: z.string(),
   permanentState: z.string(),
+  district: z.string(),
   permanentPincode: z.number(), // Using number for pincode
   parentContact: z.string(), // Phone number as a string to handle leading zeroes
   parentEmailId: z.string().email(), // Validates email format
-  presentAddress: z.string().nullable(), // Nullable to allow null values
+  presentAddress: z.string(), // Nullable to allow null values
 });
 
 export const studentAdmissionDetailsOnlySchema = z.object({
   regdNo: z.string(),
-  admissionDate: z.date().nullable(), // Nullable to allow null values
+  admissionDate: z.string(), // Nullable to allow null values
   ojeeCounsellingFeePaid: z.string(), // Assuming "YES" or "NO" as string values
-  tfw: z.string().nullable(), // Nullable to allow "NTFW" or similar values
-  admissionType: z.string().nullable(), // Nullable to allow values like "OJEE"
-  ojeeRollNo: z.string().nullable(),
-  ojeeRank: z.string().nullable(),
-  aieeeRank: z.string().nullable(),
+  tfw: z.string(), // Nullable to allow "NTFW" or similar values
+  admissionType: z.string(), // Nullable to allow values like "OJEE"
+  ojeeRollNo: z.string().optional(),
+  ojeeRank: z.string().optional(),
+  aieeeRank: z.string().optional(),
   caste: z.string(),
-  reportingDate: z.date().nullable(),
-  categoryCode: z.string().nullable(),
-  categoryRank: z.number().nullable(),
+  reportingDate: z.date().optional(),
+  categoryCode: z.string().optional(),
+  categoryRank: z.number().optional(),
   jeeApplicationNo: z.string(),
   allotmentId: z.string(),
 });
