@@ -26,6 +26,7 @@ const studentData = async (): Promise<Student | null> => {
       headers: {
         'NSR-Authorization': `Bearer ${NSR_token?.value}`,
       },
+      timeout: 5
     },
   );
     if (response.status !== 200) {

@@ -136,7 +136,7 @@ const NsrPersonalDetailsForm = (initial: any) => {
       religion: initial?.religion || '',
     },
   });
-  // console.log(form.watch())
+  console.log(form.watch())
 
   const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
