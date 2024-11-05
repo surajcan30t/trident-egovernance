@@ -8,7 +8,7 @@ const getStudentByRegdNo = async (regdNo: string) => {
       `${process.env.NEXT_PUBLIC_BACKEND}/office/get-student-by-regdNo/${regdNo}`,
       {
         cache: 'no-cache'
-      },
+      }
     );
     const data = await res.json();
     // console.log(data)
@@ -23,7 +23,7 @@ const page = async ({ params }: { params: { regdno: string } }) => {
     <>
       <main className="w-full h-full flex flex-col justify-center items-center relative">
         <div className="flex flex-row bg-sky-400 rounded-t-lg justify-between w-full sticky top-[calc(0vh+3.5rem)]">
-          <h1 className="text-xl text-white font-semibold px-2">Registration No. - <span className='font-extrabold'>{params.regdno}</span></h1>
+          <h1 className="text-xl text-white font-semibold px-2">Registration No. - <span className='font-extrabold'>{studentData?.studentOnlyDTO?.regdNo ?? 'N/A'}</span></h1>
         </div>
         <SingleStudentDetails studentData={studentData} />
       </main>

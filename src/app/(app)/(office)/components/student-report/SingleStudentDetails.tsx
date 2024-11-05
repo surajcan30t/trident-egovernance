@@ -1,9 +1,12 @@
 import { StudentReport, StudentOnly, StudentAdmissionDetailsOnly, PersonalDetailsOnly, CareerOnly, HostelOnly, TransportOnly, Documents } from '@/app/(app)/(office)/office-schemas/schema';
 import React from 'react';
 import Link from 'next/link';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import StudentOnlyForm from '@/app/(app)/(office)/components/student-report/student-only-form';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import StudentPersonalDetailsForm from '@/app/(app)/(office)/components/student-report/student-personal-details-form';
+import StudentDocsForm from '@/app/(app)/(office)/components/student-report/student-docs-form';
+import StudentAdmissionDetailsForm from '@/app/(app)/(office)/components/student-report/student-admission-details-form';
 
 const SingleStudentDetails = ({ studentData }: { studentData: StudentReport }) => {
   return (
@@ -15,7 +18,7 @@ const SingleStudentDetails = ({ studentData }: { studentData: StudentReport }) =
         <CareerDetailComponent careerDetails={studentData?.studentCareerOnlyDTO}/>
         <HostelDetailComponent hostelDetails={studentData?.hostelOnlyDTO}/>
         <TransportDetailComponent transportDetails={studentData?.transportOnlyDTO}/>
-        <StudentDocumentsComponent documents={studentData?.studentDocsOnlyDTOS}/>
+        <StudentDocumentsComponent documents={studentData?.studentDocsOnlyDTOS} registrationNo={studentData?.studentOnlyDTO?.regdNo}/>
       </div>
     </>
   );
@@ -41,7 +44,12 @@ const StudentComponent = ({studentOnly}: {studentOnly: StudentOnly}) =>{
             <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
           </DialogTrigger>
           <DialogContent className="">
-            <StudentOnlyForm table={'student-only'} data={studentOnly}/>
+            <DialogHeader>
+              <DialogTitle>Update Student Details</DialogTitle>
+            </DialogHeader>
+            <ScrollArea>
+              <StudentOnlyForm table={'student'} data={studentOnly}/>
+            </ScrollArea>
           </DialogContent>
         </Dialog>
       </div>
@@ -49,6 +57,7 @@ const StudentComponent = ({studentOnly}: {studentOnly: StudentOnly}) =>{
         <DataField label="Name" value={studentOnly?.studentName} />
         <DataField label="Branch" value={studentOnly?.branchCode} />
         <DataField label="Course" value={studentOnly?.course} />
+        <DataField label="Section" value={studentOnly?.section} />
         <DataField label="D.O.B" value={studentOnly?.dob} />
         <DataField label="Admission Year" value={studentOnly?.admissionYear} />
         <DataField label="Current Year" value={studentOnly?.currentYear} />
@@ -65,7 +74,6 @@ const StudentComponent = ({studentOnly}: {studentOnly: StudentOnly}) =>{
         <DataField label="Placement Pool Availed" value={studentOnly?.plpoolm} />
         <DataField label="Hostelier" value={studentOnly?.hostelier} />
         <DataField label="Industrial Training" value={studentOnly?.indortrng} />
-        <DataField label="Transport Availed" value={studentOnly?.transportAvailed} />
       </div>
     </>
   )
@@ -84,7 +92,14 @@ const PersonalDetailsComponent = ({
           <DialogTrigger>
             <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
           </DialogTrigger>
-          <DialogContent className=""></DialogContent>
+          <DialogContent className="">
+            <DialogHeader>
+              <DialogTitle>Update Personal Details</DialogTitle>
+            </DialogHeader>
+            <ScrollArea>
+              <StudentPersonalDetailsForm table={'personal-details'} data={personalDetails}/>
+            </ScrollArea>
+          </DialogContent>
         </Dialog>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
@@ -109,6 +124,10 @@ const PersonalDetailsComponent = ({
         <DataField
           label="Permanent City"
           value={personalDetails?.permanentCity}
+        />
+        <DataField
+          label="District"
+          value={personalDetails?.district}
         />
         <DataField
           label="Permanent State"
@@ -140,7 +159,14 @@ const AdmissionDetailsComponent = ({
           <DialogTrigger>
             <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
           </DialogTrigger>
-          <DialogContent className=""></DialogContent>
+          <DialogContent className="">
+            <DialogHeader>
+              <DialogTitle>Update Admission Details</DialogTitle>
+            </DialogHeader>
+            <ScrollArea>
+              <StudentAdmissionDetailsForm table={'admission-details'} data={admissionDetails} />
+            </ScrollArea>
+          </DialogContent>
         </Dialog>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
@@ -195,7 +221,14 @@ const CareerDetailComponent = ({
           <DialogTrigger>
             <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
           </DialogTrigger>
-          <DialogContent className=""></DialogContent>
+          <DialogContent className="">
+            <DialogHeader>
+              <DialogTitle>Update Career Details</DialogTitle>
+            </DialogHeader>
+            <ScrollArea>
+
+            </ScrollArea>
+          </DialogContent>
         </Dialog>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">
@@ -290,7 +323,7 @@ const TransportDetailComponent = ({
   );
 };
 
-const StudentDocumentsComponent = ({ documents }: { documents: Documents }) => {
+const StudentDocumentsComponent = ({ documents, registrationNo }: { documents: Documents, registrationNo: string }) => {
   return (
     <>
       <div className="flex flex-row justify-between p-1">
@@ -299,7 +332,14 @@ const StudentDocumentsComponent = ({ documents }: { documents: Documents }) => {
           <DialogTrigger>
             <div className='bg-[#fb923c] text-stone-50 shadow hover:bg-[#f97316] dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded-lg px-2 py-1'>Update</div>
           </DialogTrigger>
-          <DialogContent className=""></DialogContent>
+          <DialogContent className="">
+            <DialogHeader>
+              <DialogTitle>Update Documents</DialogTitle>
+            </DialogHeader>
+            <ScrollArea>
+              <StudentDocsForm table={'student-docs'} data={documents} registrationNo={registrationNo}/>
+            </ScrollArea>
+          </DialogContent>
         </Dialog>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 border rounded-lg p-2 gap-3 mb-8">

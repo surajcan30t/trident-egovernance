@@ -62,7 +62,7 @@ export const studentAdmissionDetailsOnlySchema = z.object({
   ojeeRank: z.string().optional(),
   aieeeRank: z.string().optional(),
   caste: z.string(),
-  reportingDate: z.date().optional(),
+  reportingDate: z.string().optional(),
   categoryCode: z.string().optional(),
   categoryRank: z.number().optional(),
   jeeApplicationNo: z.string(),
