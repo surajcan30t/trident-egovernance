@@ -6,6 +6,7 @@ import { z } from 'zod';
 //   uploadDate: Date | null;
 // }
 export const documentSchema = z.object({
+  docId: z.number(),
   docLink: z.string(),
   docType: z.string(),
   uploadDate: z.date().nullable(),
