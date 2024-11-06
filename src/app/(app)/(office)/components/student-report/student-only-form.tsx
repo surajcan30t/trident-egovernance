@@ -18,6 +18,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroupItem, RadioGroup } from '@/components/ui/radio-group';
 import { studentDetailsUpdateAction } from '@/app/(app)/(office)/serveractions-office/student-report-update-actions';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
+import PulseLoader from 'react-spinners/PulseLoader';
 
 const formSchema = z.object({
   regdNo: z.string(),
@@ -53,6 +56,7 @@ const formSchema = z.object({
 })
 
 const StudentOnlyForm = ({table, data}:{table:string, data: StudentOnly}) =>{
+  const router = useRouter()
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,6 +93,17 @@ const StudentOnlyForm = ({table, data}:{table:string, data: StudentOnly}) =>{
       const response = await studentDetailsUpdateAction(values, table)
       if(response === 200){
         setLoading(false)
+        toast({
+          variant: 'success',
+          title: 'Student details updated successfully.',
+        });
+        router.refresh()
+      }
+      else {
+        toast({
+          variant: 'destructive',
+          title: 'Something went wrong, please try again.'
+        });
       }
 
     }catch{
@@ -469,6 +484,9 @@ const StudentOnlyForm = ({table, data}:{table:string, data: StudentOnly}) =>{
                 </FormItem>
               )}
             />
+            <div className='hidden'>
+
+
             <FormField
               control={form.control}
               name="transportAvailed"
@@ -546,11 +564,12 @@ const StudentOnlyForm = ({table, data}:{table:string, data: StudentOnly}) =>{
                 </FormItem>
               )}
             />
+            </div>
 
           </div>
           <div className="space-y-2 flex justify-center">
             <Button variant="trident" size="lg" type="submit">
-              {loading? 'Updating' : 'Update'}
+              {loading? <PulseLoader color="white" size={5} /> : 'Update'}
             </Button>
           </div>
         </form>

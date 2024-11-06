@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import StudentPersonalDetailsForm from '@/app/(app)/(office)/components/student-report/student-personal-details-form';
 import StudentDocsForm from '@/app/(app)/(office)/components/student-report/student-docs-form';
 import StudentAdmissionDetailsForm from '@/app/(app)/(office)/components/student-report/student-admission-details-form';
+import StudentCareerDetailsForm from '@/app/(app)/(office)/components/student-report/student-career-form';
 
 const SingleStudentDetails = ({ studentData }: { studentData: StudentReport }) => {
   return (
@@ -164,7 +165,7 @@ const AdmissionDetailsComponent = ({
               <DialogTitle>Update Admission Details</DialogTitle>
             </DialogHeader>
             <ScrollArea>
-              <StudentAdmissionDetailsForm table={'admission-details'} data={admissionDetails} />
+              <StudentAdmissionDetailsForm table={'student-admission-details'} data={admissionDetails} />
             </ScrollArea>
           </DialogContent>
         </Dialog>
@@ -226,7 +227,7 @@ const CareerDetailComponent = ({
               <DialogTitle>Update Career Details</DialogTitle>
             </DialogHeader>
             <ScrollArea>
-
+              <StudentCareerDetailsForm data={careerDetails} table={'student-career'}/>
             </ScrollArea>
           </DialogContent>
         </Dialog>

@@ -71,14 +71,14 @@ export const studentAdmissionDetailsOnlySchema = z.object({
 
 export const studentCareerOnlySchema = z.object({
   regdNo: z.string(),
-  tenthPercentage: z.number(), // Assuming this is a mandatory field
-  tenthYOP: z.number(), // Year of Passing for 10th, assuming mandatory
-  twelvthPercentage: z.number(), // 12th percentage, assuming mandatory
-  twelvthYOP: z.number(), // Year of Passing for 12th, assuming mandatory
-  diplomaPercentage: z.number().nullable(), // Nullable to allow null values if diploma wasn't pursued
-  diplomaYOP: z.number().nullable(), // Nullable for the Year of Passing of diploma
-  graduationPercentage: z.number().nullable(), // Nullable to allow null values if graduation wasn't pursued
-  graduationYOP: z.number().nullable(), // Nullable for the Year of Passing of graduation
+  tenthPercentage: z.string(), // Assuming this is a mandatory field
+  tenthYOP: z.string(), // Year of Passing for 10th, assuming mandatory
+  twelvthPercentage: z.string().optional(), // 12th percentage, assuming mandatory
+  twelvthYOP: z.string().optional(), // Year of Passing for 12th, assuming mandatory
+  diplomaPercentage: z.string().optional(), // Nullable to allow null values if diploma wasn't pursued
+  diplomaYOP: z.string().optional(), // Nullable for the Year of Passing of diploma
+  graduationPercentage: z.string().optional(), // Nullable to allow null values if graduation wasn't pursued
+  graduationYOP: z.string().optional(), // Nullable for the Year of Passing of graduation
 });
 
 export const hostelOnlySchema = z.object({

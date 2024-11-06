@@ -24,6 +24,10 @@ import {
   studentDetailsUpdateAction,
 } from '@/app/(app)/(office)/serveractions-office/student-report-update-actions';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from '@/hooks/use-toast';
+import PulseLoader from 'react-spinners/PulseLoader';
+
 
 const formSchema = z.object({
   regdNo: z.string(),
@@ -43,6 +47,7 @@ const formSchema = z.object({
 })
 
 const StudentAdmissionDetailsForm = ({table, data}:{table:string, data: StudentAdmissionDetailsOnly}) =>{
+  const router = useRouter()
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,6 +76,18 @@ const StudentAdmissionDetailsForm = ({table, data}:{table:string, data: StudentA
       const response = await studentAdmissionDetailsUpdateAction(values, table)
       if(response === 200){
         setLoading(false)
+        toast({
+          variant: 'success',
+          title: 'Academic details updated successfully.',
+        });
+        router.refresh()
+      }
+      else {
+        toast({
+          variant: 'destructive',
+          title: 'Something went wrong.',
+          // description: uploadResponse.message,
+        });
       }
 
     }catch{
@@ -364,7 +381,7 @@ const StudentAdmissionDetailsForm = ({table, data}:{table:string, data: StudentA
           </div>
           <div className="space-y-2 flex justify-center">
             <Button variant="trident" size="lg" type="submit">
-              {loading? 'Updating' : 'Update'}
+              {loading? <PulseLoader color="white" size={5} /> : 'Update'}
             </Button>
           </div>
         </form>

@@ -41,8 +41,8 @@ const docIndexMap = new Map([
   ['RankCard', 7],
   ['PassportPhoto', 8],
   ['AadhaarCard', 9],
-  // Add more document types and their respective indices as needed
 ]);
+
 
 const FormSchema = z.object(
   Object.fromEntries(
@@ -87,7 +87,10 @@ const StudentDocsForm = ({
   });
   const router = useRouter();
 
-
+  const dataMap = data?.reduce((acc:any, doc) => {
+    acc[doc.docType] = doc;
+    return acc;
+  }, {});
 
 
   const handleSingleUpload = async (file: File, index: number) => {
@@ -102,8 +105,7 @@ const StudentDocsForm = ({
       const formData = new FormData()
       console.log(1)
       formData.append(`file${index}`, file);
-      const payload = {formData: formData, registrationNo: registrationNo, docId: data[index].docId ?? null}
-      console.log('regd',registrationNo)
+      const payload = {formData: formData, registrationNo: registrationNo, docId: data[index]?.docId ?? null}
       console.log(3)
       // data[index]?.docId ? formData.append('docId', data[index].docId.toString()) : formData.append('docId', '')
       console.log(4)
@@ -145,9 +147,9 @@ const StudentDocsForm = ({
       if (response.status === 200) {
         toast({
           variant: 'success',
-          title: 'Documents uploaded successfully.',
+          title: 'Changes updated successfully.',
         });
-        // router.push('/studentportal/newstudentfinalregister');
+        router.refresh();
       }
       else {
         toast({
@@ -202,9 +204,9 @@ const StudentDocsForm = ({
                       >
                         {isUploading[index] ? <PulseLoader color="white" size={5} /> : 'Upload'}
                       </Button>
-                      {data?.length > 0 && data[index]?.docLink && (
+                      {dataMap[docType]?.docLink && (
                         <Link
-                          href={data[index]?.docLink}
+                          href={dataMap[docType].docLink}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-500 underline ml-2 flex flex-row"

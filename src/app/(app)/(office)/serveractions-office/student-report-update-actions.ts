@@ -16,7 +16,7 @@ export const studentDetailsUpdateAction = async (
   const regdno = formData.regdNo;
   console.log('regd no', regdno);
   try {
-    const resp = await fetch(
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
       {
         headers: {
@@ -26,9 +26,10 @@ export const studentDetailsUpdateAction = async (
         body: JSON.stringify(formData),
       },
     );
-    const stringfy = await resp.json();
-    console.log(stringfy);
-    return 200;
+    const result = await response.json();
+    console.log(result);
+    if (result === true) return 200;
+    else return 400;
   } catch (error) {
     console.log(error);
   }
@@ -41,7 +42,7 @@ export const studentPersonalDetailsUpdateAction = async (
   const regdno = formData.regdNo;
   console.log('regd no', regdno);
   try {
-    const resp = await fetch(
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
       {
         headers: {
@@ -51,9 +52,10 @@ export const studentPersonalDetailsUpdateAction = async (
         body: JSON.stringify(formData),
       },
     );
-    const stringfy = await resp.json();
-    console.log(stringfy);
-    return 200;
+    const result = await response.json();
+    console.log(result);
+    if (result === true) return 200;
+    else return 400;
   } catch (error) {
     console.log(error);
   }
@@ -66,7 +68,7 @@ export const studentAdmissionDetailsUpdateAction = async (
   const regdno = formData.regdNo;
   console.log('regd no', regdno);
   try {
-    const resp = await fetch(
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
       {
         headers: {
@@ -76,9 +78,10 @@ export const studentAdmissionDetailsUpdateAction = async (
         body: JSON.stringify(formData),
       },
     );
-    const stringfy = await resp.json();
-    console.log(stringfy);
-    return 200;
+    const result = await response.json();
+    console.log(result);
+    if (result === true) return 200;
+    else return 400;
   } catch (error) {
     console.log(error);
   }
