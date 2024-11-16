@@ -8,6 +8,7 @@ declare module 'next-auth' {
       email?: string | null;
       image?: string | null;
       userType?: object | null;
+      accessToken?: string | null;
     } & DefaultSession['user'];
   }
   interface JWT {
