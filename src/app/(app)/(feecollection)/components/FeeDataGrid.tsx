@@ -1,24 +1,17 @@
-'use client'
+// 'use client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import React, { useEffect, useState } from 'react';
 
 const FeeDataGrid = () => {
-  const [activesem, setactivesem] = useState('')
-  const [nextsem, setnextsem] = useState('')
-  useEffect(() => {
-    const sem = 2 * (Math.floor(Math.random() * 4)) + 1
-    setactivesem(sem.toString())
-    setnextsem((sem + 1).toString())
-  }, [])
+
 
   return (
     <Tabs defaultValue="account" className="w-[50vw]">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value={`Semester ${activesem}`}>Semester {activesem}</TabsTrigger>
-        <TabsTrigger value={`Semester ${nextsem}`}>Semester {nextsem}</TabsTrigger>
+        <TabsTrigger value={`Semester 1`}>Semester 1</TabsTrigger>
+        <TabsTrigger value={`Semester 2`}>Semester 2</TabsTrigger>
       </TabsList>
-      <TabsContent value={`Semester ${activesem}`}>
+      <TabsContent value={`Semester 1`}>
         <Card>
           <CardHeader>
             <CardDescription>
@@ -76,7 +69,7 @@ const FeeDataGrid = () => {
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value={`Semester ${nextsem}`}>
+      <TabsContent value={`Semester 2`}>
         <Card>
           <CardHeader>
             <CardDescription>

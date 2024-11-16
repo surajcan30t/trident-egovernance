@@ -47,6 +47,7 @@ const fetchStudentData = async () => {
 
 const TotalStudent: React.FC = async () => {
   const studentData: CourseWise[] = await fetchStudentData();
+  console.log(studentData)
   return (
     <>
       <Card className="bg-orange-700 text-white">
@@ -55,7 +56,7 @@ const TotalStudent: React.FC = async () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-row gap-3 flex-wrap">
-            {studentData.map((data, index) => (
+            {studentData && studentData?.map((data, index) => (
               <div
                 key={data.course}
                 className={`flex flex-row items-center gap-2 border border-gray-100 rounded-md px-2`}

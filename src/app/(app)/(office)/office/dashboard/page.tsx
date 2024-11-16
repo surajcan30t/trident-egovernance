@@ -9,7 +9,7 @@ const page = () => {
         <TotalStudent />
         <TotoalAlum />
       </div>
-      <div className="w-full">
+      <div className="w-[calc(100vw-20vw)]">
         <StudentDataTable />
       </div>
     </div>
