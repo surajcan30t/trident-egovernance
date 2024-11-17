@@ -1,5 +1,6 @@
 'use server';
 import { z } from 'zod';
+import axios from 'axios';
 
 let financialSession: string | null = null;
 
@@ -337,6 +338,26 @@ export const feeCollectionSingleStudentDetails = async (
   } catch (e) {
     console.log(e);
     return { status: 500 };
+  }
+};
+
+export const handleDuesFeePayment = async (formData: any) => {
+  try {
+    const data = formData;
+    const regdNo = formData.regdNo;
+    if (!data) {
+      console.log('No initial data found.');
+      return;
+    }
+    console.log('Data in NSRALLOTMENTID function', data);
+    const request = axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/dues-payment/${regdNo}`,
+      data,
+    );
+    console.log('Response: \n', (await request).data);
+    return (await request).status;
+  } catch (error) {
+    console.log(error);
   }
 };
 
