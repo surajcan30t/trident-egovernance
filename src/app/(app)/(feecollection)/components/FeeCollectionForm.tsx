@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,15 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { handleDuesFeePayment } from '@/app/(app)/(feecollection)/server-actions-fee-collection/table-actions';
 
 const FormSchema = z
   .object({
     regdNo: z.string().min(2, {
       message: 'Username must be at least 2 characters.',
     }),
-    processingMode: z.enum(['AUTO', 'COURSEFEEFIRST', 'OPTIONALFEEFIRST'], {
-      required_error: 'Must choose payment processing mode',
-    }),
+    // processingMode: z.enum(['AUTO', 'COURSEFEEFIRST', 'OPTIONALFEEFIRST'], {
+    //   required_error: 'Must choose payment processing mode',
+    // }),
     collectedFee: z.string({
       required_error: 'Must enter collected fee',
     }),
@@ -71,21 +72,23 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
     reset({ regdNo: regdNo });
   }, [regdNo, reset]);
 
+  const paymentModeSelected = form.watch('paymentMode');
   useEffect(() => {
-    const paymentModeSelected = form.watch('paymentMode');
-    console.log(paymentModeSelected)
+    console.log('Payment Mode:', paymentModeSelected);
+
     if (paymentModeSelected === 'DD') {
       setShowDDFields(true);
     } else {
       setShowDDFields(false);
     }
-  }, [form]);
-  console.log(form.watch())
+  }, [paymentModeSelected]);
+
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      const response = { status: 200 };
-      if (response.status !== 200) {
+      //acount-section/payment/dues
+      const response = await handleDuesFeePayment(data)
+      if (response !== 200) {
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -97,6 +100,7 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
           title: 'Success',
           description: 'Form submitted successfully',
         });
+        router.refresh()
       }
     } catch (e) {
       console.log(e);
@@ -129,36 +133,37 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="processingMode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Payment Processing Mode</FormLabel>
-                  <span className="text-red-500">*</span>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select payment processing mode" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="AUTO">Auto</SelectItem>
-                      <SelectItem value="COURSEFEEFIRST">
-                        Course fee first
-                      </SelectItem>
-                      <SelectItem value="OPTIONALFEEFIRST">
-                        Optional fee first
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/*Processing mode*/}
+            {/*<FormField*/}
+            {/*  control={form.control}*/}
+            {/*  name="processingMode"*/}
+            {/*  render={({ field }) => (*/}
+            {/*    <FormItem>*/}
+            {/*      <FormLabel>Payment Processing Mode</FormLabel>*/}
+            {/*      <span className="text-red-500">*</span>*/}
+            {/*      <Select*/}
+            {/*        onValueChange={field.onChange}*/}
+            {/*        defaultValue={field.value}*/}
+            {/*      >*/}
+            {/*        <FormControl>*/}
+            {/*          <SelectTrigger>*/}
+            {/*            <SelectValue placeholder="Select payment processing mode" />*/}
+            {/*          </SelectTrigger>*/}
+            {/*        </FormControl>*/}
+            {/*        <SelectContent>*/}
+            {/*          <SelectItem value="AUTO">Auto</SelectItem>*/}
+            {/*          <SelectItem value="COURSEFEEFIRST">*/}
+            {/*            Course fee first*/}
+            {/*          </SelectItem>*/}
+            {/*          <SelectItem value="OPTIONALFEEFIRST">*/}
+            {/*            Optional fee first*/}
+            {/*          </SelectItem>*/}
+            {/*        </SelectContent>*/}
+            {/*      </Select>*/}
+            {/*      <FormMessage />*/}
+            {/*    </FormItem>*/}
+            {/*  )}*/}
+            {/*/>*/}
             <FormField
               control={form.control}
               name="collectedFee"
@@ -219,42 +224,42 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
                   )}
                 />
             )}
-            {/*{showDDFields && (*/}
-            {/*  <FormField*/}
-            {/*    control={form.control}*/}
-            {/*    name="ddDate"*/}
-            {/*    render={({ field }) => (*/}
-            {/*      <FormItem>*/}
-            {/*        <FormLabel>*/}
-            {/*          DD Date<span className="text-red-500">*</span>*/}
-            {/*        </FormLabel>*/}
-            {/*        <FormControl>*/}
-            {/*          <Input type={'date'} placeholder="fee" {...field} />*/}
-            {/*        </FormControl>*/}
-            {/*        <FormMessage />*/}
-            {/*      </FormItem>*/}
-            {/*    )}*/}
-            {/*  />*/}
-            {/*)}*/}
-            {/*{showDDFields && (*/}
-            {/*  <FormField*/}
-            {/*    control={form.control}*/}
-            {/*    name="ddBank"*/}
-            {/*    render={({ field }) => (*/}
-            {/*      <FormItem>*/}
-            {/*        <FormLabel>*/}
-            {/*          DD Bank<span className="text-red-500">*</span>*/}
-            {/*        </FormLabel>*/}
-            {/*        <FormControl>*/}
-            {/*          <Input placeholder="fee" {...field} />*/}
-            {/*        </FormControl>*/}
-            {/*        <FormMessage />*/}
-            {/*      </FormItem>*/}
-            {/*    )}*/}
-            {/*  />*/}
-            {/*)}*/}
+            {showDDFields && (
+              <FormField
+                control={form.control}
+                name="ddDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      DD Date<span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input type={'date'} placeholder="fee" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {showDDFields && (
+              <FormField
+                control={form.control}
+                name="ddBank"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      DD Bank<span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="fee" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <Button variant={'trident'} size={'lg'} type="submit">
-              Submit
+              Confirm
             </Button>
           </form>
         </Form>
