@@ -350,12 +350,12 @@ export const handleDuesFeePayment = async (formData: any) => {
       return;
     }
     console.log('Data in NSRALLOTMENTID function', data);
-    const request = axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/dues-payment/${regdNo}`,
+    const request = await axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
       data,
     );
-    console.log('Response: \n', (await request).data);
-    return (await request).status;
+    console.log('Response: \n', request.data);
+    return request.status;
   } catch (error) {
     console.log(error);
   }
@@ -375,3 +375,7 @@ export const handleDuesFeePayment = async (formData: any) => {
 //       console.error(e);
 //     }
 // }
+
+/*
+other fees - dropdown menu of particulars from backend - /accounts-section/get-other-fees
+* */
