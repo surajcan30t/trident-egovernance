@@ -28,9 +28,9 @@ const FormSchema = z
     regdNo: z.string().min(2, {
       message: 'Username must be at least 2 characters.',
     }),
-    // processingMode: z.enum(['AUTO', 'COURSEFEEFIRST', 'OPTIONALFEEFIRST'], {
-    //   required_error: 'Must choose payment processing mode',
-    // }),
+    feeProcessingMode: z.enum(['AUTO', 'COURSEFEES', 'OPTIONALFEES'], {
+      required_error: 'Must choose payment processing mode',
+    }),
     collectedFee: z.string({
       required_error: 'Must enter collected fee',
     }),
@@ -86,7 +86,6 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      //acount-section/payment/dues
       const response = await handleDuesFeePayment(data)
       if (response !== 200) {
         toast({
@@ -95,12 +94,12 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
           description: 'Something went wrong',
         });
       } else {
+        // router.refresh()
         toast({
           variant: 'success',
           title: 'Success',
           description: 'Form submitted successfully',
         });
-        router.refresh()
       }
     } catch (e) {
       console.log(e);
@@ -110,7 +109,8 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
 
   return (
     <>
-      <div className="">
+      <div className="mb-8 shadow-xl border rounded-lg p-2">
+        <h1 className='font-extrabold text-lg'>Fees Payment</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             <FormField
@@ -134,36 +134,36 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
               )}
             />
             {/*Processing mode*/}
-            {/*<FormField*/}
-            {/*  control={form.control}*/}
-            {/*  name="processingMode"*/}
-            {/*  render={({ field }) => (*/}
-            {/*    <FormItem>*/}
-            {/*      <FormLabel>Payment Processing Mode</FormLabel>*/}
-            {/*      <span className="text-red-500">*</span>*/}
-            {/*      <Select*/}
-            {/*        onValueChange={field.onChange}*/}
-            {/*        defaultValue={field.value}*/}
-            {/*      >*/}
-            {/*        <FormControl>*/}
-            {/*          <SelectTrigger>*/}
-            {/*            <SelectValue placeholder="Select payment processing mode" />*/}
-            {/*          </SelectTrigger>*/}
-            {/*        </FormControl>*/}
-            {/*        <SelectContent>*/}
-            {/*          <SelectItem value="AUTO">Auto</SelectItem>*/}
-            {/*          <SelectItem value="COURSEFEEFIRST">*/}
-            {/*            Course fee first*/}
-            {/*          </SelectItem>*/}
-            {/*          <SelectItem value="OPTIONALFEEFIRST">*/}
-            {/*            Optional fee first*/}
-            {/*          </SelectItem>*/}
-            {/*        </SelectContent>*/}
-            {/*      </Select>*/}
-            {/*      <FormMessage />*/}
-            {/*    </FormItem>*/}
-            {/*  )}*/}
-            {/*/>*/}
+            <FormField
+              control={form.control}
+              name="feeProcessingMode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment Processing Mode</FormLabel>
+                  <span className="text-red-500">*</span>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select payment processing mode" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="AUTO">Auto</SelectItem>
+                      <SelectItem value="COURSEFEES">
+                        Course fee first
+                      </SelectItem>
+                      <SelectItem value="OPTIONALFEES">
+                        Optional fee first
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="collectedFee"

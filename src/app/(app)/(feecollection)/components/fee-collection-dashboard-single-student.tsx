@@ -10,7 +10,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { useSearchParams } from 'next/navigation';
 import { FeeCollectionForm } from '@/app/(app)/(feecollection)/components/FeeCollectionForm';
-import { ReceiptText } from 'lucide-react';
+import { PiFilePdfFill } from 'react-icons/pi';
+import useSWR, { mutate } from 'swr';
+import { OtherFeeCollectionForm } from '@/app/(app)/(feecollection)/components/OtherFeeCollectionForm';
 
 interface StudentData {
   regdNo?: string;
@@ -97,68 +99,106 @@ const FeeCollectionTable = ({ regdNo }: { regdNo: string | null }) => {
   );
 };
 
+const fetchDuesDetails = async (regdNo: string) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/getDuesDetails/${regdNo}`,
+    {
+      cache: 'no-cache',
+    },
+  );
+  return response.json();
+};
+
+const fetchCollectionDetails = async (regdNo: string) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection-history/${regdNo}`,
+    {
+      cache: 'no-cache',
+    },
+  );
+  return response.json();
+};
+
 const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
-  const [duesData, setDuesData] = useState<any>({});
-  const [collectionData, setCollectionData] = useState<any>({});
+  // const [duesData, setDuesData] = useState<any>({});
+  // const [collectionData, setCollectionData] = useState<any>({});
   const [dataAvailable, setDataAvailable] = useState<boolean>(false);
-  const [defaultTab, setDefaultTab] = useState<string>('');
-  useEffect(() => {
-    const getDuesDetails = async (regdNo: string | null) => {
-      setDefaultTab('');
-      setDataAvailable(false);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/getDuesDetails/${regdNo}`,
-          {
-            cache: 'no-cache',
-          },
-        );
-        const result = await response.json();
-        setDuesData(result);
-        const years = Object.keys(result);
-        const currentYear = years[years.length - 1]; // Get the most recent year
-        const semesters = Object.keys(result[currentYear]);
-        const latestSemester = semesters[semesters.length - 1];
-        setDefaultTab(`${currentYear}-${latestSemester}`);
-        setDataAvailable(true);
-      } catch (e) {
-        console.error(e);
-      }
-    };
+  // const [defaultTab, setDefaultTab] = useState<string>('');
+  // const [showModal, setShowModal] = useState<boolean>(false);
+  // useEffect(() => {
+  //   const getDuesDetails = async (regdNo: string | null) => {
+  //     setDefaultTab('');
+  //     setDataAvailable(false);
+  //     try {
+  //       const response = await fetch(
+  //         `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/getDuesDetails/${regdNo}`,
+  //         {
+  //           cache: 'no-cache',
+  //         },
+  //       );
+  //       const result = await response.json();
+  //       setDuesData(result);
+  //       const years = Object.keys(result);
+  //       const currentYear = years[years.length - 1]; // Get the most recent year
+  //       const semesters = Object.keys(result[currentYear]);
+  //       const latestSemester = semesters[semesters.length - 1];
+  //       setDefaultTab(`${currentYear}-${latestSemester}`);
+  //       setDataAvailable(true);
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //   };
+  //
+  //   const getCollectionDetails = async (regdNo: string | null) => {
+  //     try {
+  //       const response = await fetch(
+  //         `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection-history/${regdNo}`,
+  //         {
+  //           cache: 'no-cache',
+  //         },
+  //       );
+  //       const result = await response.json();
+  //       console.log('collection details\n', result);
+  //       setCollectionData(result);
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //   };
+  //
+  //   if (regdNo) {
+  //     getDuesDetails(regdNo);
+  //     getCollectionDetails(regdNo);
+  //   }
+  // }, [regdNo]);
 
-    const getCollectionDetails = async (regdNo: string | null) => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection-history/${regdNo}`,
-          {
-            cache: 'no-cache',
-          },
-        );
-        const result = await response.json();
-        console.log('collection details\n', result);
-        setCollectionData(result);
-      } catch (e) {
-        console.error(e);
-      }
-    };
+  const openModalInNewTab = () => {
+    // Open a new tab with the specified URL
+    window.open(`studentfeecollection/mr?registrationNo=${regdNo}`, '_blank');
+  };
+  const { data: duesData, error: duesError } = useSWR(
+    regdNo ? `/getDuesDetails/${regdNo}` : null,
+    () => fetchDuesDetails(regdNo!),
+  );
+  const { data: collectionData, error: collectionError } = useSWR(
+    regdNo ? `/get-fee-collection-history/${regdNo}` : null,
+    () => fetchCollectionDetails(regdNo!),
+  );
 
-    if (regdNo) {
-      getDuesDetails(regdNo);
-      getCollectionDetails(regdNo);
-    }
-  }, [regdNo]);
+  if (duesError || collectionError) {
+    return <div>Error fetching data</div>;
+  }
 
   let grandTotalAmountDue = 0;
   let grandTotalAmountPaid = 0;
   let grandTotalAmountPaidToJee = 0;
   let grandTotalBalanceAmount = 0;
-
-  const years = Object.keys(duesData);
+  console.log('Dues Data', duesData);
+  const years = duesData ? Object.keys(duesData) : [];
   const defaultYear = years[years.length - 1];
   return (
     <>
       <div className="w-[51vw] p-2 rounded-lg shadow-lg border">
-        {dataAvailable && (
+        {duesData && (
           <Tabs defaultValue={defaultYear} className="w-full">
             <TabsList className="grid w-full grid-cols-8 gap-x-1 flex justify-center">
               {years &&
@@ -222,19 +262,19 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                 {duesData[year][semester].map(
                                   (item: any, index: number) => (
                                     <tr key={index}>
-                                      <td className="border">
+                                      <td className="border p-1">
                                         {item.description}
                                       </td>
-                                      <td className="border">
+                                      <td className="border p-1">
                                         {item.amountDue.toFixed(2)}
                                       </td>
-                                      <td className="border">
+                                      <td className="border p-1">
                                         {item.amountPaid.toFixed(2)}
                                       </td>
-                                      <td className="border">
+                                      <td className="border p-1">
                                         {item.amountPaidToJee.toFixed(2)}
                                       </td>
-                                      <td className="border">
+                                      <td className="border p-1">
                                         {item.balanceAmount.toFixed(2)}
                                       </td>
                                     </tr>
@@ -298,7 +338,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                       <h2 className="text-lg font-semibold">
                         Fee Collection Details
                       </h2>
-                      {collectionData[`year${year}`] ? (
+                      {collectionData ? (
                         <Card key={year} className="mb-4">
                           <CardHeader>
                             <CardDescription>
@@ -320,36 +360,51 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                 </tr>
                               </thead>
                               <tbody>
-                                {collectionData[`year${year}`].map(
-                                  (entry: any, index: number) => (
-                                    <tr key={index} className="text-center">
-                                      <td className="border p2">
-                                        {entry.mrNo}
-                                      </td>
-                                      <td className="border p2">
-                                        {entry.paymentDate}
-                                      </td>
-                                      <td className="border p2">
-                                        {entry.paymentMode}
-                                      </td>
-                                      <td className="border p2">
-                                        {entry.collectedFee.toFixed(2)}
-                                      </td>
-                                      <td className="border p2">
-                                        {entry.ddNo ?? 'N/A'}
-                                      </td>
-                                      <td className="border p2">
-                                        {entry.ddDate ?? 'N/A'}
-                                      </td>
-                                      <td className="border p2">
-                                        <Button className='bg-yellow-400 py-0' size={'default'}><ReceiptText /></Button>
-                                      </td>
-                                      <td className="border p2">
-                                        {entry.ddDate ?? 'N/A'}
-                                      </td>
-                                    </tr>
-                                  ),
-                                )}
+                                {collectionData[`year${year}`] &&
+                                  collectionData[`year${year}`].map(
+                                    (entry: any, index: number) => (
+                                      console.log(
+                                        'collection details',
+                                        collectionData,
+                                      ),
+                                      (
+                                        <tr key={index} className="text-center">
+                                          <td className="border p2">
+                                            {entry.mrNo}
+                                          </td>
+                                          <td className="border p2">
+                                            {entry.paymentDate}
+                                          </td>
+                                          <td className="border p2">
+                                            {entry.paymentMode}
+                                          </td>
+                                          <td className="border p2">
+                                            {entry.collectedFee.toFixed(2)}
+                                          </td>
+                                          <td className="border p2">
+                                            {entry.ddNo ?? 'N/A'}
+                                          </td>
+                                          <td className="border p2">
+                                            {entry.ddDate ?? 'N/A'}
+                                          </td>
+                                          <td className="border p2">
+                                            <Button
+                                              className="bg-yellow-400 py-0"
+                                              size={'default'}
+                                              onClick={() => {
+                                                openModalInNewTab();
+                                              }}
+                                            >
+                                              <PiFilePdfFill />
+                                            </Button>
+                                          </td>
+                                          <td className="border p2">
+                                            {entry.ddDate ?? 'N/A'}
+                                          </td>
+                                        </tr>
+                                      )
+                                    ),
+                                  )}
                               </tbody>
                             </table>
                           </CardContent>
@@ -366,6 +421,13 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
           </Tabs>
         )}
       </div>
+      {/*{*/}
+      {/*  showModal && (*/}
+      {/*    <div>*/}
+      {/*      <ExportPdf />*/}
+      {/*    </div>*/}
+      {/*  )*/}
+      {/*}*/}
     </>
   );
 };
@@ -375,13 +437,15 @@ const FeeCollectionDashboardSingleStudent = () => {
   const param = searchParams.get('registrationNo');
   return (
     <>
-      <div className="w-full flex flex-row gap-x-2">
+      <div className="w-full flex flex-row gap-x-0">
         <div className="w-2/3 flex flex-col space-y-6">
           <FeeDuesDetailsTable regdNo={param} />
-          {/*<FeeCollectionTable regdNo={param} />*/}
         </div>
-        <div className="w-1/3 h-fit rounded-lg shadow-xl p-1 py-3 border">
-          {param && <FeeCollectionForm regdNo={param} />}
+        <div className="w-1/3 h-fit rounded-lg px-3 py-3 border">
+          <div className="w-full flex flex-col space-y-20">
+            {param && <FeeCollectionForm regdNo={param} />}
+            {param && <OtherFeeCollectionForm regdNo={param} />}
+          </div>
         </div>
       </div>
     </>
