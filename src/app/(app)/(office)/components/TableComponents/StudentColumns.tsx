@@ -41,6 +41,9 @@ const branches = [
   {
     value: 'CSAIML',
   },
+  {
+    value: 'MECH',
+  },
 ];
 
 const years = [
