@@ -1,15 +1,14 @@
 import { Metadata } from 'next';
 
 import Navbar from '@/components/Navbar';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import SideBarLayout from './components/SideBarLayout';
 import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
+import { AppSidebar } from '@/app/(app)/components/SideBarMenu';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 const data = {
-  description:
-    'Papermark is an open-source document infrastructure for sharing and collaboration. Free alternative to Docsend with custom domain. Manage secure document sharing with real-time analytics.',
-  title: 'Papermark | The Open Source DocSend Alternative',
+  description: '',
+  title: '',
   url: '/',
 };
 
@@ -46,9 +45,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <>
       <div className="flex flex-row">
         <aside className="sticky top-0 z-30 h-[calc(100vh-0rem)] w-[250px] flex-shrink-0">
-          {/* <ScrollArea className="h-full">
-            <SideBarLayout />
-          </ScrollArea> */}
+            <SidebarProvider>
+              <AppSidebar />
+            </SidebarProvider>
         </aside>
         <div className="flex flex-col w-full">
           {/* Sidebar */}
