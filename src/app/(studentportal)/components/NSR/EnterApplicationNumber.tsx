@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import PulseLoader from 'react-spinners/PulseLoader'
+import PulseLoader from 'react-spinners/PulseLoader';
 import {
   Form,
   FormControl,
@@ -16,7 +16,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { newStudentLogin } from '../../nsractions/nsractions';
+import {
+  multiFinalSubmit,
+  multiStudentRegistration,
+  newStudentLogin,
+} from '../../nsractions/nsractions';
 
 const FormSchema = z.object({
   applicationNo: z.string().min(2, {
@@ -68,7 +72,6 @@ const EnterApplicationNumber = () => {
           default:
             break;
         }
-
       }
       setError(response?.message || 'An error occurred during login');
     } catch (error: any) {
@@ -77,6 +80,12 @@ const EnterApplicationNumber = () => {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function multiReg(data: number) {
+    const response = await multiFinalSubmit();
+    // const response = await multiStudentRegistration();
+    console.log(response);
 
   }
 
@@ -118,15 +127,23 @@ const EnterApplicationNumber = () => {
                 </FormItem>
               )}
             />
-            <Button size={'lg'} variant="trident" type="submit" >
-              {loading ? (<PulseLoader
-                color="#ffffff"
-                size={5}
-              />) : 'Submit'}
+            <Button size={'lg'} variant="trident" type="submit">
+              {loading ? <PulseLoader color="#ffffff" size={5} /> : 'Submit'}
             </Button>
           </form>
         </Form>
         {error && <p className="text-red-600 font-semibold">{error}</p>}
+      </div>
+      <div>
+        <h1>Multi Student Registration</h1>
+        <button
+          className="border"
+          onClick={() => {
+            multiReg(1);
+          }}
+        >
+          Multi Register
+        </button>
       </div>
     </>
   );

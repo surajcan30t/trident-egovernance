@@ -55,6 +55,7 @@ const initialStudentData = async (formData: any) => {
     docType: string;
     uploadDate: Date | null;
   }
+
   interface Student {
     jeeApplicationNo: string | null;
     regdNo: string | null;
@@ -124,6 +125,7 @@ const initialStudentData = async (formData: any) => {
     studentDocsData: Document[];
     step: number | null;
   }
+
   try {
     const NSR_token = cookies().get('NSR-Authorization');
     const response: AxiosResponse<Student> = await axios.get(
@@ -531,11 +533,13 @@ export const upLoadToS3 = async (inputIndex: Number, userFile: File) => {
 
 export const saveDocumentToDB = async (ind: Number) => {
   const applicationNo = cookies().get('applicationNo')?.value as string;
+
   interface Document {
     docLink: String;
     docType: string | null;
     uploadDate: Date | null;
   }
+
   // const applicationNo = 'jee789';
   let documents: Document[] = [];
   for (let index = 0; index < 5; index++) {
@@ -587,5 +591,200 @@ export const nsrFinalSubmit = async () => {
     return request.status;
   } catch (error) {
     console.log(error);
+  }
+};
+
+interface Document {
+  docLink: string;
+  docType: string;
+  uploadDate: Date | null;
+}
+
+interface Student {
+  jeeApplicationNo: string | null;
+  regdNo: string | null;
+  ojeeCouncellingFeePaid: string | null; // It was BooleanString in Java but used string due to mismatch in given example
+  studentName: string;
+  gender: string | null; // Gender enum type in Java
+  branchCode: string | null;
+  admissionYear: string | null;
+  degreeYop: number | null; // Integer in Java
+  phNo: string; // Phone number as string to handle leading zeroes
+  email: string;
+  dob: string | null;
+  hostelier: string | null; // BooleanString type in Java
+  hostelOption: string | null; // BooleanString type in Java
+  hostelChoice: string | null; // Assuming this as a string
+  transportAvailed: string | null; // BooleanString type in Java
+  status: string | null;
+  batchId: string | null;
+  currentYear: number | null; // Integer in Java
+  aadhaarNo: number; // Long in Java
+  indortrng: string | null; // BooleanString type in Java
+  plpoolm: string | null; // BooleanString type in Java
+  cfPayMode: string | null; // CfPaymentMode type in Java, using string for simplicity
+  religion: string | null; // Enum type in Java, keeping string for simplicity
+  rank: number | null; // Long in Java
+  rankType: string | null; // RankType in Java, assuming string here
+  course: string; // Enum in Java, keeping string
+  tfw: string | null; // Enum in Java
+  admissionType: string | null; // Enum in Java
+  studentType: string | null; // Enum in Java
+
+  tenthPercentage: number | null;
+  tenthYOP: number | null;
+  twelvthPercentage: number | null;
+  twelvthYOP: number | null;
+  diplomaPercentage: number | null;
+  diplomaYOP: number | null;
+  graduationPercentage: number | null;
+  graduationYOP: number | null;
+
+  fname: string; // Father's name
+  mname: string; // Mother's name
+  lgName: string; // Legal guardian's name
+  permanentAddress: string;
+  permanentCity: string;
+  permanentState: string;
+  permanentPincode: number; // Number type in Java
+  parentContact: string; // Phone numbers as strings
+  parentEmailId: string;
+  presentAddress: string | null;
+  district: string;
+
+  ojeeCounsellingFeePaid: string | null;
+  ojeeRollNo: string | null;
+  ojeeRank: string | null;
+  aieeeRank: string | null;
+  caste: string;
+  categoryCode: string | null;
+  categoryRank: number | null;
+  allotmentId: string;
+
+  transportOpted: string | null; // BooleanString in Java
+  pickUpPoint: string | null;
+  studentDocsData: Document[];
+}
+
+function generateRandomStudentData(index: number): Student {
+  const randomDate = (): Date =>
+    new Date(new Date().getTime() - Math.random() * 1e12);
+  const formatDate = (date: Date): string => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+  const randomString = (length: number): string =>
+    Math.random()
+      .toString(36)
+      .substring(2, 2 + length);
+  const randomNumber = (min: number, max: number): number =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+  const hostelOption = Math.random() > 0.5 ? 'YES' : 'NO';
+
+  return {
+    jeeApplicationNo: `REGD${index}${index}${index}${index}`,
+    regdNo: `REGD${index}${index}${index}${index}`,
+    ojeeCouncellingFeePaid: Math.random() > 0.5 ? 'YES' : 'NO',
+    studentName: `Bulk Student${index}`,
+    gender: Math.random() > 0.5 ? 'MALE' : 'FEMALE',
+    branchCode:
+      Math.random() > 0.5
+        ? 'CSE'
+        : Math.random() > 0.5
+          ? 'CST'
+          : Math.random() > 0.5
+            ? 'CSDS'
+            : 'MECH',
+    admissionYear: '2024',
+    degreeYop: randomNumber(2027, 2028),
+    phNo: `98765${randomNumber(10000, 99999)}`,
+    email: `student${index}@example.com`,
+    dob: randomDate().toISOString().split('T')[0],
+    hostelier: 'NO',
+    hostelOption,
+    hostelChoice: hostelOption === 'YES' ? 'ONCAMPUS' : 'NONE',
+    transportAvailed: Math.random() > 0.5 ? 'YES' : 'NO',
+    status: 'CONTINUING',
+    batchId: null,
+    currentYear: randomNumber(1, 4),
+    aadhaarNo: randomNumber(100000000000, 999999999999),
+    indortrng: Math.random() > 0.5 ? 'YES' : 'NO',
+    plpoolm: Math.random() > 0.5 ? 'YES' : 'NO',
+    cfPayMode: Math.random() > 0.5 ? 'YEARLY' : 'SEMESTER',
+    religion: 'HINDU',
+    rank: randomNumber(1, 1000000),
+    rankType: 'JEE',
+    course: 'BTECH',
+    tfw: Math.random() > 0.5 ? 'TFW' : 'NTFW',
+    admissionType: 'JEEMAIN',
+    studentType: 'REGULAR',
+    tenthPercentage: randomNumber(60, 100),
+    tenthYOP: randomNumber(2015, 2020),
+    twelvthPercentage: randomNumber(60, 100),
+    twelvthYOP: randomNumber(2017, 2022),
+    diplomaPercentage: randomNumber(60, 100),
+    diplomaYOP: randomNumber(2017, 2022),
+    graduationPercentage: randomNumber(60, 100),
+    graduationYOP: randomNumber(2019, 2023),
+    fname: `Father${index}`,
+    mname: `Mother${index}`,
+    lgName: `Guardian${index}`,
+    permanentAddress: `Address${index}`,
+    permanentCity: `City${randomNumber(1, 50)}`,
+    permanentState: `State${randomNumber(1, 30)}`,
+    permanentPincode: randomNumber(100000, 999999),
+    parentContact: `87654${randomNumber(10000, 99999)}`,
+    parentEmailId: `parent${index}@example.com`,
+    presentAddress: null,
+    district: `District${randomNumber(1, 50)}`,
+    ojeeCounsellingFeePaid: 'YES',
+    ojeeRollNo: null,
+    ojeeRank: null,
+    aieeeRank: String(randomNumber(1, 1000)),
+    caste: 'GENERAL',
+    categoryCode: null,
+    categoryRank: null,
+    allotmentId: `Allot${index}`,
+    transportOpted: Math.random() > 0.5 ? 'YES' : 'NO',
+    pickUpPoint: Math.random() > 0.5 ? `Route ${randomNumber(1, 30)}` : null,
+    studentDocsData: Array.from({ length: 3 }, () => ({
+      docLink: `https://images.unsplash.com/photo-1633526543814-9718c8922b7a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fGRvY3VtZW50fGVufDB8fDB8fHwy`,
+      docType: '10thCertificate',
+      uploadDate: randomDate(),
+    })),
+  };
+}
+
+export const multiStudentRegistration = async () => {
+  const students: Student[] = Array.from({ length: 50 }, (_, index) =>
+    generateRandomStudentData(index + 1),
+  );
+  console.log(students);
+  for (const student of students) {
+    try {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/post`,
+        student,
+      );
+      console.log(response.status);
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  }
+};
+
+export const multiFinalSubmit = async () => {
+  try {
+    for (let i = 1; i <= 50; i++) {
+      const regdNum = `REGD${i}${i}${i}${i}`;
+      const request = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent/${regdNum}`,
+      );
+      console.log('request', request.status);
+    }
+  } catch (error: any) {
+    console.log(error.response.data);
   }
 };
