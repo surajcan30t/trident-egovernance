@@ -348,14 +348,38 @@ export const handleDuesFeePayment = async (formData: any) => {
     if (!data) {
       console.log('No initial data found.');
       return;
+    } else {
+      console.log('Data in NSRALLOTMENTID function', data);
+      try {
+      const request = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
+        data,
+      );
+      console.log('Response: \n', request.data);
+      return request.status;
+      }cat
     }
-    console.log('Data in NSRALLOTMENTID function', data);
-    const request = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
-      data,
-    );
-    console.log('Response: \n', request.data);
-    return request.status;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const handleOtherFeesPayment = async (formData: any) => {
+  try {
+    const data = formData;
+    const regdNo = formData.regdNo;
+    console.log('Data in OTHERFEESPAYMENT ', data);
+    // if (!data) {
+    //   console.log('No initial data found.');
+    //   return;
+    // }
+    // console.log('Data in NSRALLOTMENTID function', data);
+    // const request = await axios.post(
+    //   `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
+    //   data,
+    // );
+    // console.log('Response: \n', request.data);
+    // return request.status;
   } catch (error) {
     console.log(error);
   }
