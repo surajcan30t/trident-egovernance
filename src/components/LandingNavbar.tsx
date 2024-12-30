@@ -11,9 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { Button } from './ui/button';
-import { CircleX, User2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import {
   Sheet,
   SheetClose,
@@ -24,7 +21,6 @@ import {
 } from './ui/sheet';
 import User from './User';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import Link from 'next/link';
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -32,14 +28,14 @@ const Navbar = () => {
   if (session) {
     return (
       <div className="sticky top-0 z-50">
-        <div className="mx-auto flex h-14 w-full items-center justify-center bg-white/0 backdrop-blur-lg">
-          <div className="mx-auto flex w-full max-w-7xl items-center justify-between self-center px-4 md:px-8">
-            <div className="w-full rounded-b-sm text-white font-bold text-xl flex items-center px-14">
+        <div className="mx-auto flex h-14 w-full  items-center justify-center bg-white/0 backdrop-blur-lg">
+          <div className="w-full md:max-w-7xl rounded-b-sm text-white font-bold text-xl flex items-center px-5 md:px-14">
+            <div className="w-full flex flex-row justify-between items-center">
               <div className="w-full flex justify-between items-center">
                 {/* Mobile Logo */}
-                {/* <div className='w-auto md:hidden'>
-								<Image src="/tgi.png" alt="logo" width={80} height={80} />
-							</div> */}
+                <div className="w-auto md:hidden">
+                  <Image src="/tgi.png" alt="logo" width={80} height={80} />
+                </div>
 
                 {/* Desktop Logo */}
                 <div className="hidden md:block">
@@ -53,7 +49,7 @@ const Navbar = () => {
 
                 {/* Avatar */}
                 <div className="w-auto flex items-center gap-2">
-                  <span className="text-base text-slate-200">
+                  <span className="hidden md:block text-base text-slate-200">
                     Hey! &#128075; {session.user.name} {''}
                   </span>
                   <DropdownMenu>
@@ -79,7 +75,10 @@ const Navbar = () => {
               </div>
             </div>
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-              <SheetContent side="right" className="bg-slate-500 text-white">
+              <SheetContent
+                side="right"
+                className="bg-slate-500 text-white h-fit"
+              >
                 <SheetHeader>
                   <SheetTitle className="text-white">User profile</SheetTitle>
                 </SheetHeader>
@@ -92,14 +91,14 @@ const Navbar = () => {
     );
   }
   return (
-  // <div className="top-0 z-50">
-  // 	<div className="h-14 z-50 top-0 bg-[#ffe5ca4e] backdrop-saturate-100 backdrop-blur-[6px] shadow flex justify-around md:justify-around items-center">
-  // 		<div className="w-full rounded-b-sm text-white font-bold text-xl flex items-center px-14">
-  // 			<div className='w-full flex justify-between items-center'>
-  // 				{/* Mobile Logo */}
-  // 				{/* <div className='w-auto md:hidden'>
-  // 					<Image src="/tgi.png" alt="logo" width={80} height={80} />
-  // 				</div> */}
+    // <div className="top-0 z-50">
+    // 	<div className="h-14 z-50 top-0 bg-[#ffe5ca4e] backdrop-saturate-100 backdrop-blur-[6px] shadow flex justify-around md:justify-around items-center">
+    // 		<div className="w-full rounded-b-sm text-white font-bold text-xl flex items-center px-14">
+    // 			<div className='w-full flex justify-between items-center'>
+    // 				{/* Mobile Logo */}
+    // 				{/* <div className='w-auto md:hidden'>
+    // 					<Image src="/tgi.png" alt="logo" width={80} height={80} />
+    // 				</div> */}
 
     // 				{/* Desktop Logo */}
     // 				<div className='hidden md:block'>
@@ -121,9 +120,9 @@ const Navbar = () => {
     // </div>
     <div className="sticky top-0 z-50">
       <div className="mx-auto flex h-14 w-full items-center justify-center bg-white/0 backdrop-blur-lg">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between self-center px-4 md:px-8">
-          <div className="w-full rounded-b-sm text-white font-bold text-xl flex items-center px-14">
-            <div className="w-full flex justify-between items-center">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between self-center px-1 md:px-8">
+          <div className="w-full rounded-b-sm text-white font-bold text-xl flex items-center md:px-14">
+            <div className="w-full flex justify-between items-center ">
               {/* Mobile Logo */}
               <div className="w-auto md:hidden">
                 <Image src="/tgi.png" alt="logo" width={80} height={80} />
