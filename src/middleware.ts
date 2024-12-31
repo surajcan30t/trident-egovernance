@@ -12,67 +12,95 @@ interface UserType {
 }
 
 interface Token {
+  accessToken: string;
   userType?: UserType; // Optional userType object
 }
-
-let serverRoutesArr: Route[] = [];
-console.log('length of array is :', serverRoutesArr.length);
-async function fetchDynamicRoutes() {
-  if (serverRoutesArr.length === 0) {
-    try {
-      const response = await fetch('http://localhost:8080/api/routes', {
-        cache: 'no-store',
-      });
-      const resp = await response.json();
-      const data = await resp.routes;
-
-      if (data) {
-        serverRoutesArr = data; // Assign the fetched routes
-        console.log('Fetched routes: ', serverRoutesArr);
-      } else {
-        console.error('No routes found in response: ', resp);
-      }
-    } catch (error) {
-      console.error('Error fetching dynamic routes:', error);
-    }
-  }
+interface MenuBlade {
+  redirectUrl: string;
+  allowedRoutes: string[];
 }
+
+// export default withAuth(
+//   async function middleware(req) {
+//     console.log('correct url: ', req.nextUrl.pathname);
+//     const token = req.nextauth.token as Token; // Type assertion to Token interface
+//     console.log('Token:', token);
+//
+//     const userRole = token?.userType?.jobTitle;
+//
+//     // If the user is logged in and requests the home page ('/')
+//     if (userRole && req.nextUrl.pathname === '/') {
+//       const redirectionRoute = serverRoutesArr[0]; // Redirect to the zeroth index route based on the user role
+//       console.log('Redirecting logged-in user to:', redirectionRoute);
+//
+//       // Prevent access to home page and redirect logged-in users to their role-based page
+//       return NextResponse.redirect(new URL(redirectionRoute, req.url));
+//     }
+//
+//     // Role-based redirection if visiting any other page
+//     if (
+//       userRole &&
+//       serverRoutesArr.length > 0 &&
+//       req.nextUrl.pathname.startsWith('/')
+//     ) {
+//       const redirectionRoute = serverRoutesArr[0]; // Redirect to the zeroth index route
+//       console.log('Redirecting to:', redirectionRoute);
+//
+//       // Prevent redirect loop by checking if the user is already on the correct route
+//       if (req.nextUrl.pathname !== redirectionRoute) {
+//         return NextResponse.redirect(new URL(redirectionRoute, req.url));
+//       }
+//     }
+//
+//     // If no valid token or role, allow access to public pages like the home page ('/')
+//     return NextResponse.next();
+//   },
+//   {
+//     callbacks: {
+//       authorized: ({ token }) => {
+//         return !!token; // Allow access if token exists
+//       },
+//     },
+//   },
+// );
 
 export default withAuth(
   async function middleware(req) {
-    await fetchDynamicRoutes(); // Fetch the routes if not already fetched
-    console.log('currect url: ', req.nextUrl.pathname);
-    const token = req.nextauth.token as Token; // Type assertion to Token interface
+    const token = req.nextauth.token; // Extract the token
     console.log('Token:', token);
 
-    const userRole = token?.userType?.jobTitle;
-
-    // If the user is logged in and requests the home page ('/')
-    if (userRole && req.nextUrl.pathname === '/') {
-      const redirectionRoute = serverRoutesArr[0]; // Redirect to the zeroth index route based on the user role
-      console.log('Redirecting logged-in user to:', redirectionRoute);
-
-      // Prevent access to home page and redirect logged-in users to their role-based page
-      return NextResponse.redirect(new URL(redirectionRoute, req.url));
+    // If there's no token, redirect to login
+    if (!token) {
+      console.log('No token found. Redirecting to login.');
+      return NextResponse.redirect(new URL('/', req.url));
     }
 
-    // Role-based redirection if visiting any other page
-    if (
-      userRole &&
-      serverRoutesArr.length > 0 &&
-      req.nextUrl.pathname.startsWith('/')
-    ) {
-      const redirectionRoute = serverRoutesArr[0]; // Redirect to the zeroth index route
-      console.log('Redirecting to:', redirectionRoute);
-
-      // Prevent redirect loop by checking if the user is already on the correct route
-      if (req.nextUrl.pathname !== redirectionRoute) {
-        return NextResponse.redirect(new URL(redirectionRoute, req.url));
-      }
+    // Extract menuBlade from token
+    const menuBlade = token?.menuBlade as MenuBlade | undefined;
+    if (!menuBlade) {
+      console.error('menuBlade not found in token.');
+      return NextResponse.redirect(new URL('/', req.url));
+    }
+    //
+    const { redirectUrl, allowedRoutes } = menuBlade;
+    const requestedPath = req.nextUrl.pathname;
+    if (requestedPath === '/') {
+      console.log(`User accessing base path. Redirecting to ${redirectUrl}.`);
+      return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 
-    // If no valid token or role, allow access to public pages like the home page ('/')
-    return NextResponse.next();
+    // Check if the requested route is allowed
+    // const isRouteAllowed = allowedRoutes.some(
+    //   (route: string) => route === requestedPath,
+    // );
+
+    // if (!isRouteAllowed) {
+    //   console.log(`Route not allowed. Redirecting to ${redirectUrl}.`);
+    //   return NextResponse.redirect(new URL(redirectUrl, req.url));
+    // }
+
+    console.log('Access granted to:', requestedPath);
+    return NextResponse.next(); // Proceed if all checks pass
   },
   {
     callbacks: {
@@ -98,7 +126,7 @@ export default withAuth(
 //   // Check if the current path matches any public route
 //   const isPublic = isPublicRoutes.some(route => {
 //     const regex = new RegExp(`^${route.replace(':path*', '.*')}$`);
-//     return regex.test(pathname);
+//     return regex.testpage(pathname);
 //   });
 
 //   // Fetch the token
@@ -115,8 +143,8 @@ export default withAuth(
 //   if (token) {
 //     switch (token.userType.jobTitle) {
 //       case "job_student":
-//         if (!request.nextUrl.pathname.startsWith("/app")) {
-//           return NextResponse.redirect(new URL("/app", request.url));
+//         if (!request.nextUrl.pathname.startsWith("/dashboard")) {
+//           return NextResponse.redirect(new URL("/dashboard", request.url));
 //         }
 //         break;
 //       case "job_office":
@@ -146,6 +174,9 @@ export default withAuth(
 export const config = {
   matcher: [
     // '/((?!api|_next/static|_next/image|.*\\.png$|favicon.ico|login|studentportal).*)',
-    '/abc',
+    '/student/:path*',
+    '/newstudentregistration',
+    '/office/:path*',
+    // '/feecollection/:path*',
   ],
 };
