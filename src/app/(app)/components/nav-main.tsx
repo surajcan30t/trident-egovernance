@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronRight, type LucideIcon } from "lucide-react"
-
+import * as Icons from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
@@ -18,21 +18,25 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 
+
+type IconName = keyof typeof Icons;
 export function NavMain({
                           items,
                         }: {
   items: {
     title: string
     url: string
-    icon?: LucideIcon
-    isActive?: boolean
-    items?: {
+                            logo?: IconName
+                            // isActive?: boolean
+                            children?: {
       title: string
       url: string
+      logo?: IconName
       isActive?: boolean
-      items?: {
+      children?: {
         title: string
         url: string
+        logo?: IconName
       }[]
     }[]
   }[]
@@ -42,25 +46,26 @@ export function NavMain({
       {/*<SidebarGroupLabel></SidebarGroupLabel>*/}
       <SidebarMenu>
         {items.map((item) =>
-          item.items ? (
+          item.children ? (
             // Render a Collapsible for items with nested items
             <Collapsible
               key={item.title}
               asChild
-              defaultOpen={item.isActive}
+              // defaultOpen={item.isActive}
               className="group/collapsible"
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton tooltip={item.title}>
+                    {item.logo && item.logo}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.items.map((subItem) =>
-                      subItem.items ? (
+                    {item.children.map((subItem) =>
+                      subItem.children ? (
                         // Render a nested Collapsible if subItem has nested items
                         <Collapsible
                           key={subItem.title}
@@ -71,13 +76,14 @@ export function NavMain({
                           <SidebarMenuSubItem>
                             <CollapsibleTrigger asChild>
                               <SidebarMenuSubButton>
+                                {item.logo && item.logo}
                                 <span>{subItem.title}</span>
-                                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/inner-collapsible:rotate-90" />
+                                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/inner-collapsible:rotate-90 text-white" />
                               </SidebarMenuSubButton>
                             </CollapsibleTrigger>
                             <CollapsibleContent>
                               <SidebarMenuSub>
-                                {subItem.items.map((nestedItem) => (
+                                {subItem.children.map((nestedItem) => (
                                   <SidebarMenuSubItem
                                     key={nestedItem.title}
                                   >
@@ -112,6 +118,7 @@ export function NavMain({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
                 <a href={item.url}>
+                    {item.logo && item.logo}
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>

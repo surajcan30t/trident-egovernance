@@ -13,10 +13,13 @@ import {
   ReceiptIndianRupee,
   Settings2,
   SquareTerminal,
+  UserRoundPen,
+  type LucideIcon
 } from 'lucide-react';
 
+import { PiStudentBold } from 'react-icons/pi';
+
 import { NavMain } from '@/app/(app)/components/nav-main';
-import { NavProjects } from '@/app/(app)/components/nav-projects';
 import { TeamSwitcher } from '@/app/(app)/components/team-switcher';
 import {
   Sidebar,
@@ -24,6 +27,41 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
+import * as Icons from 'lucide-react';
+
+
+type IconName = keyof typeof Icons;
+interface MenuItem {
+  title: string;
+  url: string;
+  logo: IconName
+  children?: MenuItem[]; // Optional, no `null`
+}
+
+interface Token {
+  name: string;
+  picture: string | null;
+  sub: string;
+  accessToken: string;
+  menuBlade?: { // Mark menuBlade as optional
+    redirectUrl: string;
+    allowedRoutes: string[];
+    urls: {
+      title: string;
+      url: string;
+      logo: string;
+      children: null
+      | {
+        title: string;
+        url: string;
+        logo: string;
+        children: null;
+      }[];
+    }[];
+  };
+}
 
 // This is sample data.
 const data = {
@@ -34,8 +72,8 @@ const data = {
   },
   teams: [
     {
-      name: 'Fee Collection',
-      logo: ReceiptIndianRupee,
+      name: 'Student',
+      logo: PiStudentBold,
       plan: 'Enterprise',
     },
   ],
@@ -43,16 +81,16 @@ const data = {
     {
       title: 'Orc Warrior Ground',
       url: '#',
-      icon: SquareTerminal,
+      logo: SquareTerminal,
       isActive: true,
-      items: [
+      children: [
         {
           title: 'History',
           url: '#',
-          items: [
+          children: [
             {
-              title: 'Non history',
-              url: '#'
+              title: 'Non history less authenticated person',
+              url: '#',
             },
           ],
         },
@@ -69,7 +107,7 @@ const data = {
     {
       title: 'Models',
       url: '#',
-      icon: Bot,
+      logo: Bot,
       items: [
         {
           title: 'Genesis',
@@ -88,7 +126,7 @@ const data = {
     {
       title: 'Documentation',
       url: '#',
-      icon: BookOpen,
+      logo: BookOpen,
       items: [
         {
           title: 'Introduction',
@@ -111,7 +149,7 @@ const data = {
     {
       title: 'Settings',
       url: '#',
-      icon: Settings2,
+      logo: Settings2,
       items: [
         {
           title: 'General',
@@ -150,17 +188,74 @@ const data = {
     },
   ],
 };
+type IconMap = {
+  [key: string]: React.ComponentType<any>; // All Lucide icons are React components
+};
 
+type DynamicIconProps = {
+  iconName: keyof typeof Icons; // Ensures the iconName matches available icon names in lucide-react
+};
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+  const menuBlade: any = session?.user?.menuBlade;
+  const [navMain, setNavMain] = React.useState<MenuItem[]>([]);
+  const DynamicIcon: React.FC<DynamicIconProps> = ({ iconName }) => {
+    const IconComponent = Icons[iconName] as React.FC<React.SVGProps<SVGSVGElement>>;
+    return IconComponent ? <IconComponent /> : null;
+  };
+  useEffect(() => {
+    if (menuBlade?.urls) {
+      const getNavMain = menuBlade.urls.map(({ title, url, logo, children }: MenuItem) => ({
+        title,
+        url,
+        logo: <DynamicIcon iconName={logo} />,
+        children: children
+          ? children.map(({ title, url, logo, children }: MenuItem) => ({
+            title,
+            url,
+            logo: <DynamicIcon iconName={logo} />,
+            children,
+          }))
+          : null,
+      }));
+      console.log(getNavMain)
+      setNavMain(getNavMain);
+    }
+  }, [menuBlade?.urls]);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        {navMain.length > 0 && <NavMain items={navMain} />}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
   );
 }
+
+// urls: [
+//   {
+//     title: 'Dashboard',
+//     url: '/student/dashboard',
+//     logo: 'logo',
+//     children: [
+//       {
+//         title: 'Dashboard',
+//         url: '/student/dashboard/1',
+//         logo: 'logo',
+//         children: null
+//       }
+//     ]
+//   },
+//   {
+//     title: 'Account Details',
+//     url: '/student/accountdetails',
+//     logo: 'logo',
+//     children: null
+//   }
+// ]
+
+
