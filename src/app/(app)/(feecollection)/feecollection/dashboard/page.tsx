@@ -1,8 +1,7 @@
 import React from 'react';
 import DailyCollection from '../../components/DailyCollection';
-import FeeDataGrid from '@/app/(app)/(feecollection)/components/FeeDataGrid';
-import { RegdNumForm } from '@/app/(app)/(feecollection)/components/RegdNumForm';
-import FeeCollectionDashboardSingleStudent from '@/app/(app)/(feecollection)/components/fee-collection-dashboard-single-student';
+import { RedirectStudentFeeCollectionForm } from '@/app/(app)/(feecollection)/components/RegdNumForm';
+
 
 const page = () => {
   return (
@@ -10,9 +9,12 @@ const page = () => {
       <div className="flex flex-row gap-4">
         <DailyCollection />
       </div>
-      <RegdNumForm />
+      <RedirectStudentFeeCollectionForm />
     </div>
   );
 };
 
 export default page;
+
+// '/account-section/payment/insert-Discount-Data'
+//

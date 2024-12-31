@@ -1,20 +1,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import React from 'react';
 import Link from 'next/link';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
 const collectionDashboardData = async () => {
+  const session = await getServerSession(authOptions);
   const date = new Date();
   const dateString = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
   try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-dashboard-data/${dateString}`,
-      {
-        method: 'GET',
-        cache: 'no-cache',
-      },
-    );
-    const data = await request.json();
-    return data;
+    if(session){
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-dashboard-data/${dateString}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          cache: 'no-cache',
+        },
+      );
+      const data = await request.json();
+      return data;
+    }else return
   } catch (e) {
     console.error(e);
   }

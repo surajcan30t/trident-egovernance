@@ -1,5 +1,6 @@
 'use server';
 import { User, getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { getToken } from 'next-auth/jwt';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -123,14 +124,27 @@ export const handleNewStudent = async (formData: any) => {
   formData.degreeYop = formData.admissionYear + 4;
   formData.status = 'CONTINUING';
   console.log(formData);
-  try {
-    const request = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/post`,
-      formData,
-    );
-    return request.status;
-  } catch (error) {
-    console.log(error);
+  const session = await getServerSession(authOptions);
+  console.log('Server session', session);
+  if (session) {
+    try {
+      const request = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/post`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          // timeout: 5
+        },
+      );
+      return request.status;
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    console.log('no session found');
+    return 401;
   }
 };
 
@@ -170,43 +184,56 @@ interface StudentRecord {
 export const handleBulkStudentUpload = async (
   formData: FormData,
 ): Promise<object | void> => {
+  interface Response {
+    status: number;
+    message: string;
+    description: string;
+  }
   const jsonRecords = formData.get('data');
   console.log('Formdata', formData);
   console.log('Uploading FormData:', jsonRecords);
+  const session = await getServerSession(authOptions);
+  if (session) {
+    try {
+      // Get the CSV file from FormData using the correct key
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/bulk-post`,
+        {
+          method: 'POST',
 
-  try {
-    // Get the CSV file from FormData using the correct key
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/bulk-post`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: jsonRecords,
-      },
-    );
-    const response = await request.json();
-    console.log('Response:', response);
-    interface Response {
-      status: number;
-      message: string;
-      description: string;
-    }
-    if (response.status === 400 || response.status === 422) {
-      console.log('This block executed');
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+
+          body: jsonRecords,
+        },
+      );
+      const response = await request.json();
+      console.log('Response:', response);
+
+      if (response.status === 400 || response.status === 422) {
+        console.log('This block executed');
+        const serverResponse = {
+          status: response.status,
+          message: response.detail,
+          description: response.description,
+        } as Response;
+        return serverResponse;
+      }
       const serverResponse = {
-        status: response.status,
-        message: response.detail,
-        description: response.description,
+        status: 200,
+        message: 'Upload Successful',
       } as Response;
       return serverResponse;
+    } catch (error) {
+      console.error('Error in handleBulkStudentUpload:', error);
     }
+  } else {
     const serverResponse = {
-      status: 200,
-      message: 'Upload Successful',
+      status: 401,
+      message: 'Unauthorized',
     } as Response;
     return serverResponse;
-  } catch (error) {
-    console.error('Error in handleBulkStudentUpload:', error);
-    // throw error; // Re-throw to be handled in the calling function
   }
 };

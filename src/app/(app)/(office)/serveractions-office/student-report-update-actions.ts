@@ -8,28 +8,34 @@ import {
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import axios from 'axios';
 import { string } from 'zod';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
 export const studentDetailsUpdateAction = async (
   formData: StudentOnly,
   table: string,
 ) => {
+  const session = await getServerSession(authOptions);
   const regdno = formData.regdNo;
   console.log('regd no', regdno);
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          method: 'PUT',
+          body: JSON.stringify(formData),
         },
-        method: 'PUT',
-        body: JSON.stringify(formData),
-      },
-    );
-    const result = await response.json();
-    console.log(result);
-    if (result === true) return 200;
-    else return 400;
+      );
+      const result = await response.json();
+      console.log(result);
+      if (result === true) return 200;
+      else return 400;
+    } else return 401;
   } catch (error) {
     console.log(error);
   }
@@ -39,23 +45,27 @@ export const studentPersonalDetailsUpdateAction = async (
   formData: PersonalDetailsOnly,
   table: string,
 ) => {
+  const session = await getServerSession(authOptions);
   const regdno = formData.regdNo;
   console.log('regd no', regdno);
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          method: 'PUT',
+          body: JSON.stringify(formData),
         },
-        method: 'PUT',
-        body: JSON.stringify(formData),
-      },
-    );
-    const result = await response.json();
-    console.log(result);
-    if (result === true) return 200;
-    else return 400;
+      );
+      const result = await response.json();
+      console.log(result);
+      if (result === true) return 200;
+      else return 400;
+    } else return 401;
   } catch (error) {
     console.log(error);
   }
@@ -65,23 +75,27 @@ export const studentAdmissionDetailsUpdateAction = async (
   formData: StudentAdmissionDetailsOnly,
   table: string,
 ) => {
+  const session = await getServerSession(authOptions);
   const regdno = formData.regdNo;
   console.log('regd no', regdno);
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          method: 'PUT',
+          body: JSON.stringify(formData),
         },
-        method: 'PUT',
-        body: JSON.stringify(formData),
-      },
-    );
-    const result = await response.json();
-    console.log(result);
-    if (result === true) return 200;
-    else return 400;
+      );
+      const result = await response.json();
+      console.log(result);
+      if (result === true) return 200;
+      else return 400;
+    } else return 401;
   } catch (error) {
     console.log(error);
   }
@@ -91,23 +105,27 @@ export const studentCareerDetailsUpdateAction = async (
   formData: CareerOnly,
   table: string,
 ) => {
+  const session = await getServerSession(authOptions);
   const regdno = formData.regdNo;
   console.log('regd no', regdno);
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${regdno}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          method: 'PUT',
+          body: JSON.stringify(formData),
         },
-        method: 'PUT',
-        body: JSON.stringify(formData),
-      },
-    );
-    const result = await response.json();
-    console.log(result);
-    if (result === true) return 200;
-    else return 400;
+      );
+      const result = await response.json();
+      console.log(result);
+      if (result === true) return 200;
+      else return 400;
+    } else return 401;
   } catch (error) {
     console.log(error);
     return 500;
@@ -399,6 +417,7 @@ export const studentDocsUpdateForm = async (
   registrationNo: string,
   table: string,
 ): Promise<DocUpdateResponse> => {
+  const session = await getServerSession(authOptions);
   interface Document {
     docId: number | null;
     docLink: string;
@@ -426,23 +445,26 @@ export const studentDocsUpdateForm = async (
     return { status: 400, message: 'No documents found' };
   }
   try {
-    const response = await axios.put(
-      `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${registrationNo}`,
-      documents,
-      {
-        headers: {
-          'Content-Type': 'application/json',
+    if (session) {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${registrationNo}`,
+        documents,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
         },
-      },
-    );
-    if (response.status === 200) {
-      documents.length = 0;
-      clearUrlMap(registrationNo);
-      console.log('request', response);
-      console.log(globalMap);
+      );
+      if (response.status === 200) {
+        documents.length = 0;
+        clearUrlMap(registrationNo);
+        console.log('request', response);
+        console.log(globalMap);
+        return { status: response.status, message: response.statusText };
+      }
       return { status: response.status, message: response.statusText };
-    }
-    return { status: response.status, message: response.statusText };
+    } else return { status: 401, message: 'Unauthorized' };
   } catch (error: any) {
     console.log(error);
     return { status: 500, message: 'Something went wrong' };

@@ -1,11 +1,16 @@
 import { z } from 'zod';
 
 export const feedetailsSchema = z.object({
-  paymentDate: z.string(),
+  mrNo: z.number(),
+  collectedFee: z.number(),
   paymentMode: z.string(),
-  particulars: z.string(),
-  totalAmount: z.number(),
-  sem: z.number(),
+  // ddNo: z.string(),
+  // ddDate: z.string(),
+  // ddBank: z.string(),
+  paymentDate: z.string(),
+  dueYear: z.number(),
+  sessionId: z.string(),
+  regdNo: z.string(),
 });
 
 export type FeesDetailsSchema = z.infer<typeof feedetailsSchema>;

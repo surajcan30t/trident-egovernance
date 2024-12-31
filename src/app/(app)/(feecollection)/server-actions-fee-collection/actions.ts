@@ -1,6 +1,9 @@
 'use server';
 import { z } from 'zod';
 import axios from 'axios';
+import { description } from '@/app/(app)/(student)/components/StudentAttendance';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
 let financialSession: string | null = null;
 
@@ -13,21 +16,27 @@ export const getSessionFromUser = async (sessionId: string) => {
 };
 
 export const fetchFeesDetailsBySession = async () => {
+  const session = await getServerSession(authOptions);
   const today = new Date();
   const defaultSession = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-  const session: string = financialSession || defaultSession;
-  console.log('session', session);
+  const sessionId: string = financialSession || defaultSession;
+  console.log('session', sessionId);
   try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection/${session}`,
-      {
-        method: 'GET',
-        cache: 'no-cache',
-      },
-    );
-    const response = await request.json();
-
-    return response;
+    if (session) {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection/${sessionId}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          cache: 'no-cache',
+        },
+      );
+      const response = await request.json();
+      console.log('response', response);
+      return response;
+    } else return;
   } catch (error) {
     console.error('Error', error);
     return;
@@ -40,16 +49,22 @@ type DistinctValues = {
 export const getOptionalValues = async (): Promise<
   DistinctValues | undefined
 > => {
+  const session = await getServerSession(authOptions);
   try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-list-of-headers`,
-      {
-        method: 'GET',
-        cache: 'no-cache',
-      },
-    );
-    const response = await request.json();
-    return response;
+    if (session) {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-list-of-headers`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          cache: 'no-cache',
+        },
+      );
+      const response = await request.json();
+      return response;
+    } else return;
   } catch (e) {
     console.error(e);
   }
@@ -325,16 +340,26 @@ type FeeCollectionSingleStudentDetails = {
 export const feeCollectionSingleStudentDetails = async (
   registrationNo: string,
 ): Promise<FeeCollectionSingleStudentDetails> => {
+  const session = await getServerSession(authOptions);
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-basic-student-details/${registrationNo}`,
-    );
-    const json = await response.json();
-    console.log('response', response.status);
-    if (response.status !== 200) {
-      return { status: 400 };
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-basic-student-details/${registrationNo}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+        },
+      );
+      const json = await response.json();
+      console.log('response', response.status);
+      if (response.status !== 200) {
+        return { status: 400 };
+      }
+      return { status: 200 };
+    } else {
+      return { status: 401 };
     }
-    return { status: 200 };
   } catch (e) {
     console.log(e);
     return { status: 500 };
@@ -342,22 +367,36 @@ export const feeCollectionSingleStudentDetails = async (
 };
 
 export const handleDuesFeePayment = async (formData: any) => {
+  const session = await getServerSession(authOptions);
   try {
     const data = formData;
     const regdNo = formData.regdNo;
-    if (!data) {
-      console.log('No initial data found.');
-      return;
+    if (session) {
+      if (!data) {
+        console.log('No initial data found.');
+        return;
+      } else {
+        console.log('Data in NSRALLOTMENTID function', data);
+        try {
+          const request = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
+            data,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${session.user.accessToken}`,
+              },
+            },
+          );
+          console.log('Response: \n', request.data);
+          return request.status;
+        } catch (e) {
+          console.error(e);
+          return;
+        }
+      }
     } else {
-      console.log('Data in NSRALLOTMENTID function', data);
-      try {
-      const request = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
-        data,
-      );
-      console.log('Response: \n', request.data);
-      return request.status;
-      }cat
+      return 401;
     }
   } catch (error) {
     console.log(error);
@@ -365,26 +404,174 @@ export const handleDuesFeePayment = async (formData: any) => {
 };
 
 export const handleOtherFeesPayment = async (formData: any) => {
+  const session = await getServerSession(authOptions);
   try {
-    const data = formData;
+    const body = formData;
     const regdNo = formData.regdNo;
-    console.log('Data in OTHERFEESPAYMENT ', data);
-    // if (!data) {
-    //   console.log('No initial data found.');
-    //   return;
-    // }
-    // console.log('Data in NSRALLOTMENTID function', data);
-    // const request = await axios.post(
-    //   `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
-    //   data,
-    // );
-    // console.log('Response: \n', request.data);
-    // return request.status;
+    const paymentMode = formData.paymentMode;
+    const totalFee = body.dynamicFields.reduce(
+      (acc: number, fee: any) => acc + parseFloat(fee.amount),
+      0,
+    );
+
+    const dynamicFields = body.dynamicFields.map((fee: any, index: number) => ({
+      slNo: index + 1,
+      particulars: fee.description,
+      amount: parseFloat(fee.amount),
+    }));
+
+    const data = {
+      feeCollection: {
+        collectedFee: totalFee,
+        paymentMode: paymentMode,
+      },
+      otherMrDetails: dynamicFields,
+    };
+
+    console.log(data);
+    if (session) {
+      if (!data) {
+        console.log('No initial data found.');
+        return 400;
+      } else {
+        console.log('Data in NSRALLOTMENTID function', data);
+        const request = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/other-fees-payment/${regdNo}`,
+          data,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.user.accessToken}`,
+            },
+          },
+        );
+        console.log('Response: \n', request.data);
+        return request.status;
+      }
+    } else return 401;
   } catch (error) {
     console.log(error);
   }
 };
 
+export const handleUpdateFeePayment = async (formData: any) => {
+  const session = await getServerSession(authOptions);
+  try {
+    if (session) {
+      const data = formData;
+      if (!data) {
+        console.log('No initial data found.');
+        return;
+      } else {
+        console.log('Data in NSRALLOTMENTID function', data);
+        try {
+          const request = await axios.put(
+            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/update-fee-collection`,
+            data,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${session.user.accessToken}`,
+              },
+            },
+          );
+          console.log('Response: \n', request.data);
+          return request.status;
+        } catch (e) {
+          console.error(e);
+          return;
+        }
+      }
+    } else return 401;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const handleUpdateOtherFeePayment = async (formData: any) => {
+  const session = await getServerSession(authOptions);
+  try {
+    if (session) {
+      const body = formData;
+      const paymentMode = formData.paymentMode;
+      const totalFee = body.dynamicFields.reduce(
+        (acc: number, fee: any) => acc + parseFloat(fee.amount),
+        0,
+      );
+
+      const dynamicFields = body.dynamicFields.map(
+        (fee: any, index: number) => ({
+          slNo: index + 1,
+          particulars: fee.description,
+          amount: parseFloat(fee.amount),
+        }),
+      );
+
+      const data = {
+        mrNo: formData.mrNo,
+        collectedFee: totalFee,
+        paymentMode: paymentMode,
+        mrDetails: dynamicFields,
+      };
+      if (!data) {
+        console.log('No initial data found.');
+        return;
+      } else {
+        console.log('Data in handleUpdateOtherFeePayment function', data);
+        try {
+          const request = await axios.put(
+            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/update-fee-collection`,
+            data,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${session.user.accessToken}`,
+              },
+            },
+          );
+          console.log('Response: \n', request.data);
+          return request.status;
+        } catch (e) {
+          console.error(e);
+          return;
+        }
+      }
+    } else return 401;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteMrDetails = async (mrNo: string) => {
+  const session = await getServerSession(authOptions);
+  try {
+    if (session) {
+      if (!mrNo) {
+        console.log('No Mr number found.');
+        return;
+      } else {
+        console.log('Delete request for MR No :- ', mrNo);
+        try {
+          const request = await axios.delete(
+            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/delete-fee-collection/${mrNo}`,
+            {
+              headers: {
+                Authorization: `Bearer ${session.user.accessToken}`,
+              },
+            },
+          );
+          console.log('Response: \n', request.data);
+          return request.status;
+        } catch (e) {
+          console.error(e);
+          return;
+        }
+      }
+    } else return 401;
+  } catch (error) {
+    console.log(error);
+  }
+};
 // const generateFeeCollectionTable = async() => {
 //     try{
 //       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/get-fee-collection-history/${regdNo}`)
@@ -402,4 +589,7 @@ export const handleOtherFeesPayment = async (formData: any) => {
 
 /*
 other fees - dropdown menu of particulars from backend - /accounts-section/get-other-fees
+
 * */
+
+// /update-fee-collection

@@ -1,5 +1,5 @@
 import React from 'react';
-import StudentReportByRegdForm from '../../components/StudentReportByRegdForm';
+import StudentReportByRegdForm from '../../../components/StudentReportByRegdForm';
 
 const page = () => {
   return (

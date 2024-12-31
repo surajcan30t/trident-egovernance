@@ -1,6 +1,6 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getOptionalValues } from '../server-actions-fee-collection/table-actions';
+import { getOptionalValues } from '../server-actions-fee-collection/actions';
 
 type FeesDetailsFilterContextType = {
   filterParticulars: string[];

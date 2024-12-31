@@ -19,10 +19,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { FileText } from 'lucide-react';
+import { FileText, UploadCloud } from 'lucide-react';
 import PulseLoader from 'react-spinners/PulseLoader';
 
-const ACCEPTED_FILE_TYPES = ['image/jpg', 'image/png', 'image/jpeg'];
+const ACCEPTED_FILE_TYPES = ['image/jpg', 'image/jpeg', 'application/pdf'];
 const MAX_FILE_SIZE = 4000000; // 4MB
 
 const FormSchema = z.object({
@@ -71,16 +71,62 @@ const FormSchema = z.object({
         message: 'File must be a PDF and less than 4MB.',
       },
     ),
+  file6: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        file.size < MAX_FILE_SIZE && ACCEPTED_FILE_TYPES.includes(file.type),
+      {
+        message: 'File must be a PDF and less than 4MB.',
+      },
+    ),
+  file7: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        file.size < MAX_FILE_SIZE && ACCEPTED_FILE_TYPES.includes(file.type),
+      {
+        message: 'File must be a PDF and less than 4MB.',
+      },
+    ),
+  file8: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        file.size < MAX_FILE_SIZE && ACCEPTED_FILE_TYPES.includes(file.type),
+      {
+        message: 'File must be a PDF and less than 4MB.',
+      },
+    ),
+  file9: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        file.size < MAX_FILE_SIZE && ACCEPTED_FILE_TYPES.includes(file.type),
+      {
+        message: 'File must be a PDF and less than 4MB.',
+      },
+    ),
+  file10: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        file.size < MAX_FILE_SIZE && ACCEPTED_FILE_TYPES.includes(file.type),
+      {
+        message: 'File must be a PDF and less than 4MB.',
+      },
+    ),
+
   step: z.number().default(6),
 });
 
 const NsrUploadFile = (initial: any) => {
   // const NsrUploadFile = () => {
-  const [isUploading, setIsUploading] = useState<boolean[]>([false, false, false, false, false, false]);// upload status for each file
+  const [isUploading, setIsUploading] = useState<boolean[]>([false, false, false, false, false, false, false, false, false, false]);// upload
+  // status for each file
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {},
-
   }
   );
   const router = useRouter();
@@ -129,7 +175,7 @@ const NsrUploadFile = (initial: any) => {
   async function handleFinalSubmit() {
     try {
       const newUploadingState = [...isUploading];
-      newUploadingState[5] = true;
+      newUploadingState[10] = true;
       setIsUploading(newUploadingState);
       const response = await saveDocumentToDB(1);
       if (response === 200) {
@@ -150,18 +196,17 @@ const NsrUploadFile = (initial: any) => {
 
     } finally {
       const newUploadingState = [...isUploading];
-      newUploadingState[5] = false;
+      newUploadingState[10] = false;
       setIsUploading(newUploadingState);
     }
   }
   console.log("Value", form.getValues());
-
   return (
     <>
       <Form {...form}>
         <div className="w-2/3 flex flex-col items-center gap-3">
           <div className="w-full lg:grid lg:grid-cols-2 lg:gap-2 lg:gap-y-1">
-            {/* File 1 with Upload Button */}
+            {/* File 1 10th certificate */}
             <FormField
               control={form.control}
               name="file1"
@@ -188,25 +233,37 @@ const NsrUploadFile = (initial: any) => {
                       className="mt-2"
                       onClick={() => handleSingleUpload(value, 0)}
                     >
-                      {isUploading[0] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
+                      {isUploading[0] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
                     </Button>
-                    {initial?.studentDocsData?.length > 0 && initial?.studentDocsData[0]?.docLink && (
-                      <Link
-                        href={initial?.studentDocsData[0]?.docLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 underline ml-2"
-                      >
-                        <FileText />
-                      </Link>
-                    )}
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === '10thCertificate'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
                   </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* File 2 with Upload Button */}
+            {/* File 2 10th marksheet */}
             <FormField
               control={form.control}
               name="file2"
@@ -231,25 +288,37 @@ const NsrUploadFile = (initial: any) => {
                       className="mt-2"
                       onClick={() => handleSingleUpload(value, 1)}
                     >
-                      {isUploading[1] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
+                      {isUploading[1] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
                     </Button>
-                    {initial?.studentDocsData?.length > 1 && initial?.studentDocsData[1]?.docLink && (
-                      <Link
-                        href={initial?.studentDocsData[1]?.docLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 underline ml-2"
-                      >
-                        <FileText />
-                      </Link>
-                    )}
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === '10thMarkSheet'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
                   </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* File 3 with Upload Button */}
+            {/* File 3 12th certificate */}
             <FormField
               control={form.control}
               name="file3"
@@ -274,25 +343,37 @@ const NsrUploadFile = (initial: any) => {
                       className="mt-2"
                       onClick={() => handleSingleUpload(value, 2)}
                     >
-                      {isUploading[2] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
+                      {isUploading[2] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
                     </Button>
-                    {initial?.studentDocsData?.length > 2 && initial?.studentDocsData[2]?.docLink && (
-                      <Link
-                        href={initial?.studentDocsData[2]?.docLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 underline ml-2"
-                      >
-                        <FileText />
-                      </Link>
-                    )}
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === '12thorEquivalentCertificate'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
                   </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* File 4 with Upload Button */}
+            {/* File 4 12th marksheet */}
             <FormField
               control={form.control}
               name="file4"
@@ -317,25 +398,37 @@ const NsrUploadFile = (initial: any) => {
                       className="mt-2"
                       onClick={() => handleSingleUpload(value, 3)}
                     >
-                      {isUploading[3] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
+                      {isUploading[3] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
                     </Button>
-                    {initial?.studentDocsData?.length > 3 && initial?.studentDocsData[3]?.docLink && (
-                      <Link
-                        href={initial?.studentDocsData[3]?.docLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 underline ml-2"
-                      >
-                        <FileText />
-                      </Link>
-                    )}
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === '12thorEquivalentMarkSheet'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
                   </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* File 5 with Upload Button */}
+            {/* File 5 with TC */}
             <FormField
               control={form.control}
               name="file5"
@@ -360,18 +453,305 @@ const NsrUploadFile = (initial: any) => {
                       className="mt-2"
                       onClick={() => handleSingleUpload(value, 4)}
                     >
-                      {isUploading[4] ? (<PulseLoader color="white" size={5} />) : 'Upload'}
+                      {isUploading[4] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
                     </Button>
-                    {initial?.studentDocsData?.length > 4 && initial?.studentDocsData[4]?.docLink && (
-                      <Link
-                        href={initial?.studentDocsData[4]?.docLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 underline ml-2"
-                      >
-                        <FileText />
-                      </Link>
-                    )}
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === 'CLCorTC'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/*File 6 Conduct-Certificate*/}
+            <FormField
+              control={form.control}
+              name="file5"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel>
+                    Upload Conduct Certificate
+                    <span className="text-red-500 font-bold text-lg">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      type="file"
+                      onChange={(event) =>
+                        onChange(event.target.files && event.target.files[0])
+                      }
+                    />
+                  </FormControl>
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="trident"
+                      className="mt-2"
+                      onClick={() => handleSingleUpload(value, 5)}
+                    >
+                      {isUploading[5] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
+                    </Button>
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === 'ConductCertificate'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+          {/*  File 7 Final Allot Letter */}
+            <FormField
+              control={form.control}
+              name="file5"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel>
+                    Upload Final Allot Letter
+                    <span className="text-red-500 font-bold text-lg">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      type="file"
+                      onChange={(event) =>
+                        onChange(event.target.files && event.target.files[0])
+                      }
+                    />
+                  </FormControl>
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="trident"
+                      className="mt-2"
+                      onClick={() => handleSingleUpload(value, 6)}
+                    >
+                      {isUploading[6] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
+                    </Button>
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === 'FinalAllotmentLetter'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+          {/* File 8 Rank Card */}
+            <FormField
+              control={form.control}
+              name="file5"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel>
+                    Upload Rank Card
+                    <span className="text-red-500 font-bold text-lg">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      type="file"
+                      onChange={(event) =>
+                        onChange(event.target.files && event.target.files[0])
+                      }
+                    />
+                  </FormControl>
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="trident"
+                      className="mt-2"
+                      onClick={() => handleSingleUpload(value, 7)}
+                    >
+                      {isUploading[7] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
+                    </Button>
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === 'RankCard'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+          {/* File 8 Passport Photo */}
+            <FormField
+              control={form.control}
+              name="file5"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel>
+                    Upload Passport Size Photo
+                    <span className="text-red-500 font-bold text-lg">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      type="file"
+                      onChange={(event) =>
+                        onChange(event.target.files && event.target.files[0])
+                      }
+                    />
+                  </FormControl>
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="trident"
+                      className="mt-2"
+                      onClick={() => handleSingleUpload(value, 8)}
+                    >
+                      {isUploading[8] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
+                    </Button>
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === 'PassportPhoto'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+          {/* File 10 Aadhaar Card */}
+            <FormField
+              control={form.control}
+              name="file5"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel>
+                    Upload Aadhaar Card
+                    <span className="text-red-500 font-bold text-lg">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...fieldProps}
+                      type="file"
+                      onChange={(event) =>
+                        onChange(event.target.files && event.target.files[0])
+                      }
+                    />
+                  </FormControl>
+                  <div className="flex justify-between items-center">
+                    <Button
+                      variant="trident"
+                      className="mt-2"
+                      onClick={() => handleSingleUpload(value, 9)}
+                    >
+                      {isUploading[9] ? (
+                        <PulseLoader color="white" size={5} />
+                      ) : (
+                        'Upload'
+                      )}
+                    </Button>
+                    {initial?.studentDocsData?.length > 0 &&
+                      (() => {
+                        const tenthMarkSheet = initial.studentDocsData.find(
+                          (doc:any) => doc.docType === 'AadhaarCard'
+                        );
+                        return (
+                          tenthMarkSheet?.docLink && (
+                            <Link
+                              href={tenthMarkSheet.docLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500 underline ml-2"
+                            >
+                              <FileText />
+                            </Link>
+                          )
+                        );
+                      })()}
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -386,7 +766,11 @@ const NsrUploadFile = (initial: any) => {
             size="lg"
             onClick={handleFinalSubmit}
           >
-            {isUploading[5] ? (<PulseLoader color="white" size={5} />) : 'Review and Submit'}
+            {isUploading[10] ? (
+              <PulseLoader color="white" size={5} />
+            ) : (
+              'Review and Submit'
+            )}
           </Button>
         </div>
       </Form>

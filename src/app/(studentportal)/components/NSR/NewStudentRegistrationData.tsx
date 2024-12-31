@@ -15,15 +15,18 @@ import { Button } from '@/components/ui/button';
 import { nsrSendAllotmentID } from '../../nsractions/nsractions';
 import { useRouter } from 'next/navigation';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { useAuth } from '@/app/(studentportal)/provider/NSRAuthContext';
 
 const NewStudentRegistrationData = (data: any) => {
   // Dummy data (replace with actual data from school)
-
+  const { isLoggedIn } = useAuth();
   const router = useRouter();
   const [statusMessage, setStatusMessage] = useState('');
   const [inputData, setInputData] = useState({ allotmentId: '' });
   const [loading, setLoading] = useState(false);
-
+  useEffect(() => {
+    !isLoggedIn && router.push('/studentportal')
+  }, [isLoggedIn]);
   useEffect(() => {
     if (data?.allotmentId) {
       setInputData({ allotmentId: data.allotmentId });

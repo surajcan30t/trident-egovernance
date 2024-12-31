@@ -1,29 +1,184 @@
 'use server';
 
-import { Students } from '../components/TableComponents/schema';
+import {
+  AdmissionReport,
+  SessionwiseReport,
+  Students,
+  TotalAdmissionsReport,
+} from '../components/TableComponents/schema';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
 export const studentDataFetcher = async (): Promise<Students[] | undefined> => {
+  const session = await getServerSession(authOptions);
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND}/office/continuing-students`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/continuing-students`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          next: {
+            revalidate: 0,
+          },
         },
-        // next: {
-        //   revalidate: 3600,
-        // },
-      },
-    );
+      );
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch data');
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      console.log('response: ');
+
+      return data;
+    } else {
+      return;
     }
-    const data = await response.json();
-    console.log('response: ');
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
 
-    return data;
+export const getAdmissionYear = async (formData: string | null) => {
+  console.log(formData);
+  return 200;
+};
+
+export const admissionReportFetcher = async (
+  admissionYear: string,
+): Promise<AdmissionReport[] | undefined> => {
+  const session = await getServerSession(authOptions);
+  try {
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/get-admission-data-year-wise-reports/${admissionYear}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          next: {
+            revalidate: 0,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      console.log('response: ', data);
+
+      return data;
+    } else return;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
+export const totalAdmissionsReportFetcher = async (
+  course: string,
+  branch: string,
+): Promise<TotalAdmissionsReport[] | undefined> => {
+  const session = await getServerSession(authOptions);
+  try {
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/get-total-admission-data-reports?course=${course}&branch=${branch}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          next: {
+            revalidate: 0,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      console.log('response: ', data);
+
+      return data;
+    } else return;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
+export const sessionwiseContinuingReportFetcher = async (
+  type: string,
+): Promise<SessionwiseReport[] | undefined> => {
+  const session = await getServerSession(authOptions);
+  try {
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/get-session-wise-reports?status=${type}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          next: {
+            revalidate: 0,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      console.log('response: ', data);
+
+      return data;
+    } else return;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
+export const sessionwiseAlumniReportFetcher = async (): Promise<
+  SessionwiseReport[] | undefined
+> => {
+  const session = await getServerSession(authOptions);
+  try {
+    if (session) {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/get-admission-data-year-wise-reports/alumni`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          next: {
+            revalidate: 0,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      console.log('response: ', data);
+
+      return data;
+    } else return;
   } catch (err) {
     console.log(err);
     return undefined;

@@ -84,16 +84,14 @@ const studentData = async (): Promise<Student | null> => {
 			headers: {
 				'NSR-Authorization': `Bearer ${NSR_token?.value}`,
 			},
-			params: {
-				cache: ''
-			}
+			timeout: 500
 		},
 		);
 		if (response.status !== 200) {
 			return null;
 		}
 
-		return response.data; // Return the student data
+		else return response.data; // Return the dashboard data
 	} catch (error) {
 		console.error(error);
 		return null; // Return null if there's an error
@@ -115,7 +113,7 @@ const DataField = ({ icon, label, value }: any) => (
 	</div>
 );
 
-// Main component to display student details
+// Main component to display dashboard details
 const NewStudentFinalView = async () => {
 	const student = await studentData();
 	return (

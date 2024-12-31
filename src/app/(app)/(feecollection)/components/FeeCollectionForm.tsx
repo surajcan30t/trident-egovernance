@@ -89,20 +89,20 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
       setLoading(true);
       const response = await handleDuesFeePayment(data)
       setLoading(false)
-      if (response !== 201) {
+      if (response !== 200) {
         toast({
           variant: 'destructive',
           title: 'Error',
           description: 'Something went wrong',
         });
       } else {
-        router.refresh()
         console.log("successful")
         toast({
           variant: 'success',
           title: 'Success',
           description: 'Form submitted successfully',
         });
+        router.refresh()
       }
     } catch (e) {
       setLoading(false);

@@ -16,9 +16,6 @@ interface Student {
   allotmentId: string
 }
 
-// Define the structure of the API response
-
-// Fetch student data asynchronously
 const studentData = async (): Promise<Student | null> => {
   try {
     const NSR_token = cookies().get("NSR-Authorization");
@@ -26,23 +23,24 @@ const studentData = async (): Promise<Student | null> => {
       headers: {
         'NSR-Authorization': `Bearer ${NSR_token?.value}`,
       },
-      timeout: 5
+      timeout: 500
     },
   );
     if (response.status !== 200) {
       return null;
     }
     
-    return response.data; // Return the student data
+    else return response.data;
   } catch (error) {
     console.error(error);
-    return null; // Return null if there's an error
+    return null;
   }
 };
+
 const page = async () => {
   const data = await studentData();
   return (
-    <div className='w-screen h-full my-5 p-0 flex flex-col justify-center items-center'>
+    <div className='w-full h-full my-5 p-0 flex flex-col justify-center items-center'>
       <h1 className='text-2xl text-slate-600 font-bold'>Personal Details</h1>
       <NsrPersonalDetailsForm {...data}/>
     </div>

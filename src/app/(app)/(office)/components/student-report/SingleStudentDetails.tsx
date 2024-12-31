@@ -58,7 +58,7 @@ const StudentComponent = ({studentOnly}: {studentOnly: StudentOnly}) =>{
         <DataField label="Name" value={studentOnly?.studentName} />
         <DataField label="Branch" value={studentOnly?.branchCode} />
         <DataField label="Course" value={studentOnly?.course} />
-        <DataField label="Section" value={studentOnly?.section} />
+        {/* <DataField label="Section" value={studentOnly?.section} /> */}
         <DataField label="D.O.B" value={studentOnly?.dob} />
         <DataField label="Admission Year" value={studentOnly?.admissionYear} />
         <DataField label="Current Year" value={studentOnly?.currentYear} />
@@ -338,7 +338,7 @@ const StudentDocumentsComponent = ({ documents, registrationNo }: { documents: D
               <DialogTitle>Update Documents</DialogTitle>
             </DialogHeader>
             <ScrollArea>
-              <StudentDocsForm table={'student-docs'} data={documents} registrationNo={registrationNo}/>
+              <StudentDocsForm table={'dashboard-docs'} data={documents} registrationNo={registrationNo} />
             </ScrollArea>
           </DialogContent>
         </Dialog>

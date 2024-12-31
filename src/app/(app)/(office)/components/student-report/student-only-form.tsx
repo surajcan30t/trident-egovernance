@@ -28,7 +28,7 @@ const formSchema = z.object({
   branchCode: z.string({
     required_error: 'You need to select the gender.',
   }),
-  section: z.string({required_error: "Please select the section"}),
+  // section: z.string({required_error: "Please select the section"}),
   course: z.string({
     required_error: 'You need to select a course.',
   }),
@@ -82,7 +82,7 @@ const StudentOnlyForm = ({table, data}:{table:string, data: StudentOnly}) =>{
       admissionYear: data?.admissionYear,
       batchId: data?.batchId,
       currentYear: data?.currentYear,
-      section: data?.section
+      // section: data?.section
     },
   })
 
@@ -212,30 +212,6 @@ const StudentOnlyForm = ({table, data}:{table:string, data: StudentOnly}) =>{
                     />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="section"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Section</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Section" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="A">A</SelectItem>
-                      <SelectItem value="B">B</SelectItem>
-                      <SelectItem value="C">C</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </FormItem>
               )}
             />
@@ -579,3 +555,29 @@ const StudentOnlyForm = ({table, data}:{table:string, data: StudentOnly}) =>{
 }
 
 export default StudentOnlyForm
+
+
+{/*<FormField*/}
+{/*  control={form.control}*/}
+{/*  name="section"*/}
+{/*  render={({ field }) => (*/}
+{/*    <FormItem>*/}
+{/*      <FormLabel>Section</FormLabel>*/}
+{/*      <Select*/}
+{/*        onValueChange={field.onChange}*/}
+{/*        defaultValue={field.value}*/}
+{/*      >*/}
+{/*        <FormControl>*/}
+{/*          <SelectTrigger>*/}
+{/*            <SelectValue placeholder="Select Section" />*/}
+{/*          </SelectTrigger>*/}
+{/*        </FormControl>*/}
+{/*        <SelectContent>*/}
+{/*          <SelectItem value="A">A</SelectItem>*/}
+{/*          <SelectItem value="B">B</SelectItem>*/}
+{/*          <SelectItem value="C">C</SelectItem>*/}
+{/*        </SelectContent>*/}
+{/*      </Select>*/}
+{/*    </FormItem>*/}
+{/*  )}*/}
+{/*/>*/}

@@ -10,9 +10,21 @@ import {
 import { Button } from '@/components/ui/button';
 import { useSearchParams } from 'next/navigation';
 import { FeeCollectionForm } from '@/app/(app)/(feecollection)/components/FeeCollectionForm';
-import { PiFilePdfFill } from 'react-icons/pi';
+import { PiFilePdfBold } from 'react-icons/pi';
 import useSWR, { mutate } from 'swr';
-import { OtherFeeCollectionForm } from '@/app/(app)/(feecollection)/components/OtherFeeCollectionForm';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { FeeCollectionUpdateForm } from '@/app/(app)/(feecollection)/components/FeeCollectionUpdateForm';
+import { MRDeleteAction } from '@/app/(app)/(feecollection)/components/MRDeleteAction';
+import { useSession } from 'next-auth/react';
+import DiscountForm from './DiscountForm';
+import { BadgePercent } from 'lucide-react';
 
 interface StudentData {
   regdNo?: string;
@@ -30,12 +42,12 @@ const FeeCollectionTable = ({ regdNo }: { regdNo: string | null }) => {
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection-history/${regdNo}`,
-          {
-            cache: 'no-cache',
-          },
+
         );
         const result = await response.json();
-        setData(result);
+        const sortedResult = result.sort((a: any, b: any) => a.mrNo - b.mrNo);
+        console.log('sorted result', sortedResult);
+        setData(sortedResult);
 
         return result;
       } catch (e) {
@@ -99,100 +111,59 @@ const FeeCollectionTable = ({ regdNo }: { regdNo: string | null }) => {
   );
 };
 
-const fetchDuesDetails = async (regdNo: string) => {
+const fetchDuesDetails = async (regdNo: string, session: any) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/getDuesDetails/${regdNo}`,
     {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${session.user.accessToken}`,
+      },
       cache: 'no-cache',
-    },
+    }
   );
   return response.json();
 };
 
-const fetchCollectionDetails = async (regdNo: string) => {
+const fetchCollectionDetails = async (regdNo: string, session: any) => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection-history/${regdNo}`,
+    `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection-history/${regdNo}/COMPULSORY%20FEES`,
     {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${session.user.accessToken}`,
+      },
       cache: 'no-cache',
-    },
+    }
   );
   return response.json();
 };
 
 const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
-  // const [duesData, setDuesData] = useState<any>({});
-  // const [collectionData, setCollectionData] = useState<any>({});
-  const [dataAvailable, setDataAvailable] = useState<boolean>(false);
-  // const [defaultTab, setDefaultTab] = useState<string>('');
-  // const [showModal, setShowModal] = useState<boolean>(false);
-  // useEffect(() => {
-  //   const getDuesDetails = async (regdNo: string | null) => {
-  //     setDefaultTab('');
-  //     setDataAvailable(false);
-  //     try {
-  //       const response = await fetch(
-  //         `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/getDuesDetails/${regdNo}`,
-  //         {
-  //           cache: 'no-cache',
-  //         },
-  //       );
-  //       const result = await response.json();
-  //       setDuesData(result);
-  //       const years = Object.keys(result);
-  //       const currentYear = years[years.length - 1]; // Get the most recent year
-  //       const semesters = Object.keys(result[currentYear]);
-  //       const latestSemester = semesters[semesters.length - 1];
-  //       setDefaultTab(`${currentYear}-${latestSemester}`);
-  //       setDataAvailable(true);
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //   };
-  //
-  //   const getCollectionDetails = async (regdNo: string | null) => {
-  //     try {
-  //       const response = await fetch(
-  //         `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection-history/${regdNo}`,
-  //         {
-  //           cache: 'no-cache',
-  //         },
-  //       );
-  //       const result = await response.json();
-  //       console.log('collection details\n', result);
-  //       setCollectionData(result);
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
-  //   };
-  //
-  //   if (regdNo) {
-  //     getDuesDetails(regdNo);
-  //     getCollectionDetails(regdNo);
-  //   }
-  // }, [regdNo]);
-
-  const openModalInNewTab = () => {
+  const { data: session } = useSession();
+  const openModalInNewTab = (mrNo: number) => {
     // Open a new tab with the specified URL
-    window.open(`studentfeecollection/mr?registrationNo=${regdNo}`, '_blank');
+    window.open(`studentfeecollection/mr?registrationNo=${regdNo}&mrNo=${mrNo}`, '_blank');
   };
   const { data: duesData, error: duesError } = useSWR(
     regdNo ? `/getDuesDetails/${regdNo}` : null,
-    () => fetchDuesDetails(regdNo!),
+    () => fetchDuesDetails(regdNo!, session),
   );
   const { data: collectionData, error: collectionError } = useSWR(
-    regdNo ? `/get-fee-collection-history/${regdNo}` : null,
-    () => fetchCollectionDetails(regdNo!),
+    regdNo ? `/get-fee-collection-history/${regdNo}/COMPULSORY%20FEES` : null,
+    () => fetchCollectionDetails(regdNo!, session),
   );
 
   if (duesError || collectionError) {
-    return <div>Error fetching data</div>;
+    console.log('Due Error:', duesError, 'Collection Error: ', collectionError)
+    return <div>Oops!! Something went wrong</div>;
   }
 
   let grandTotalAmountDue = 0;
   let grandTotalAmountPaid = 0;
   let grandTotalAmountPaidToJee = 0;
   let grandTotalBalanceAmount = 0;
-  console.log('Dues Data', duesData);
+
   const years = duesData ? Object.keys(duesData) : [];
   const defaultYear = years[years.length - 1];
   return (
@@ -200,7 +171,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
       <div className="w-[51vw] p-2 rounded-lg shadow-lg border">
         {duesData && (
           <Tabs defaultValue={defaultYear} className="w-full">
-            <TabsList className="grid w-full grid-cols-8 gap-x-1 flex justify-center">
+            <TabsList className="w-full grid-cols-8 gap-x-1 flex justify-center">
               {years &&
                 years.map((year: any) => (
                   <TabsTrigger key={year} value={year}>
@@ -220,13 +191,15 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
 
                 return (
                   <TabsContent key={year} value={year}>
+                    <div className='bg-slate-200 w-full flex justify-end items-end p-3 rounded-lg my-2'>
+                      <Button variant='trident' >Apply Discount</Button>
+                    </div>
                     {semesters.map((semester) => {
                       // Calculate totals for the semester
                       let totalAmountDue = 0;
                       let totalAmountPaid = 0;
                       let totalAmountPaidToJee = 0;
                       let totalBalanceAmount = 0;
-
                       duesData[year][semester].forEach((item: any) => {
                         totalAmountDue += item.amountDue;
                         totalAmountPaid += item.amountPaid;
@@ -248,6 +221,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="space-y-2">
+
                             <table className="w-full uppercase text-start text-sm">
                               <thead className={'bg-amber-600/60 text-left'}>
                                 <tr>
@@ -256,6 +230,8 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                   <th className="border">Amount Paid</th>
                                   <th className="border">AMT Paid At OJEE</th>
                                   <th className="border">Balance AMT</th>
+                                  <th className="border">Discount</th>
+                                  <th className="border">Adjustment</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -276,6 +252,18 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                       </td>
                                       <td className="border p-1">
                                         {item.balanceAmount.toFixed(2)}
+                                      </td>
+                                      <td className="border p-1">
+                                        <div className='flex justify-between gap-1'>
+                                          {item.discount.toFixed(2)}
+                                          <Button size='sm' className='bg-violet-400' ><BadgePercent /></Button>
+                                        </div>
+                                      </td>
+                                      <td className="border p-1">
+                                        <div className='flex justify-between gap-1'>
+                                          {item.adjustment.toFixed(2)}
+                                          <Button size='sm' className='bg-violet-400' ><BadgePercent /></Button>
+                                        </div>
                                       </td>
                                     </tr>
                                   ),
@@ -301,6 +289,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                 </tr>
                               </tfoot>
                             </table>
+
                           </CardContent>
                         </Card>
                       );
@@ -309,7 +298,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                       <table className="w-[46vw] uppercase text-start text-sm bg-teal-600 text-white">
                         <thead className={'text-xs'}>
                           <tr>
-                            <th className="border">Total Amount Due</th>
+                            <th colSpan={2} className="border">Total Amount Due</th>
                             <th className="border">Total Amount Paid</th>
                             <th className="border">Total AMT Paid At OJEE</th>
                             <th className="border">Total Balance AMT</th>
@@ -317,7 +306,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                         </thead>
                         <tbody className={'text-center font-extrabold'}>
                           <tr>
-                            <td className="border">
+                            <td colSpan={2} className="border">
                               {grandTotalAmountDue.toFixed(2)}
                             </td>
                             <td className="border">
@@ -333,12 +322,15 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                         </tbody>
                       </table>
                     </div>
+
+
                     {/* Collection Table for the Year */}
                     <div className="mt-4">
                       <h2 className="text-lg font-semibold">
                         Fee Collection Details
                       </h2>
                       {collectionData ? (
+                        console.log('Collection details', collectionData),
                         <Card key={year} className="mb-4">
                           <CardHeader>
                             <CardDescription>
@@ -357,52 +349,72 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                   <th className="border">DD Date</th>
                                   <th className="border"></th>
                                   <th className="border"></th>
+                                    <th className="border"></th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {collectionData[`year${year}`] &&
                                   collectionData[`year${year}`].map(
                                     (entry: any, index: number) => (
-                                      console.log(
-                                        'collection details',
-                                        collectionData,
-                                      ),
-                                      (
-                                        <tr key={index} className="text-center">
-                                          <td className="border p2">
-                                            {entry.mrNo}
-                                          </td>
-                                          <td className="border p2">
-                                            {entry.paymentDate}
-                                          </td>
-                                          <td className="border p2">
-                                            {entry.paymentMode}
-                                          </td>
-                                          <td className="border p2">
-                                            {entry.collectedFee.toFixed(2)}
-                                          </td>
-                                          <td className="border p2">
-                                            {entry.ddNo ?? 'N/A'}
-                                          </td>
-                                          <td className="border p2">
-                                            {entry.ddDate ?? 'N/A'}
-                                          </td>
-                                          <td className="border p2">
-                                            <Button
-                                              className="bg-yellow-400 py-0"
-                                              size={'default'}
-                                              onClick={() => {
-                                                openModalInNewTab();
-                                              }}
-                                            >
-                                              <PiFilePdfFill />
-                                            </Button>
-                                          </td>
-                                          <td className="border p2">
-                                            {entry.ddDate ?? 'N/A'}
-                                          </td>
-                                        </tr>
-                                      )
+                                      <tr key={index} className="text-center">
+                                        <td className="border p2">
+                                          {entry.feeCollection.mrNo}
+                                        </td>
+                                        <td className="border p2">
+                                          {entry.feeCollection.paymentDate}
+                                        </td>
+                                        <td className="border p2">
+                                          {entry.feeCollection.paymentMode}
+                                        </td>
+                                        <td className="border p2">
+                                          {entry.feeCollection.collectedFee.toFixed(
+                                            2,
+                                          )}
+                                        </td>
+                                        <td className="border p2">
+                                          {entry.feeCollection.ddNo ?? 'N/A'}
+                                        </td>
+                                        <td className="border p2">
+                                          {entry.feeCollection.ddDate ?? 'N/A'}
+                                        </td>
+                                        <td className="border p2">
+                                          <Button
+                                            className="bg-lime-600 py-0"
+                                            size={'sm'}
+                                            onClick={() => {
+                                              openModalInNewTab(entry.feeCollection.mrNo);
+                                            }}
+                                          >
+                                            <PiFilePdfBold />
+                                          </Button>
+                                        </td>
+                                        <td className="border p2">
+                                          <Dialog>
+                                            <DialogTrigger>
+                                              <div className="bg-amber-600 text-stone-50 shadow hover:bg-slate-800 dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded px-2 py-1">
+                                                Edit
+                                              </div>
+                                            </DialogTrigger>
+                                            <DialogContent className="">
+                                              <DialogHeader>
+                                                <DialogTitle>
+                                                  Update Mr number-{entry.mrNo}
+                                                </DialogTitle>
+                                              </DialogHeader>
+                                              <ScrollArea>
+                                                <FeeCollectionUpdateForm
+                                                  data={entry}
+                                                />
+                                              </ScrollArea>
+                                            </DialogContent>
+                                          </Dialog>
+                                        </td>
+                                        <td className="border p2">
+                                          <MRDeleteAction
+                                            mrNo={entry.feeCollection.mrNo}
+                                          />
+                                        </td>
+                                      </tr>
                                     ),
                                   )}
                               </tbody>
@@ -416,18 +428,9 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                   </TabsContent>
                 );
               })}
-
-            {/* Grand Totals */}
           </Tabs>
         )}
       </div>
-      {/*{*/}
-      {/*  showModal && (*/}
-      {/*    <div>*/}
-      {/*      <ExportPdf />*/}
-      {/*    </div>*/}
-      {/*  )*/}
-      {/*}*/}
     </>
   );
 };
@@ -441,10 +444,10 @@ const FeeCollectionDashboardSingleStudent = () => {
         <div className="w-2/3 flex flex-col space-y-6">
           <FeeDuesDetailsTable regdNo={param} />
         </div>
-        <div className="w-1/3 h-fit rounded-lg px-3 py-3 border">
-          <div className="w-full flex flex-col space-y-20">
+        <div className="w-1/3 h-fit rounded-lg px-3 py-0">
+          <div className="w-full flex flex-col space-y-5">
             {param && <FeeCollectionForm regdNo={param} />}
-            {param && <OtherFeeCollectionForm regdNo={param} />}
+            {param && <DiscountForm regdNo={param} />}
           </div>
         </div>
       </div>
@@ -453,48 +456,3 @@ const FeeCollectionDashboardSingleStudent = () => {
 };
 
 export default FeeCollectionDashboardSingleStudent;
-
-// const StudentDetails = ({regdNo}:{regdNo: string | null}) => {
-//   const [studentData, setStudentData] = useState<StudentData>({})
-//   useEffect(() => {
-//     const getStudentDetails = async (regdNo: string | null | undefined) => {
-//       try {
-//         const response = await fetch(
-//           `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-basic-student-details/${regdNo}`,
-//         );
-//         const data = await response.json();
-//         setStudentData(data)
-//         return data;
-//       } catch (e) {
-//         console.error(e);
-//       }
-//     };
-//     getStudentDetails(regdNo)
-//   }, [regdNo]);
-//   return <>
-//     <div className={''}>
-//       <table className='text-xs'>
-//         <thead className='font-medium'>
-//           <tr className="">
-//             <th className='border text-left'>Regd No.</th>
-//             <th className='border text-left'>Name</th>
-//             <th className='border text-left'>Gender</th>
-//             <th className='border text-left'>Branch</th>
-//             <th className='border text-left'>Admission Year</th>
-//             <th className='border text-left'>Year</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           <tr>
-//             <td className='p-2 border'>{studentData.regdNo}</td>
-//             <td className='p-2 border'>{studentData.studentName}</td>
-//             <td className='p-2 border'>{studentData.gender}</td>
-//             <td className='p-2 border'>{studentData.branchCode}</td>
-//             <td className='p-2 border'>{studentData.admissionYear}</td>
-//             <td className='p-2 border'>{studentData.currentYear}</td>
-//           </tr>
-//         </tbody>
-//       </table>
-//     </div>
-//   </>;
-// };

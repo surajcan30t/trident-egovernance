@@ -34,7 +34,7 @@ export const studentOnlySchema = z.object({
   plpoolm: z.string(),
   cfPayMode: z.string(),
   religion: z.string(),
-  section: z.string(),
+  // section: z.string(),
 });
 
 export const personalDetailsOnlySchema = z.object({

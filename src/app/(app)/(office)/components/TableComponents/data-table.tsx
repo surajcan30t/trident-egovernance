@@ -19,7 +19,7 @@ import {
 import {
   Table,
   TableBody,
-  TableCell,
+  TableCell, TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -118,6 +118,26 @@ export function DataTable<TData, TValue>({
               </TableRow>
             )}
           </TableBody>
+          {table.getFooterGroups &&
+            <TableFooter>
+              {table.getFooterGroups().map((footerGroup) => {
+                return (
+                  <TableRow className="bg-zinc-50" key={footerGroup.id}>
+                    {footerGroup.headers.map((footer) => {
+                      return (
+                        <TableCell key={footer.id} colSpan={footer.colSpan}>
+                          {flexRender(
+                            footer.column.columnDef.footer,
+                            footer.getContext(),
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableFooter>
+          }
         </Table>
       </div>
       <DataTablePagination table={table} />

@@ -31,7 +31,7 @@ const studentData = async (): Promise<Student | null> => {
       return null;
     }
     
-    return response.data; // Return the student data
+    return response.data; // Return the dashboard data
   } catch (error) {
     console.error(error);
     return null; // Return null if there's an error
@@ -40,7 +40,7 @@ const studentData = async (): Promise<Student | null> => {
 const page = async() => {
   const data = await studentData();
   return (
-    <div className='w-screen h-full my-5 p-0 flex flex-col justify-center items-center'>
+    <div className='w-full h-full my-5 p-0 flex flex-col justify-center items-center'>
       <h1 className='text-2xl text-slate-600 font-bold'>Optional Facilities</h1>
       <NsrOptionalFacilityForm {...data}/>   
     </div>

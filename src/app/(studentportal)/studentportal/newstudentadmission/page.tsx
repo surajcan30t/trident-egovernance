@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { cookies } from 'next/headers';
 import React from 'react';
 
-// Define the structure of the student data returned by the API
+// Define the structure of the dashboard data returned by the API
 interface Student {
   jeeApplicationNo: string;
   regdNo: string;
@@ -23,13 +23,14 @@ const studentData = async (): Promise<Student | null> => {
       headers: {
         'NSR-Authorization': `Bearer ${NSR_token?.value}`,
       },
+      timeout: 500
     },
     );
     if (response.status !== 200) {
       return null;
     }
 
-    return response.data; // Return the student data
+    return response.data; // Return the dashboard data
   } catch (error) {
     console.error(error);
     return null; // Return null if there's an error
@@ -38,7 +39,7 @@ const studentData = async (): Promise<Student | null> => {
 
 // The page component
 const Page: React.FC = async () => {
-  const data = await studentData(); // Fetch the student data
+  const data = await studentData(); // Fetch the dashboard data
   return (
     <div>
       {/* {data&& */}

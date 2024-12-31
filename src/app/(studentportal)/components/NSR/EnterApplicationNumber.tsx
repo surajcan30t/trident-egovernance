@@ -21,6 +21,7 @@ import {
   multiStudentRegistration,
   newStudentLogin,
 } from '../../nsractions/nsractions';
+import { useAuth } from '@/app/(studentportal)/provider/NSRAuthContext';
 
 const FormSchema = z.object({
   applicationNo: z.string().min(2, {
@@ -29,9 +30,11 @@ const FormSchema = z.object({
   rank: z.coerce.number(),
 });
 const EnterApplicationNumber = () => {
+  const { setIsLoggedIn } = useAuth()
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -49,6 +52,7 @@ const EnterApplicationNumber = () => {
       }
       const response: Response | undefined = await newStudentLogin(data);
       if (response?.status === 200) {
+        setIsLoggedIn(true);
         const step = response?.step;
         switch (step) {
           case 1:
@@ -73,7 +77,9 @@ const EnterApplicationNumber = () => {
             break;
         }
       }
-      setError(response?.message || 'An error occurred during login');
+      else{
+        setError(response?.message || 'An error occurred during login');
+      }
     } catch (error: any) {
       console.log(error);
       // setError(error);
@@ -83,8 +89,12 @@ const EnterApplicationNumber = () => {
   }
 
   async function multiReg(data: number) {
+    const response = await multiStudentRegistration();
+    console.log(response);
+
+  }
+  async function multiSub(data: number) {
     const response = await multiFinalSubmit();
-    // const response = await multiStudentRegistration();
     console.log(response);
 
   }
@@ -122,7 +132,7 @@ const EnterApplicationNumber = () => {
                 <FormItem>
                   <FormLabel>Rank</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter you rank" {...field} />
+                    <Input type='number' placeholder="Enter you rank" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -134,17 +144,28 @@ const EnterApplicationNumber = () => {
         </Form>
         {error && <p className="text-red-600 font-semibold">{error}</p>}
       </div>
-      <div>
-        <h1>Multi Student Registration</h1>
-        <button
-          className="border"
-          onClick={() => {
-            multiReg(1);
-          }}
-        >
-          Multi Register
-        </button>
-      </div>
+      {/*<div>*/}
+      {/*  <h1>Multi Student Registration</h1>*/}
+      {/*  <button*/}
+      {/*    className="border bg-blue-200"*/}
+      {/*    onClick={() => {*/}
+      {/*      multiReg(1);*/}
+      {/*    }}*/}
+      {/*  >*/}
+      {/*    Multi Register*/}
+      {/*  </button>*/}
+      {/*</div>*/}
+      {/*<div>*/}
+      {/*  <h1>Multi Student Submit</h1>*/}
+      {/*  <button*/}
+      {/*    className="border bg-blue-200"*/}
+      {/*    onClick={() => {*/}
+      {/*      multiSub(1);*/}
+      {/*    }}*/}
+      {/*  >*/}
+      {/*    Multi Submit*/}
+      {/*  </button>*/}
+      {/*</div>*/}
     </>
   );
 };

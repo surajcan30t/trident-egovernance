@@ -131,8 +131,8 @@ const NsrPersonalDetailsForm = (initial: any) => {
       parentContact: initial?.parentContact || '',
       parentEmailId: initial?.parentEmailId || '',
       caste: initial?.caste || '',
-      permanentPincode: initial?.permanentPincode?.toString() || 0,
-      aadhaarNo: initial?.aadhaarNo?.toString() || 0,
+      permanentPincode: initial?.permanentPincode?.toString(),
+      aadhaarNo: initial?.aadhaarNo?.toString(),
       religion: initial?.religion || '',
     },
   });

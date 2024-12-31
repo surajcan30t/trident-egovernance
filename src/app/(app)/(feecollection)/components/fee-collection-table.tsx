@@ -1,14 +1,14 @@
 import React from 'react'
 import {
   fetchFeesDetailsBySession,
-} from '@/app/(app)/(feecollection)/server-actions-fee-collection/table-actions';
+} from '@/app/(app)/(feecollection)/server-actions-fee-collection/actions';
 import { DataTable } from './fee-data-table-components/data-table'
 import { columns } from './fee-data-table-components/fees-details-columns'
 
 
 const getFianance = async() =>{
   const response = await fetchFeesDetailsBySession()
-  // console.log(response)
+
   return response
 }
 

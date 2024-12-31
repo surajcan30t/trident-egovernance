@@ -13,38 +13,60 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
 interface StudentData {
   branchCode: string;
   branchStudentCount: number;
 }
+
 interface CourseWise {
   course: string;
   studentCount: number;
   branches: StudentData[];
 }
+
 interface BranchWiseComponentProps {
   branchWiseStudent: StudentData[];
   course: string;
 }
 
 const fetchStudentData = async () => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND}/office/grouped-student-count/CONTINUING`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      next: { revalidate: 3600 },
-    },
-  );
-  const data = await response.json();
-  return data as CourseWise[];
+  const session = await getServerSession(authOptions);
+  try {
+    if(session){
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/grouped-student-count/CONTINUING`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          next: { revalidate: 10 },
+        },
+      );
+      const data = await response.json();
+      return data as CourseWise[];
+    }else return undefined;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const TotoalAlum: React.FC = async () => {
-  const studentData: CourseWise[] = await fetchStudentData();
+  const studentData: CourseWise[] | undefined = await fetchStudentData();
+  if (!studentData) {
+    return (
+      <Card className="bg-amber-600 text-white">
+        <CardHeader>
+          <CardTitle>Total Alumni</CardTitle>
+        </CardHeader>
+        <CardContent>No data...</CardContent>
+      </Card>
+    );
+  }
   return (
     <>
       <Card className="bg-amber-600 text-white">
@@ -53,29 +75,30 @@ const TotoalAlum: React.FC = async () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-row gap-3 flex-wrap">
-            {studentData && studentData?.map((data, index) => (
-              <div
-                key={data.course}
-                className={`flex flex-row items-center gap-2 border border-gray-100 rounded-md px-2`}
-              >
-                <Dialog>
-                  <DialogTrigger>
-                    <div className="flex flex-col gap-0">
-                      <div className="uppercase">{data.course}</div>
-                      <span className="text-xl font-bold">
-                        {data.studentCount}
-                      </span>
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className="m-2 p-2">
-                    <BranchWiseComponent
-                      branchWiseStudent={data.branches}
-                      course={data.course}
-                    />
-                  </DialogContent>
-                </Dialog>
-              </div>
-            ))}
+            {studentData &&
+              studentData?.map((data, index) => (
+                <div
+                  key={data.course}
+                  className={`flex flex-row items-center gap-2 border border-gray-100 rounded-md px-2`}
+                >
+                  <Dialog>
+                    <DialogTrigger>
+                      <div className="flex flex-col gap-0">
+                        <div className="uppercase">{data.course}</div>
+                        <span className="text-xl font-bold">
+                          {data.studentCount}
+                        </span>
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="m-2 p-2">
+                      <BranchWiseComponent
+                        branchWiseStudent={data.branches}
+                        course={data.course}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ))}
           </div>
         </CardContent>
       </Card>

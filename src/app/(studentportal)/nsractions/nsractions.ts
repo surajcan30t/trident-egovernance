@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 export const newStudentLogin = async (formData: any) => {
-  // console.log(formData);
+  console.log(formData);
   try {
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND}/public/login`,
@@ -48,7 +48,19 @@ export const newStudentLogin = async (formData: any) => {
   }
 };
 
-// function to get initial student data if exist and update with user input
+export const nsrSignout = async () => {
+  cookies().delete('NSR-Authorization');
+  return true;
+};
+
+export const isAuthenticated = async () => {
+  const token = cookies().get('NSR-Authorization');
+  if (!token) {
+    return false;
+  } else return true;
+};
+
+// function to get initial dashboard data if exist and update with user input
 const initialStudentData = async (formData: any) => {
   interface Document {
     docLink: string;
@@ -139,10 +151,7 @@ const initialStudentData = async (formData: any) => {
     if (response.status !== 200) {
       return null;
     }
-    // console.log('Inside initialstudentdata formdata:', formData);
     const data = response.data;
-    // const data = 123;
-    // console.log('Data in initialStudentData function', data);
     const studentDocsData: Document[] =
       formData.studentDocsData || data.studentDocsData;
     const initData = {
@@ -247,7 +256,7 @@ export const nsrSendAllotmentID = async (formData: any) => {
 // function to send personal data
 export const handleNsPersonal = async (formData: any) => {
   try {
-    // Fetch initial student data
+    // Fetch initial dashboard data
     const data = await initialStudentData(formData);
 
     if (!data) {
@@ -282,7 +291,7 @@ export const handleNsPersonal = async (formData: any) => {
 export const handleNsrAcademic = async (formData: any) => {
   console.log('Acad form data', formData);
   try {
-    // Fetch initial student data
+    // Fetch initial dashboard data
     const data = await initialStudentData(formData);
     // const data = formData
 
@@ -323,7 +332,7 @@ export const handleNsrAcademic = async (formData: any) => {
 // function to send optional facility data
 export const handleNsrOptionalFacility = async (formData: any) => {
   try {
-    // Fetch initial student data
+    // Fetch initial dashboard data
     const data = await initialStudentData(formData);
 
     if (!data) {
@@ -356,8 +365,9 @@ export const handleNsrOptionalFacility = async (formData: any) => {
 
 //
 const documentNameAndTypeSelector = (inputIndex: Number) => {
-  // const applicationNo = cookies().get('applicationNo');
-  const applicationNo = 'jee789';
+  const applicationNo = cookies().get('applicationNo')?.value as string;
+  console.log('appl: ', applicationNo);
+  // const applicationNo = 'jee789';
   let documentName = '';
   let documentType = '';
   switch (inputIndex) {
@@ -499,8 +509,7 @@ export const upLoadToS3 = async (inputIndex: Number, userFile: File) => {
   const applicationNo = cookies().get('applicationNo')?.value as string;
   // const applicationNo = 'jee789';
   let fileName = documentNameAndTypeSelector(inputIndex).name;
-  console.log('fileName', userFile.name);
-
+  // console.log('fileName', userFile.name);
   const fileBuffer = Buffer.from(await userFile.arrayBuffer());
   const params = {
     Bucket: process.env.AWS_S3_BUCKETNAME as string, // Ensure this environment variable is set
@@ -517,7 +526,8 @@ export const upLoadToS3 = async (inputIndex: Number, userFile: File) => {
       return;
     }
     const fileUrl = `https://${process.env.AWS_S3_BUCKETNAME}.s3.amazonaws.com/${applicationNo}/${fileName}`;
-    const setFileUrl = urlMapSetter(applicationNo, inputIndex, fileUrl);
+    urlMapSetter(applicationNo, inputIndex, fileUrl);
+    console.log('url map for', applicationNo, '\n', globalMap);
     const response = {
       status: awsRequest?.$metadata?.httpStatusCode,
       statusText: 'Ok',
@@ -540,14 +550,13 @@ export const saveDocumentToDB = async (ind: Number) => {
     uploadDate: Date | null;
   }
 
-  // const applicationNo = 'jee789';
   let documents: Document[] = [];
-  for (let index = 0; index < 5; index++) {
+  for (let index = 0; index < 10; index++) {
     const url = urlMapGetter(applicationNo, index);
     if (url.status !== 'Error') {
       documents.push({
         docLink: url.data || '',
-        docType: documentNameAndTypeSelector(index).name,
+        docType: documentNameAndTypeSelector(index).type,
         uploadDate: new Date(),
       });
     } else {
@@ -569,9 +578,12 @@ export const saveDocumentToDB = async (ind: Number) => {
       },
     );
     // console.log('request', request);
-    return request.status;
+    const status = request.status;
+    if (status === 200) {
+      return status;
+    } else return status;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -581,6 +593,7 @@ export const nsrFinalSubmit = async () => {
     const authToken = cookies().get('NSR-Authorization');
     const request = await axios.post(
       `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent/${applicationNo?.value}`,
+      {},
       {
         headers: {
           'NSR-Authorization': `Bearer ${authToken?.value}`,
@@ -590,7 +603,7 @@ export const nsrFinalSubmit = async () => {
     console.log('request', request);
     return request.status;
   } catch (error) {
-    console.log(error);
+    console.error('+++++++++++++++Final Submit Error+++++++++++++++\n', error);
   }
 };
 
@@ -684,10 +697,10 @@ function generateRandomStudentData(index: number): Student {
   const hostelOption = Math.random() > 0.5 ? 'YES' : 'NO';
 
   return {
-    jeeApplicationNo: `REGD${index}${index}${index}${index}`,
-    regdNo: `REGD${index}${index}${index}${index}`,
+    jeeApplicationNo: `YZXa${index}${index}${index}${index}`,
+    regdNo: `YZXa${index}${index}${index}${index}`,
     ojeeCouncellingFeePaid: Math.random() > 0.5 ? 'YES' : 'NO',
-    studentName: `Bulk Student${index}`,
+    studentName: `Bulky Students${index}`,
     gender: Math.random() > 0.5 ? 'MALE' : 'FEMALE',
     branchCode:
       Math.random() > 0.5
@@ -757,9 +770,93 @@ function generateRandomStudentData(index: number): Student {
   };
 }
 
+function generateRandomStudentDataForMe(index: number): Student {
+  const randomDate = (): Date =>
+    new Date(new Date().getTime() - Math.random() * 1e12);
+  const formatDate = (date: Date): string => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+  const randomString = (length: number): string =>
+    Math.random()
+      .toString(36)
+      .substring(2, 2 + length);
+  const randomNumber = (min: number, max: number): number =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+  const hostelOption = 'NO';
+
+  return {
+    jeeApplicationNo: `2101289370`,
+    regdNo: `2101289370`,
+    ojeeCouncellingFeePaid: Math.random() > 0.5 ? 'YES' : 'NO',
+    studentName: `Swayam Prakash Mohanty`,
+    gender: 'MALE',
+    branchCode: 'CST',
+    admissionYear: '2021',
+    degreeYop: 2025,
+    phNo: `9938771133`,
+    email: `mohantyswayam2001@gmail.com `,
+    dob: randomDate().toISOString().split('T')[0],
+    hostelier: 'NO',
+    hostelOption,
+    hostelChoice: 'NONE',
+    transportAvailed: 'NO',
+    status: 'CONTINUING',
+    batchId: null,
+    currentYear: randomNumber(1, 4),
+    aadhaarNo: randomNumber(100000000000, 999999999999),
+    indortrng: 'YES',
+    plpoolm: 'YES',
+    cfPayMode: 'SEMESTER',
+    religion: 'HINDU',
+    rank: randomNumber(1, 1000000),
+    rankType: 'JEE',
+    course: 'BTECH',
+    tfw: Math.random() > 0.5 ? 'TFW' : 'NTFW',
+    admissionType: 'JEEMAIN',
+    studentType: 'REGULAR',
+    tenthPercentage: randomNumber(60, 100),
+    tenthYOP: 2018,
+    twelvthPercentage: randomNumber(60, 100),
+    twelvthYOP: 2020,
+    diplomaPercentage: null,
+    diplomaYOP: null,
+    graduationPercentage: randomNumber(60, 100),
+    graduationYOP: 2025,
+    fname: `Father${index}`,
+    mname: `Mother${index}`,
+    lgName: `Guardian${index}`,
+    permanentAddress: `Address${index}`,
+    permanentCity: `City${randomNumber(1, 50)}`,
+    permanentState: `State${randomNumber(1, 30)}`,
+    permanentPincode: randomNumber(100000, 999999),
+    parentContact: `87654${randomNumber(10000, 99999)}`,
+    parentEmailId: `parent${index}@example.com`,
+    presentAddress: null,
+    district: `District${randomNumber(1, 50)}`,
+    ojeeCounsellingFeePaid: 'YES',
+    ojeeRollNo: null,
+    ojeeRank: null,
+    aieeeRank: String(randomNumber(1, 1000)),
+    caste: 'GENERAL',
+    categoryCode: null,
+    categoryRank: null,
+    allotmentId: `Allot${index}`,
+    transportOpted: 'NO',
+    pickUpPoint: null,
+    studentDocsData: Array.from({ length: 3 }, () => ({
+      docLink: `https://images.unsplash.com/photo-1633526543814-9718c8922b7a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fGRvY3VtZW50fGVufDB8fDB8fHwy`,
+      docType: '10thCertificate',
+      uploadDate: randomDate(),
+    })),
+  };
+}
+
 export const multiStudentRegistration = async () => {
-  const students: Student[] = Array.from({ length: 50 }, (_, index) =>
-    generateRandomStudentData(index + 1),
+  const students: Student[] = Array.from({ length: 1 }, (_, index) =>
+    generateRandomStudentDataForMe(index + 1),
   );
   console.log(students);
   for (const student of students) {
@@ -777,10 +874,10 @@ export const multiStudentRegistration = async () => {
 
 export const multiFinalSubmit = async () => {
   try {
-    for (let i = 1; i <= 50; i++) {
-      const regdNum = `REGD${i}${i}${i}${i}`;
+    for (let i = 1; i <= 1; i++) {
+      const regdNum = `YZXa${i}${i}${i}${i}`;
       const request = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent/${regdNum}`,
+        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent/2101289370`,
       );
       console.log('request', request.status);
     }

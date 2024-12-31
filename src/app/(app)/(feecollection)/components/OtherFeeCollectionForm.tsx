@@ -1,9 +1,11 @@
+'use client'
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '@/hooks/use-toast';
+import PulseLoader from 'react-spinners/PulseLoader';
 import {
   Form,
   FormControl,
@@ -21,7 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { handleDuesFeePayment } from '@/app/(app)/(feecollection)/server-actions-fee-collection/table-actions';
+import {
+  handleOtherFeesPayment,
+} from '@/app/(app)/(feecollection)/server-actions-fee-collection/actions';
+import { useSession } from 'next-auth/react';
 
 const FormSchema = z
   .object({
@@ -31,18 +36,13 @@ const FormSchema = z
     dynamicFields: z
       .array(
         z.object({
-          description: z.string().min(1, {
-            message: 'Must select a description',
-          }),
-          amount: z.number().min(1, {
-            message: 'Must enter collected fee',
-          }),
+          description: z.string().min(1,{message: 'This field is required.'}),
+          amount: z.string().min(1,{message: 'This field is required.'}),
         }),
       )
       .min(1, {
         message: 'At least one description and fee pair must be added',
       }), // Ensure at least one dynamic field is added
-    collectedFee: z.number(),
     paymentMode: z.enum(['CASH', 'CHEQUE', 'DD', 'UPI', 'CARD'], {
       required_error: 'Must choose payment mode',
     }),
@@ -65,22 +65,22 @@ const FormSchema = z
   );
 
 export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
+  const {data: session} = useSession()
+  const token = session?.user?.accessToken
   const router = useRouter();
   const [showDDFields, setShowDDFields] = useState<boolean>(false);
   const [particulars, setParticulars] = useState<string[] | null>([]);
-  const [totaldFee, setTotaldFee] = useState<number>(0)
+  const [loading, setLoading] = useState(false);
   const [dynamicFields, setDynamicFields] = useState<
-    { description: string; collectedFee: string }[]
-  >([{ description: '', collectedFee: '' }]);
+    { description?: string; amount?: string }[]
+  >([{ description: '', amount: '' }]);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       regdNo: regdNo,
-      collectedFee: totaldFee
     },
   });
   const { reset } = form;
-
   useEffect(() => {
     const otherFeeMenuFetcher = async () => {
       try {
@@ -88,6 +88,9 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
           `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-other-fees`,
           {
             cache: 'no-cache',
+            headers:{
+              'Authorization': `Bearer ${token}`,
+            }
           },
         );
         const status = await response.status;
@@ -109,34 +112,27 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
   const handleAddField = () => {
     setDynamicFields((prevFields) => [
       ...prevFields,
-      { description: '', collectedFee: '' },
+      { description: '', amount: '' },
     ]);
   };
 
   const handleRemoveField = (index: number) => {
-    setDynamicFields((prevFields) => prevFields.filter((_, i) => i !== index));
+    const currentValues = form.getValues("dynamicFields");
+
+    const updatedValues = currentValues.filter((_, i) => i !== index);
+
+    setDynamicFields(updatedValues);
+    form.setValue("dynamicFields", updatedValues);
   };
 
+
   useEffect(() => {
-    reset({ regdNo: regdNo });
+    reset({ regdNo: regdNo});
   }, [regdNo, reset]);
 
-  const dynamicFieldsData = form.watch('dynamicFields');
-  useEffect(() => {
-    const fee = setAddCollectedFee(dynamicFieldsData);
-    setTotaldFee(fee)
-  }, [dynamicFieldsData]);
-
-  const setAddCollectedFee = (fields: any) => {
-    const totalFee = fields?.reduce((sum: number, field: { amount: string }) => {
-      return sum + (parseFloat(field.amount) || 0);
-    }, 0);
-    return totalFee
-  };
 
   const paymentModeSelected = form.watch('paymentMode');
   useEffect(() => {
-    console.log('Payment Mode:', paymentModeSelected);
 
     if (paymentModeSelected === 'DD') {
       setShowDDFields(true);
@@ -144,10 +140,11 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
       setShowDDFields(false);
     }
   }, [paymentModeSelected]);
-
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      const response = await handleDuesFeePayment(data);
+      setLoading(true)
+      const response = await handleOtherFeesPayment(data);
+      setLoading(false)
       if (response !== 200) {
         toast({
           variant: 'destructive',
@@ -156,20 +153,24 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
         });
       } else {
         // router.refresh()
+        form.reset()
         toast({
           variant: 'success',
           title: 'Success',
           description: 'Form submitted successfully',
         });
+        router.refresh()
       }
     } catch (e) {
       console.log(e);
+    }finally {
+      setLoading(false);
     }
   }
 
   return (
     <>
-      <div className="mt-16 shadow-xl border rounded-lg p-2">
+      <div className="mt-0 shadow-lg border rounded-lg p-2">
         <h1 className="font-extrabold text-lg">Other Fees Payment</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
@@ -193,7 +194,6 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
                 </FormItem>
               )}
             />
-            {/*Processing mode*/}
             {dynamicFields.map((_, index) => (
               <div key={index}>
                 {/* Description Field */}
@@ -257,24 +257,9 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
 
             {/* Add New Field Button */}
             <Button type="button" variant={'outline'} onClick={handleAddField}>
-              Add Description
+              Add Fees
             </Button>
 
-            <FormField
-              control={form.control}
-              name="collectedFee"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Collected Fee<span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input readOnly={true} disabled={true} placeholder="" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="paymentMode"
@@ -355,7 +340,12 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
               />
             )}
             <Button variant={'trident'} size={'lg'} type="submit">
-              Confirm
+              {loading ? (<PulseLoader
+                  color="#ffffff"
+                  size={5}
+                />):
+              'Confirm'
+              }
             </Button>
           </form>
         </Form>

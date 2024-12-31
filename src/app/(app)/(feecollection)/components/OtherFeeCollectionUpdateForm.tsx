@@ -25,6 +25,7 @@ import {
   handleUpdateOtherFeePayment,
 } from '@/app/(app)/(feecollection)/server-actions-fee-collection/actions';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { useSession } from 'next-auth/react';
 
 const FormSchema = z
   .object({
@@ -68,6 +69,8 @@ const FormSchema = z
   );
 
 export function OtherFeeCollectionUpdateForm({ data }: { data: any }) {
+  const {data: session} = useSession()
+  const token = session?.user?.accessToken
   console.log('Data', data);
   const router = useRouter();
   const [render, setRender] = useState<boolean>(false);
@@ -101,6 +104,9 @@ export function OtherFeeCollectionUpdateForm({ data }: { data: any }) {
           `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-other-fees`,
           {
             cache: 'no-cache',
+            headers:{
+              'Authorization': `Bearer ${token}`,
+            }
           },
         );
         const status = await response.status;

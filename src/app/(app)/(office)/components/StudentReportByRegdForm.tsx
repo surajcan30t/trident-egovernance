@@ -49,7 +49,7 @@ const StudentReportByRegdForm = (initial: any) => {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       setLoading(true);
-      const status = router.push(`/office/studentreport/${data.regdNo}`);
+      const status = router.push(`/office/reports/studentreport/${data.regdNo}`);
       setLoading(false);
     } catch (err) {
       toast({
