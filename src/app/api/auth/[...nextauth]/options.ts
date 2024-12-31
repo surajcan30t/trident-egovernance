@@ -1,6 +1,7 @@
 import { NextAuthOptions } from 'next-auth';
 import AzureADProvider from 'next-auth/providers/azure-ad';
 import { JWT, getToken } from 'next-auth/jwt';
+import { redirectLogic } from '@/lib/redirectlogic';
 
 const AZURE_AD_CLIENT_ID = process.env.AZURE_AD_CLIENT_ID!;
 const AZURE_AD_CLIENT_SECRET = process.env.AZURE_AD_CLIENT_SECRET!;
@@ -22,10 +23,10 @@ export const authOptions: NextAuthOptions = {
       issuer: AZURE_AD_ISSUER,
     }),
   ],
-  session: {
-    strategy: 'jwt',
-    maxAge: 60 * 60, // 1 hour
-  },
+  // session: {
+  //   strategy: 'jwt',
+  //   maxAge: 60 * 60, // 1 hour
+  // },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, account }): Promise<JWT> {
@@ -33,7 +34,16 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
         try {
           const userType = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND}/api/get-job-information`,
+            `${process.env.NEXT_PUBLIC_BACKEND}/api/get-user-information`,
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${token.accessToken}`,
+              },
+            },
+          );
+          const menuBlade = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND}/api/get-menu-blade`,
             {
               method: 'GET',
               headers: {
@@ -42,6 +52,8 @@ export const authOptions: NextAuthOptions = {
             },
           );
           token.userType = await userType.json();
+          token.menuBlade = await menuBlade.json();
+
           console.log('token \n\n\n\n\n', token);
         } catch (error) {
           console.log('Error during fetch ', error);
@@ -53,10 +65,13 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (token) {
         session.user.userType = token.userType || null;
+        session.user.menuBlade = token.menuBlade || null;
         session.user.accessToken = token.accessToken as string;
       }
-      console.log('Session', session);
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      return `${baseUrl}/redirect`;
     },
   },
 };
