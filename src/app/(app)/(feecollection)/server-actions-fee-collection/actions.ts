@@ -15,16 +15,14 @@ export const getSessionFromUser = async (sessionId: string) => {
   return { success: true, message: 'Successfully updated session' };
 };
 
-export const fetchFeesDetailsBySession = async () => {
+export const fetchFeesDetailsBySession = async (query: string) => {
   const session = await getServerSession(authOptions);
-  const today = new Date();
-  const defaultSession = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
-  const sessionId: string = financialSession || defaultSession;
-  console.log('session', sessionId);
+  console.log('search param:-', query);
   try {
     if (session) {
+      console.log('fetching data');
       const request = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection/${sessionId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-collection-report-by-date/${query}`,
         {
           method: 'GET',
           headers: {
@@ -34,8 +32,9 @@ export const fetchFeesDetailsBySession = async () => {
         },
       );
       const response = await request.json();
-      console.log('response', response);
-      return response;
+      const total = response.desciptionSum;
+      const collections = response.collectionReport;
+      return { total, collections };
     } else return;
   } catch (error) {
     console.error('Error', error);
@@ -70,269 +69,6 @@ export const getOptionalValues = async (): Promise<
   }
 };
 
-//get-fee-collection-history/{regdno} for fee collection details
-// {
-//   "year1": [
-//   {
-//     "mrNo": 9,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 10,
-//     "collectedFee": 1.23,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 23,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 24,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 25,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 11,
-//     "collectedFee": 1.23,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 19,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 20,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 21,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 22,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 3,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 12,
-//     "collectedFee": 1.23,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 13,
-//     "collectedFee": 1.23,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 14,
-//     "collectedFee": 1.23,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 15,
-//     "collectedFee": 1.23,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 16,
-//     "collectedFee": 5000,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 17,
-//     "collectedFee": 54000,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 18,
-//     "collectedFee": 30000,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 4,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 5,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 6,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 7,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "2023",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   },
-//   {
-//     "mrNo": 8,
-//     "collectedFee": 107348.34,
-//     "paymentMode": "CASH",
-//     "ddNo": null,
-//     "ddDate": null,
-//     "ddBank": null,
-//     "paymentDate": "06-11-2024",
-//     "dueYear": 1,
-//     "sessionId": "2024-2025"
-//   }
-// ],
-//   "year2": null,
-//   "year3": null,
-//   "year4": null
-// }
-//getDuesDetails for dues details
-//
 type FeeCollectionSingleStudentDetails = {
   status: number;
 };
@@ -400,6 +136,7 @@ export const handleDuesFeePayment = async (formData: any) => {
     }
   } catch (error) {
     console.log(error);
+    return 500;
   }
 };
 
@@ -542,6 +279,62 @@ export const handleUpdateOtherFeePayment = async (formData: any) => {
   }
 };
 
+export const handleDiscount = async (formData: any) => {
+  const session = await getServerSession(authOptions);
+  try {
+    if (session) {
+      const data = formData;
+      console.log('Data in handleDiscount function', data);
+      const request = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/insert-Discount-Data`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+        },
+      );
+      console.log('Response: \n', request.data);
+      if (request.status === 200) {
+        return 200;
+      } else {
+        return 400;
+      }
+    } else return 401;
+  } catch (error) {
+    console.log(error);
+    return 500;
+  }
+};
+
+export const handleAdjustment = async (formData: any) => {
+  const session = await getServerSession(authOptions);
+  try {
+    if (session) {
+      const data = formData;
+      console.log('Data in handleDiscount function', data);
+      const request = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/apply-Adjustment`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+        },
+      );
+      console.log('Response: \n', request.data);
+      if (request.status === 200) {
+        return 200;
+      } else {
+        return 400;
+      }
+    } else return 401;
+  } catch (error) {
+    console.log(error);
+    return 500;
+  }
+};
+
 export const deleteMrDetails = async (mrNo: string) => {
   const session = await getServerSession(authOptions);
   try {
@@ -572,24 +365,3 @@ export const deleteMrDetails = async (mrNo: string) => {
     console.log(error);
   }
 };
-// const generateFeeCollectionTable = async() => {
-//     try{
-//       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/get-fee-collection-history/${regdNo}`)
-//     }catch (e) {
-//       console.error(e);
-//     }
-// }
-// const generateFeeDuesTable = async(registrationNo: string) => {
-//     try{
-//       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/get-fee-collection-history/${registrationNo}`)
-//     }catch (e) {
-//       console.error(e);
-//     }
-// }
-
-/*
-other fees - dropdown menu of particulars from backend - /accounts-section/get-other-fees
-
-* */
-
-// /update-fee-collection
