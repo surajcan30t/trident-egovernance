@@ -26,55 +26,58 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import PulseLoader from 'react-spinners/PulseLoader';
-import { handleDiscount } from '../server-actions-fee-collection/actions'
+import { handleAdjustment } from '../server-actions-fee-collection/actions'
 const FormSchema = z
   .object({
     regdNo: z.string().min(2, {
       message: 'Username must be at least 2 characters.',
     }),
-    particulars: z.string({
+    description: z.string({
       required_error: 'Must enter the description',
     }),
-    discount: z.string({
-      required_error: 'Must enter collected fee',
+    considerationAmount: z.string({
+      required_error: 'Must enter consideration amount',
+    }),
+    approvedBy: z.enum(['Principal'], {
+      required_error: 'Must enter approved by',
     }),
   })
 
-const DiscountForm = ({ regdNo, description }: { regdNo: string, description: string }) => {
+const AdjustmentForm = ({ regdNo, description }: { regdNo: string, description: string }) => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       regdNo: regdNo,
-      particulars: description,
+      description: description,
     },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       setLoading(true);
-      const response = await handleDiscount(data)
-      setLoading(false)
-      if (response !== 200) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong',
-        });
-      } else {
+      const response = await handleAdjustment(data)
+      if (response === 200) {
         toast({
           variant: 'success',
           title: 'Success',
           description: 'Discount applied successfully',
         });
         form.reset();
-        router.refresh();
+        setTimeout(() => {
+          router.refresh();
+        }, 100);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Something went wrong',
+        });
       }
     } catch (e) {
-      setLoading(false);
-      console.log(e);
     } finally {
       setLoading(false);
     }
@@ -115,7 +118,7 @@ const DiscountForm = ({ regdNo, description }: { regdNo: string, description: st
                   {/*Description*/}
                   <FormField
                     control={form.control}
-                    name="particulars"
+                    name="description"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
@@ -123,26 +126,51 @@ const DiscountForm = ({ regdNo, description }: { regdNo: string, description: st
                         </FormLabel>
                         <FormControl>
                           <Input
-                          readOnly={true}
-                          disabled={true}
-                          placeholder="Enter the description" {...field} />
+                            readOnly={true}
+                            disabled={true}
+                            placeholder="Enter the description" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  {/*Discount Amount*/}
+                  {/* Consideration Amount*/}
                   <FormField
                     control={form.control}
-                    name="discount"
+                    name="considerationAmount"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          Discount Amount<span className="text-red-500">*</span>
+                          Consideration Amount<span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter the discount amount" {...field} />
+                          <Input placeholder="Enter the consideration amount" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {/* Approved By*/}
+                  <FormField
+                    control={form.control}
+                    name="approvedBy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Approved By</FormLabel>
+                        <span className="text-red-500">*</span>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Approved By" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Principal">Principal</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -166,4 +194,4 @@ const DiscountForm = ({ regdNo, description }: { regdNo: string, description: st
   )
 }
 
-export default DiscountForm
+export default AdjustmentForm

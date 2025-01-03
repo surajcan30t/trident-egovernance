@@ -25,6 +25,7 @@ import { MRDeleteAction } from '@/app/(app)/(feecollection)/components/MRDeleteA
 import { useSession } from 'next-auth/react';
 import DiscountForm from './DiscountForm';
 import { BadgePercent } from 'lucide-react';
+import AdjustmentForm from './AdjustmentForm';
 
 interface StudentData {
   regdNo?: string;
@@ -163,6 +164,8 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
   let grandTotalAmountPaid = 0;
   let grandTotalAmountPaidToJee = 0;
   let grandTotalBalanceAmount = 0;
+  let grandTotalDiscount = 0;
+  let grandTotalAdjustment = 0;
 
   const years = duesData ? Object.keys(duesData) : [];
   const defaultYear = years[years.length - 1];
@@ -191,20 +194,21 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
 
                 return (
                   <TabsContent key={year} value={year}>
-                    <div className='bg-slate-200 w-full flex justify-end items-end p-3 rounded-lg my-2'>
-                      <Button variant='trident' >Apply Discount</Button>
-                    </div>
                     {semesters.map((semester) => {
                       // Calculate totals for the semester
                       let totalAmountDue = 0;
                       let totalAmountPaid = 0;
                       let totalAmountPaidToJee = 0;
                       let totalBalanceAmount = 0;
+                      let totalDiscount = 0;
+                      let totalAdjustments = 0;
                       duesData[year][semester].forEach((item: any) => {
                         totalAmountDue += item.amountDue;
                         totalAmountPaid += item.amountPaid;
                         totalAmountPaidToJee += item.amountPaidToJee;
                         totalBalanceAmount += item.balanceAmount;
+                        totalDiscount += item.discount;
+                        totalAdjustments += item.adjustment;
                       });
 
                       // Accumulate grand totals
@@ -212,6 +216,8 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                       grandTotalAmountPaid += totalAmountPaid;
                       grandTotalAmountPaidToJee += totalAmountPaidToJee;
                       grandTotalBalanceAmount += totalBalanceAmount;
+                      grandTotalDiscount += totalDiscount;
+                      grandTotalAdjustment += totalAdjustments;
 
                       return (
                         <Card key={semester} className="mb-4">
@@ -229,9 +235,9 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                   <th className="border">Amount Due</th>
                                   <th className="border">Amount Paid</th>
                                   <th className="border">AMT Paid At OJEE</th>
-                                  <th className="border">Balance AMT</th>
                                   <th className="border">Discount</th>
                                   <th className="border">Adjustment</th>
+                                  <th className="border">Balance AMT</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -251,19 +257,19 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                         {item.amountPaidToJee.toFixed(2)}
                                       </td>
                                       <td className="border p-1">
-                                        {item.balanceAmount.toFixed(2)}
-                                      </td>
-                                      <td className="border p-1">
-                                        <div className='flex justify-between gap-1'>
+                                        <div className='flex justify-between items-center gap-1'>
                                           {item.discount.toFixed(2)}
-                                          <Button size='sm' className='bg-violet-400' ><BadgePercent /></Button>
+                                          {item.dueYear.toString() === defaultYear && regdNo && <DiscountForm regdNo={regdNo} description={item.description} />}
                                         </div>
                                       </td>
                                       <td className="border p-1">
-                                        <div className='flex justify-between gap-1'>
+                                        <div className='flex justify-between items-center gap-1'>
                                           {item.adjustment.toFixed(2)}
-                                          <Button size='sm' className='bg-violet-400' ><BadgePercent /></Button>
+                                          {item.dueYear.toString() === defaultYear && regdNo && <AdjustmentForm regdNo={regdNo} description={item.description} />}
                                         </div>
+                                      </td>
+                                      <td className="border p-1">
+                                        {item.balanceAmount.toFixed(2)}
                                       </td>
                                     </tr>
                                   ),
@@ -284,6 +290,12 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                     {totalAmountPaidToJee.toFixed(2)}
                                   </td>
                                   <td className="border">
+                                    {totalDiscount.toFixed(2)}
+                                  </td>
+                                  <td className="border">
+                                    {totalAdjustments.toFixed(2)}
+                                  </td>
+                                  <td className="border">
                                     {totalBalanceAmount.toFixed(2)}
                                   </td>
                                 </tr>
@@ -301,6 +313,8 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                             <th colSpan={2} className="border">Total Amount Due</th>
                             <th className="border">Total Amount Paid</th>
                             <th className="border">Total AMT Paid At OJEE</th>
+                            <th className="border">Total Discount</th>
+                            <th className="border">Total Adjustment</th>
                             <th className="border">Total Balance AMT</th>
                           </tr>
                         </thead>
@@ -314,6 +328,12 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                             </td>
                             <td className="border">
                               {grandTotalAmountPaidToJee.toFixed(2)}
+                            </td>
+                            <td className="border">
+                              {grandTotalDiscount.toFixed(2)}
+                            </td>
+                            <td className="border">
+                              {grandTotalAdjustment.toFixed(2)}
                             </td>
                             <td className="border">
                               {grandTotalBalanceAmount.toFixed(2)}
@@ -437,20 +457,24 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
 
 const FeeCollectionDashboardSingleStudent = () => {
   const searchParams = useSearchParams();
-  const param = searchParams.get('registrationNo');
+  const registrationNo = searchParams.get('registrationNo');
   return (
     <>
-      <div className="w-full flex flex-row gap-x-0">
+      {registrationNo && <div className="w-full flex flex-row gap-x-0">
         <div className="w-2/3 flex flex-col space-y-6">
-          <FeeDuesDetailsTable regdNo={param} />
+          <FeeDuesDetailsTable regdNo={registrationNo} />
         </div>
         <div className="w-1/3 h-fit rounded-lg px-3 py-0">
           <div className="w-full flex flex-col space-y-5">
-            {param && <FeeCollectionForm regdNo={param} />}
-            {param && <DiscountForm regdNo={param} />}
+            {registrationNo && <FeeCollectionForm regdNo={registrationNo} />}
           </div>
         </div>
-      </div>
+      </div> }
+      {
+        !registrationNo && <div className="w-full flex flex-col space-y-6">
+          <p className="text-center text-lg text-red-500 font-semibold">Please enter the registration number to view the fee collection details</p>
+        </div>
+      }
     </>
   );
 };
