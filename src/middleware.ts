@@ -90,14 +90,14 @@ export default withAuth(
     }
 
     // Check if the requested route is allowed
-    // const isRouteAllowed = allowedRoutes.some(
-    //   (route: string) => route === requestedPath,
-    // );
+    const isRouteAllowed = allowedRoutes.some(
+      (route: string) => route === requestedPath,
+    );
 
-    // if (!isRouteAllowed) {
-    //   console.log(`Route not allowed. Redirecting to ${redirectUrl}.`);
-    //   return NextResponse.redirect(new URL(redirectUrl, req.url));
-    // }
+    if (!isRouteAllowed) {
+      console.log(`Route not allowed. Redirecting to ${redirectUrl}.`);
+      return NextResponse.redirect(new URL(redirectUrl, req.url));
+    }
 
     console.log('Access granted to:', requestedPath);
     return NextResponse.next(); // Proceed if all checks pass
@@ -177,6 +177,10 @@ export const config = {
     '/student/:path*',
     '/newstudentregistration',
     '/office/:path*',
-    // '/feecollection/:path*',
+    '/feecollection/dashboard',
+    '/feecollection/feecollectiondetails',
+    '/feecollection/studentfeecollection',
+    '/feecollection/otherfeecollection',
+    '/feecollection/duestatusreport',
   ],
 };
