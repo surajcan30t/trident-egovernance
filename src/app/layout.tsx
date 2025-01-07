@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Chakra_Petch, Exo_2, Space_Mono } from 'next/font/google';
 import './globals.css';
 import SessionWrapper from '@/components/SessionWrapper';
-import Navbar from '@/components/LandingNavbar';
-import Footer from '@/components/Footer';
+
 
 const exo2 = Exo_2({ subsets: ['latin'] });
 

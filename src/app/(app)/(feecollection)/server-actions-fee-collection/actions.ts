@@ -15,18 +15,30 @@ export const getSessionFromUser = async (sessionId: string) => {
   return { success: true, message: 'Successfully updated session' };
 };
 
-export const fetchFeesDetailsBySession = async (query: string) => {
+export const fetchFeesDetailsBySession = async (
+  from: string | null,
+  to: string | null,
+  sessionId: string | null,
+) => {
   const session = await getServerSession(authOptions);
-  console.log('search param:-', query);
+  console.log('from:-', from);
+  console.log('to:-', to);
+  console.log('session:-', sessionId);
   try {
     if (session) {
       console.log('fetching data');
       const request = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-collection-report-by-date/${query}`,
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-collection-report`,
         {
-          method: 'GET',
+          method: 'POST',
+          body: JSON.stringify({
+            fromDate: from,
+            toDate: to,
+            session: sessionId,
+          }),
           headers: {
             Authorization: `Bearer ${session.user.accessToken}`,
+            'Content-Type': 'application/json',
           },
           cache: 'no-cache',
         },
@@ -87,7 +99,7 @@ export const feeCollectionSingleStudentDetails = async (
           },
         },
       );
-      const json = await response.json();
+      console.log('registrationNo', registrationNo);
       console.log('response', response.status);
       if (response.status !== 200) {
         return { status: 400 };
@@ -112,7 +124,6 @@ export const handleDuesFeePayment = async (formData: any) => {
         console.log('No initial data found.');
         return;
       } else {
-        console.log('Data in NSRALLOTMENTID function', data);
         try {
           const request = await axios.post(
             `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
@@ -124,7 +135,6 @@ export const handleDuesFeePayment = async (formData: any) => {
               },
             },
           );
-          console.log('Response: \n', request.data);
           return request.status;
         } catch (e) {
           console.error(e);
@@ -363,5 +373,29 @@ export const deleteMrDetails = async (mrNo: string) => {
     } else return 401;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getStudentDuesDetails = async () => {
+  const session = await getServerSession(authOptions);
+  const course = 'BTECH';
+  const branch = 'CSE';
+  let regdYear;
+  if (session) {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-due-status-report?${regdYear && `regdYear=${regdYear}`}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+        },
+      );
+      const response = await request.json();
+      console.log('response', response);
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
   }
 };

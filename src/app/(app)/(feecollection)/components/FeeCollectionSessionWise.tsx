@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button"
 import { useMemo } from 'react';
 import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { getSessionFromUser } from '@/app/(app)/(feecollection)/server-actions-fee-collection/actions';
 import { useRouter } from 'next/navigation';
+import { SearchIcon } from "lucide-react"
 
 function generateFinancialYears(startYear:any) {
   const financialYears = [];
@@ -35,7 +35,7 @@ const FormSchema = z.object({
 })
 
 
-const FinancialYearSelector = () => {
+const SessionWiseSelector = () => {
   const router = useRouter()
   const financialYears = useMemo(() => generateFinancialYears(2007), []);
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -43,17 +43,9 @@ const FinancialYearSelector = () => {
   })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const request = await getSessionFromUser(data.financialYear)
-    if (request.success === false) {
-      toast({
-        title: "You submitted the following values:",
-        variant: "destructive",
-        description: "Sorry no session found",
-      })
-    }
-    else{
-      router.refresh()
-    }
+
+    router.push(`/feecollection/feecollectiondetails?from=${null}&to=${null}&sessionId=${data.financialYear}`)
+    
   }
 
   return (
@@ -67,7 +59,7 @@ const FinancialYearSelector = () => {
               <FormItem>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Select Session" />
                     </SelectTrigger>
                   </FormControl>
@@ -82,11 +74,11 @@ const FinancialYearSelector = () => {
               </FormItem>
             )}
           />
-          <Button variant={'trident'} type="submit">Get Details</Button>
+          <Button variant={'trident'} type="submit"><SearchIcon className="w-4 h-4" /> Session</Button>
         </form>
       </Form>
     </>
   )
 }
 
-export default FinancialYearSelector
+export default SessionWiseSelector
