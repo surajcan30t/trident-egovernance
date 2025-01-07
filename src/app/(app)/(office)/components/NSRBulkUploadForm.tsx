@@ -65,7 +65,7 @@ const NSRBulkUploadForm = () => {
       return Promise.reject({
         status: 400,
         message: 'No file selected',
-        data: [] || null,
+        data: null,
       });
     }
 

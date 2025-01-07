@@ -185,7 +185,7 @@ function ChartComponent({ data, semester }: { data: any, semester: string }) {
 const StudentAttendance = () => {
   const { data: session, status } = useSession();
   const [attendanceSummary, setAttendanceSummary] = useState(null);
-  let curSem
+  const [curSem, setCursem] = useState("1");
   useEffect(() => {
     async function getAttendanceDetails() {
       // Add additional checks to prevent unnecessary API calls
@@ -193,7 +193,9 @@ const StudentAttendance = () => {
 
       if (status === 'authenticated' && session?.user?.accessToken) {
         try {
-          curSem = session.user.userType.collegeInformation.semester
+          console.log('sem', session.user.userType.collegeInformation.semester)
+          setCursem(session.user.userType.collegeInformation.semester.toString());
+          console.log('semester', curSem)
           const token = session.user.accessToken;
           const response = await axios.get(
             `${process.env.NEXT_PUBLIC_BACKEND}/student-portal/get-attendance-summary`,
@@ -213,6 +215,7 @@ const StudentAttendance = () => {
 
     // Only call the function if we have a valid session
     if (status === 'authenticated') {
+      console.log('Status:', status)
       getAttendanceDetails();
     }
   }, [status, session]);

@@ -70,8 +70,18 @@ export const columns: ColumnDef<FeesDetailsSchema>[] =[
 
   {
     accessorKey: 'mrNo',
-    header: () => <div className="">MR No.</div>,
-    cell: ({ row }) => <div className="">{row.getValue('mrNo')}</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="MR No." />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex">
+          <span className="max-w-[500px] truncate font-medium">
+            {row.getValue('mrNo')}
+          </span>
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'paymentDate',
@@ -174,44 +184,63 @@ function CollectionDetails({ mrNo }:{ mrNo:string }) {
   const token = session?.user.accessToken
   const [collectionDetails, setCollectionDetails] = useState<any>([])
   useEffect(() => {
-    const getCollectionDetails = async()=>{
-      const request = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-mrDetails-mrNo/${mrNo}`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
+    const getCollectionDetails = async () => {
+      try {
+        const request = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-mrDetails-mrNo/${mrNo}`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+            cache: 'no-cache',
           },
-          cache: 'no-cache',
-        },
-      );
-      const response = await request.json();
-      setCollectionDetails(response);
-      console.log('response', response);
+        );
+
+        if (!request.ok) {
+          throw new Error(`HTTP error! status: ${request.status}`);
+        }
+
+        const text = await request.text();
+        if (!text) {
+          setCollectionDetails([]);
+          return;
+        }
+
+        const response = JSON.parse(text);
+        setCollectionDetails(response);
+        console.log('response', response);
+      } catch (error) {
+        console.error('Error fetching collection details:', error);
+        setCollectionDetails([]);
+      }
+    };
+
+    if (token && mrNo) {
+      getCollectionDetails();
     }
-    getCollectionDetails()
-  }, [mrNo]);
+  }, [mrNo, token]);
   return(
     <>
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline">Details</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[40vw]">
           <table >
             <thead>
-            <tr>
+            <tr className="bg-slate-200 border">
               <th >Sl. No</th>
               <th >Particulars</th>
               <th >Amount</th>
             </tr>
             </thead>
             <tbody>
-            {collectionDetails.map((item:any, index:number) => (
+            {[...collectionDetails].sort((a, b) => a.slNo - b.slNo).map((item:any, index:number) => (
               <tr key={index}>
-                <td >{item.slNo}</td>
-                <td >{item.particulars}</td>
-                <td >{item.amount}</td>
+                <td className="border">{item.slNo}</td>
+                <td className="border">{item.particulars}</td>
+                <td className="border">{item.amount}</td>
               </tr>
             ))}
             </tbody>

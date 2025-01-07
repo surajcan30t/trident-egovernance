@@ -48,6 +48,12 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: data.length,
+      },
+    },
     state: {
       sorting,
       columnVisibility,

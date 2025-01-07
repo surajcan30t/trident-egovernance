@@ -14,7 +14,6 @@ interface PersonalDetails {
   currentYear?: number;
 }
 
-// http://172.16.1.151:8080/accounts-section/get-money-receipt/7623
 export default function ExportPdf(): JSX.Element {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -63,20 +62,20 @@ export default function ExportPdf(): JSX.Element {
       }
     }else return
   };
-  // const handlePrint = () => {
-  //   const printSection = document.getElementById('print-section');
-  //   if (!printSection) {
-  //     console.error('Print section not found!');
-  //     return;
-  //   }
-  //   //
-  //   // Temporarily clone the print section and print
-  //   const newWindow: Window | null = window.open('', '_blank');
-  //   newWindow?.document.write(printSection.innerHTML);
-  //   newWindow?.document.close();
-  //   newWindow?.print();
-  //   newWindow?.close();
-  // };
+  const handlePrint = () => {
+    const printSection = document.getElementById('print-section');
+    if (!printSection) {
+      console.error('Print section not found!');
+      return;
+    }
+    //
+    // Temporarily clone the print section and print
+    const newWindow: Window | null = window.open('', '_blank');
+    newWindow?.document.write(printSection.innerHTML);
+    newWindow?.document.close();
+    newWindow?.print();
+    newWindow?.close();
+  };
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -139,6 +138,15 @@ export default function ExportPdf(): JSX.Element {
         disabled={isLoading}
       >
         {isLoading ? 'Generating...' : 'Download PDF'}
+      </Button>
+
+      <Button
+        variant="trident"
+        onClick={handlePrint}
+        className="float-end m-2"
+        disabled={isLoading}
+      >
+        Print
       </Button>
       <div className="bg-cover bg-no-repeat border p-4" id="print-section">
         <table className="w-full border-collapse mt-0">

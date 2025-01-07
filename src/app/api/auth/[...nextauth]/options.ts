@@ -24,13 +24,14 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 60 * 60, // Session expires after 1 hour of inactivity
-    updateAge: 0, // Update session with each request to keep it active while user is on page
+    maxAge: 60 * 60,
+    updateAge: 0
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, account }): Promise<JWT> {
       if (account) {
+        console.log('account', account);
         token.accessToken = account.access_token;
         try {
           const userType = await fetch(
