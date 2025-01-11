@@ -1,0 +1,842 @@
+'use client'
+import { z } from 'zod';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from '@/hooks/use-toast';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import PulseLoader from 'react-spinners/PulseLoader';
+import { useParticulars } from './FeeDetailsFilterProvider';
+import axios from 'axios';
+import { Input } from '@/components/ui/input';
+import { Trash2Icon } from 'lucide-react';
+
+/**
+ * 
+ * regdYear int
+ * description string
+ * amount int
+ * comments string
+ * tfwType ['TFW', 'NTFW', 'ALL']
+ * tatFees int 0
+ * tactFees int 0
+ * payType ['SEMESTER', 'YEARLY']
+
+*/
+
+const generateRegdYearOptions = () => {
+  const currentYear = 1;
+  const years = Array.from({ length: 4 }, (_, index) => currentYear + index);
+  return years.map(year => ({ label: year.toString(), value: year.toString() }));
+}
+
+function SelectRegdYear({ onSubmit, loading }: { onSubmit: (data: z.infer<typeof FormSchema>) => void, loading: boolean }) {
+
+  const FormSchema = z
+    .object({
+      admissionYear: z.enum(generateRegdYearOptions().map(option => option.value) as [string, ...string[]]),
+    })
+clear
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  })
+
+  return (
+    <div className='w-full flex flex-col items-center justify-center'>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex flex-row items-end gap-2">
+          <div className='w-4/5'>
+            {/* Registration Year*/}
+            <FormField
+              control={form.control}
+              name="admissionYear"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Registration Year</FormLabel>
+                  <span className="text-red-500">*</span>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select registration year" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {generateRegdYearOptions().map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className='w-1/5 flex justify-center'>
+            <Button variant={'trident'} size={'default'} type="submit">
+              {loading ? (<PulseLoader
+                color="#ffffff"
+                size={5}
+              />) :
+                'Get Particulars'
+              }
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
+  )
+
+}
+
+function FeeStructureFormYearwise({ token }: { token: string }) {
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [feeTypeListData, setFeeTypeListData] = useState<Array<{ description: string; type: string; feeGroup: string; mrHead: string; partOf: string; semester: number }> | null>(null);
+
+  const [dynamicFields, setDynamicFields] = useState<
+    {
+      regdYear?: string,
+      description?: string,
+      amount?: string,
+      payType?: string,
+      tfwType?: string,
+      tatFees?: number,
+      tactFees?: number,
+      comments?: string,
+    }[]
+  >([{
+    regdYear: '',
+    description: '',
+    amount: '',
+    payType: '',
+    tfwType: '',
+    tatFees: 0,
+    tactFees: 0,
+    comments: ''
+  }]);
+
+
+  const RegdYrFormSchema = z
+    .object({
+      admissionYear: z.enum(generateRegdYearOptions().map(option => option.value) as [string, ...string[]]),
+    })
+
+  const FormSchema = z
+    .object({
+      dynamicFields: z
+        .array(
+          z.object({
+            regdYear: z.string().min(1, { message: 'This field is required.' }),
+            description: z.string().min(1, { message: 'This field is required.' }),
+            amount: z.string().min(1, { message: 'This field is required.' }),
+            payType: z.enum(['SEMESTER', 'YEARLY'], {
+              required_error: 'Must choose payment mode',
+            }),
+            tfwType: z.enum(['TFW', 'NTFW', 'ALL'], {
+              required_error: 'Must choose payment mode',
+            }),
+            tatFees: z.number().default(0),
+            tactFees: z.number().default(0),
+            comments: z.string().optional(),
+          }),
+        )
+        .min(1, {
+          message: 'At least one description and fee pair must be added',
+        }),
+    })
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  })
+
+  const handleAddField = () => {
+    setDynamicFields((prevFields) => [
+      ...prevFields,
+      {
+        regdYear: '',
+        description: '',
+        amount: '',
+        payType: '',
+        tfwType: '',
+        tatFees: 0,
+        tactFees: 0,
+        comments: ''
+      },
+    ]);
+  };
+
+  const handleRemoveField = (index: number) => {
+    const currentValues = form.getValues("dynamicFields");
+
+    const updatedValues = currentValues.filter((_, i) => i !== index);
+
+    setDynamicFields(updatedValues);
+    form.setValue("dynamicFields", updatedValues);
+  };
+
+
+  const onRegdYrSubmit = async (data: z.infer<typeof RegdYrFormSchema>) => {
+    setLoading(true)
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-feeType-list?year=${data.admissionYear}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      )
+      if (response.status === 200) {
+        setLoading(false)
+        setFeeTypeListData(response.data)
+        console.log(response.data)
+      }
+      else {
+        setLoading(false)
+        toast({
+          title: 'Error',
+          description: 'Something went wrong',
+          variant: 'destructive'
+        })
+      }
+    } catch (error) {
+      setLoading(false)
+      toast({
+        title: 'Error',
+        description: 'Something went wrong',
+        variant: 'destructive'
+      })
+    }
+  }
+
+  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    console.log(data)
+  }
+
+  return (
+    <div className='w-full flex flex-col items-center justify-center border rounded-lg p-2'>
+      <SelectRegdYear onSubmit={onRegdYrSubmit} loading={loading} />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          {dynamicFields.map((_, index) => (
+            <div className='grid grid-cols-6 gap-2' key={index}>
+              {/* Description Field */}
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <span className="text-red-500">*</span>
+                <Controller
+                  name={`dynamicFields.${index}.description`}
+                  control={form.control}
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select payment description" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {feeTypeListData?.map((item: any, idx: number) => (
+                          <SelectItem key={idx} value={item.description}>
+                            {item.description}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FormMessage />
+              </FormItem>
+              {/* Collected Fee Field */}
+              <FormItem>
+                <FormLabel>
+                  Amount<span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...form.register(`dynamicFields.${index}.amount`)}
+                    placeholder="Amount"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+
+              {/* Pay type */}
+              <FormItem>
+                <FormLabel>Payment Mode</FormLabel>
+                <span className="text-red-500">*</span>
+                <Controller
+                  name={`dynamicFields.${index}.payType`}
+                  control={form.control}
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select payment type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="SEMESTER">SEMESTER</SelectItem>
+                        <SelectItem value="YEARLY">YEARLY</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FormMessage />
+              </FormItem>
+
+              {/* TFW type */}
+              <FormItem>
+                <FormLabel>TFW Type</FormLabel>
+                <span className="text-red-500">*</span>
+                <Controller
+                  name={`dynamicFields.${index}.tfwType`}
+                  control={form.control}
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select TFW type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="TFW">TFW</SelectItem>
+                        <SelectItem value="NTFW">NTFW</SelectItem>
+                        <SelectItem value="ALL">ALL</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FormMessage />
+              </FormItem>
+
+              {/* Comments Field */}
+              <FormItem>
+                <FormLabel>
+                  Comments
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...form.register(`dynamicFields.${index}.comments`)}
+                    placeholder="Comments"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+
+              {/* Remove Button */}
+              <div className="flex justify-start items-end">
+                <Button
+                  type="button"
+                  size={'icon'}
+                  onClick={() => handleRemoveField(index)}
+                  className="mt-2"
+                  variant="destructive"
+                >
+                  <Trash2Icon className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+          <Button type="button" variant={'outline'} onClick={handleAddField}>
+            Add Fees
+          </Button>
+        </form>
+      </Form>
+    </div>
+  )
+
+}
+
+
+
+export default function FeeStructureGenerationForm({ token }: { token: string }) {
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [feeTypeListData, setFeeTypeListData] = useState<Array<{ description: string; type: string; feeGroup: string; mrHead: string; partOf: string; semester: number }> | null>(null);
+
+  const [dynamicFields, setDynamicFields] = useState<
+    {
+
+    }[]
+  >([{
+    
+  }]);
+
+  const FormSchema = z
+    .object({
+      dynamicFields: z
+        .array(
+          z.object({
+            regdYear: z.string().min(1, { message: 'This field is required.' }),
+            description: z.string().min(1, { message: 'This field is required.' }),
+            amount: z.string().min(1, { message: 'This field is required.' }),
+            payType: z.enum(['SEMESTER', 'YEARLY'], {
+              required_error: 'Must choose payment mode',
+            }),
+            tfwType: z.enum(['TFW', 'NTFW', 'ALL'], {
+              required_error: 'Must choose payment mode',
+            }),
+            tatFees: z.number().default(0),
+            tactFees: z.number().default(0),
+            comments: z.string().optional(),
+          }),
+        )
+        .min(1, {
+          message: 'At least one description and fee pair must be added',
+        }),
+    })
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  })
+
+  const handleAddField = () => {
+    setDynamicFields((prevFields) => [
+      ...prevFields,
+      {
+        regdYear: '',
+        description: '',
+        amount: '',
+        payType: '',
+        tfwType: '',
+        tatFees: 0,
+        tactFees: 0,
+        comments: ''
+      },
+    ]);
+  };
+
+  const handleRemoveField = (index: number) => {
+    const currentValues = form.getValues("dynamicFields");
+
+    const updatedValues = currentValues.filter((_, i) => i !== index);
+
+    setDynamicFields(updatedValues);
+    form.setValue("dynamicFields", updatedValues);
+  };
+
+  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    console.log(data)
+  }
+
+  return (
+    <div className='w-3/4 flex flex-col items-center justify-center border shadow-lg rounded-lg p-2'>
+      <h1 className='text-xl text-start font-semibold'>Generate Fee Structure</h1>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          {dynamicFields.map((_, index) => (
+            <div key={index} className='flex flex-row gap-x-2'>
+              <FeeStructureFormYearwise token={token} />
+              <div className='bg-red-500 flex items-center justify-center rounded-md'>
+                <Button type="button" variant={'destructive'} onClick={() => handleRemoveField(index)}><Trash2Icon className="w-4 h-4" /></Button>
+              </div>
+            </div>
+          ))}
+          <Button type="button" variant={'outline'} onClick={handleAddField}>
+            Add More
+          </Button>
+        </form>
+      </Form>
+    </div>
+  )
+}
+
+/**
+ * for regd 1
+ * [
+    {
+        "description": "BLAZER, UNIFORM FEE",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "TACTFACILITIES",
+        "mrHead": "TACTF",
+        "partOf": "FEES",
+        "semester": 1
+    },
+    {
+        "description": "CAUTION MONEY",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "CAUTIONMONEY",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 1
+    },
+    {
+        "description": "OTHER FEES - SEM1",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "MISCFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 1
+    },
+    {
+        "description": "OTHER FEES - SEM2",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "MISCFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 2
+    },
+    {
+        "description": "COURSE/TUITION FEE - SEM1",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "COURSEFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 1
+    },
+    {
+        "description": "COURSE/TUITION FEE - SEM2",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "COURSEFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 2
+    },
+    {
+        "description": "BPUT REGISTRATION FEE - SEM1",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "UNIVREGFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 1
+    },
+    {
+        "description": "BPUT REGISTRATION FEE - SEM2",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "UNIVREGFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 2
+    },
+    {
+        "description": "ACTIVITY FEE - SEM1",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "TACTFACILITIES",
+        "mrHead": "TACTF",
+        "partOf": "FEES",
+        "semester": 1
+    },
+    {
+        "description": "ACTIVITY FEE - SEM2",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "TACTFACILITIES",
+        "mrHead": "TACTF",
+        "partOf": "FEES",
+        "semester": 2
+    },
+    {
+        "description": "PRE PLACEMENT TRAINING FEE - SEM1",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "PPTFEES",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 1
+    },
+    {
+        "description": "PRE PLACEMENT TRAINING FEE - SEM2",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "PPTFEES",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 2
+    },
+    {
+        "description": "INDUSTRY-READY TRAINING FEE - SEM1",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "INDTRNGFEE",
+        "mrHead": "TACTF",
+        "partOf": "INDTRNGFEES",
+        "semester": 1
+    },
+    {
+        "description": "INDUSTRY-READY TRAINING FEE - SEM2",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "INDTRNGFEE",
+        "mrHead": "TACTF",
+        "partOf": "INDTRNGFEES",
+        "semester": 2
+    },
+    {
+        "description": "PLACEMENT-POOL MEMBERSHIP - SEM1",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "PPMFEE",
+        "mrHead": "TACTF",
+        "partOf": "PLPOOLFEES",
+        "semester": 1
+    },
+    {
+        "description": "PLACEMENT-POOL MEMBERSHIP - SEM2",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "PPMFEE",
+        "mrHead": "TACTF",
+        "partOf": "PLPOOLFEES",
+        "semester": 2
+    },
+    {
+        "description": "HOSTEL FEE - IN-CAMPUS - SEM1",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "HOSTELFEE",
+        "mrHead": "TACTF",
+        "partOf": "HOSTELFEES",
+        "semester": 1
+    },
+    {
+        "description": "HOSTEL FEE - IN-CAMPUS - SEM2",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "HOSTELFEE",
+        "mrHead": "TACTF",
+        "partOf": "HOSTELFEES",
+        "semester": 2
+    },
+    {
+        "description": "TRANSPORT FEE - SEM1",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "TRANSPORTFEE",
+        "mrHead": "TACTF",
+        "partOf": "TRANSPORTFEES",
+        "semester": 1
+    },
+    {
+        "description": "TRANSPORT FEE - SEM2",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "TRANSPORTFEE",
+        "mrHead": "TACTF",
+        "partOf": "TRANSPORTFEES",
+        "semester": 2
+    },
+    {
+        "description": "TRANSPORT FEE - Y1",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "TRANSPORTFEE",
+        "mrHead": "TAT",
+        "partOf": "TRANSPORTFEES",
+        "semester": 1
+    },
+    {
+        "description": "COLLEGE FEES - SEM1",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "COURSEFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 1
+    },
+    {
+        "description": "COLLEGE FEES - SEM2",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "COURSEFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 2
+    }
+]
+    for regd 4
+
+    [
+    {
+        "description": "OTHER FEES - SEM7",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "MISCFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 7
+    },
+    {
+        "description": "OTHER FEES - SEM8",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "MISCFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 8
+    },
+    {
+        "description": "COURSE/TUITION FEE - SEM7",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "COURSEFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 7
+    },
+    {
+        "description": "COURSE/TUITION FEE - SEM8",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "COURSEFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 8
+    },
+    {
+        "description": "HOSTEL FEE - IN-CAMPUS - SEM8",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "HOSTELFEE",
+        "mrHead": "TACTF",
+        "partOf": "HOSTELFEES",
+        "semester": 8
+    },
+    {
+        "description": "INDUSTRY-READY TRAINING FEE - SEM7",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "INDTRNGFEE",
+        "mrHead": "TACTF",
+        "partOf": "INDTRNGFEES",
+        "semester": 7
+    },
+    {
+        "description": "INDUSTRY-READY TRAINING FEE - SEM8",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "INDTRNGFEE",
+        "mrHead": "TACTF",
+        "partOf": "INDTRNGFEES",
+        "semester": 8
+    },
+    {
+        "description": "PLACEMENT-POOL MEMBERSHIP - SEM7",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "PPMFEE",
+        "mrHead": "TACTF",
+        "partOf": "PLPOOLFEES",
+        "semester": 7
+    },
+    {
+        "description": "PLACEMENT-POOL MEMBERSHIP - SEM8",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "PPMFEE",
+        "mrHead": "TACTF",
+        "partOf": "PLPOOLFEES",
+        "semester": 8
+    },
+    {
+        "description": "PRE PLACEMENT TRAINING FEE - SEM7",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "PPTFEES",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 7
+    },
+    {
+        "description": "PRE PLACEMENT TRAINING FEE - SEM8",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "PPTFEES",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 8
+    },
+    {
+        "description": "BPUT REGISTRATION FEE - SEM7",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "UNIVREGFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 7
+    },
+    {
+        "description": "BPUT REGISTRATION FEE - SEM8",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "UNIVREGFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 8
+    },
+    {
+        "description": "TRANSPORT FEE - SEM7",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "TRANSPORTFEE",
+        "mrHead": "TACTF",
+        "partOf": "TRANSPORTFEES",
+        "semester": 7
+    },
+    {
+        "description": "TRANSPORT FEE - SEM8",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "TRANSPORTFEE",
+        "mrHead": "TACTF",
+        "partOf": "TRANSPORTFEES",
+        "semester": 8
+    },
+    {
+        "description": "ACTIVITY FEE - SEM7",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "TACTFACILITIES",
+        "mrHead": "TACTF",
+        "partOf": "FEES",
+        "semester": 7
+    },
+    {
+        "description": "ACTIVITY FEE - SEM8",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "TACTFACILITIES",
+        "mrHead": "TACTF",
+        "partOf": "FEES",
+        "semester": 8
+    },
+    {
+        "description": "PREVIOUS DUE Y3",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "ARREARS",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 7
+    },
+    {
+        "description": "TRANSPORT FEE - Y4",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "TRANSPORTFEE",
+        "mrHead": "TAT",
+        "partOf": "TRANSPORTFEES",
+        "semester": 7
+    },
+    {
+        "description": "COLLEGE FEES - SEM7",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "COURSEFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 7
+    },
+    {
+        "description": "COLLEGE FEES - SEM8",
+        "type": "COMPULSORY_FEES",
+        "feeGroup": "COURSEFEE",
+        "mrHead": "TAT",
+        "partOf": "FEES",
+        "semester": 8
+    },
+    {
+        "description": "HOSTEL FEE - IN-CAMPUS - SEM7",
+        "type": "OPTIONAL_FEES",
+        "feeGroup": "HOSTELFEE",
+        "mrHead": "TACTF",
+        "partOf": "HOSTELFEES",
+        "semester": 7
+    }
+]
+ * */
