@@ -8,18 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import Unauthorized from '@/components/Unauthorized';
 import axios from 'axios';
-
-interface User {
-  name: string;
-  email: string;
-  image: string;
-  accessToken: string;
-  userType: { userJobInformationDto: { jobTitle: string } };
-}
+import authValidator from '@/lib/auth/role-validator';
 
 const invoices = [
   {
@@ -96,16 +87,7 @@ const invoices = [
   },
 ];
 
-async function authValidator() {
-  const session = (await getServerSession(authOptions)) as { user: User };
-  if (!session || !session.user) {
-    return { role: null, token: null };
-  } else {
-    const userRole = session?.user?.userType?.userJobInformationDto?.jobTitle;
-    const token = session?.user?.accessToken;
-    return { role: userRole, token: token };
-  }
-}
+
 
 async function getDuesDetails(token: string) {
   if (!token) {
@@ -130,6 +112,9 @@ async function getDuesDetails(token: string) {
 
 const page = async () => {
   const session = await authValidator();
+  if(session.token === undefined) {
+    return <Unauthorized />;
+  }
   if (session.role !== 'STUDENT') {
     return <Unauthorized />;
   }

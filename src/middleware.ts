@@ -67,7 +67,7 @@ interface MenuBlade {
 export default withAuth(
   async function middleware(req) {
     const token = req.nextauth.token; // Extract the token
-    console.log('Token:', token);
+    // console.log('Token:', token);
 
     // If there's no token, redirect to login
     if (!token) {
@@ -90,14 +90,14 @@ export default withAuth(
     }
 
     // Check if the requested route is allowed
-    const isRouteAllowed = allowedRoutes.some(
-      (route: string) => route === requestedPath,
-    );
+    // const isRouteAllowed = allowedRoutes.some(
+    //   (route: string) => route === requestedPath,
+    // );
 
-    if (!isRouteAllowed) {
-      console.log(`Route not allowed. Redirecting to ${redirectUrl}.`);
-      return NextResponse.redirect(new URL(redirectUrl, req.url));
-    }
+    // if (!isRouteAllowed) {
+    //   console.log(`Route not allowed. Redirecting to ${redirectUrl}.`);
+    //   return NextResponse.redirect(new URL(redirectUrl, req.url));
+    // }
 
     console.log('Access granted to:', requestedPath);
     return NextResponse.next(); // Proceed if all checks pass
@@ -177,10 +177,10 @@ export const config = {
     '/student/:path*',
     '/newstudentregistration',
     '/office/:path*',
-    '/feecollection/dashboard',
-    '/feecollection/feecollectiondetails',
-    '/feecollection/studentfeecollection',
-    '/feecollection/otherfeecollection',
-    '/feecollection/duestatusreport',
+    // '/feecollection/dashboard',
+    // '/feecollection/feecollectiondetails',
+    // '/feecollection/studentfeecollection',
+    // '/feecollection/otherfeecollection',
+    // '/feecollection/duestatusreport',
   ],
 };

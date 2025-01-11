@@ -21,22 +21,22 @@ import {
 
 type IconName = keyof typeof Icons;
 export function NavMain({
-                          items,
-                        }: {
+  items,
+  }: {
   items: {
     title: string
     url: string
-                            logo?: IconName
-                            // isActive?: boolean
-                            children?: {
+    logo?: string
+    isActive?: boolean
+    children?: {
       title: string
       url: string
-      logo?: IconName
+      logo?: string
       isActive?: boolean
       children?: {
         title: string
         url: string
-        logo?: IconName
+        logo?: string
       }[]
     }[]
   }[]
@@ -57,7 +57,12 @@ export function NavMain({
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton tooltip={item.title}>
-                    {item.logo && item.logo}
+                  {item.logo && (
+                      <span
+                        className="icon"
+                        dangerouslySetInnerHTML={{ __html: item.logo }}
+                      />
+                    )}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
@@ -76,7 +81,12 @@ export function NavMain({
                           <SidebarMenuSubItem>
                             <CollapsibleTrigger asChild>
                               <SidebarMenuSubButton>
-                                {item.logo && item.logo}
+                              {subItem.logo && (
+                              <span
+                                className="icon"
+                                dangerouslySetInnerHTML={{ __html: subItem.logo }}
+                              />
+                            )}
                                 <span>{subItem.title}</span>
                                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/inner-collapsible:rotate-90 text-white" />
                               </SidebarMenuSubButton>
@@ -118,7 +128,12 @@ export function NavMain({
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
                 <a href={item.url}>
-                    {item.logo && item.logo}
+                {item.logo && (
+                    <span
+                      className="icon"
+                      dangerouslySetInnerHTML={{ __html: item.logo }}
+                    />
+                  )}
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>

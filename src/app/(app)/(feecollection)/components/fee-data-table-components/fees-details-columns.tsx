@@ -19,20 +19,15 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 // import { useEffect } from 'react';
 
-const semesters = [
+const modes = [
   {
-    value: 1,
+    value: 'CASH',
   },
   {
-    value: 2,
+    value: 'UPI',
   },
-  {
-    value: 3,
-  },
-  {
-    value: 4,
-  },
-];
+]
+
 function ParticularsCell({ value }: { value: string }) {
   const { filterParticulars, loading } = useParticulars();
   if (loading) return <div>Loading...</div>;
@@ -101,8 +96,27 @@ export const columns: ColumnDef<FeesDetailsSchema>[] =[
   },
   {
     accessorKey: 'paymentMode',
-    header: () => <div className="">Payment Mode</div>,
-    cell: ({ row }) => <div className="">{row.getValue('paymentMode')}</div>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Payment Mode" />
+    ),
+    cell: ({ row }) => {
+      const filteredMode = modes.find(
+        (mode) => mode.value === row.getValue('paymentMode'),
+      );
+
+      if (!filteredMode) {
+        return null;
+      }
+
+      return (
+        <div className="flex items-center">
+          <span>{filteredMode.value}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
   },
   {
     accessorKey: 'regdNo',

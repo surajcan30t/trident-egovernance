@@ -150,6 +150,46 @@ export const handleDuesFeePayment = async (formData: any) => {
   }
 };
 
+export const handleExcessFeeRefund = async (formData: any) => {
+  interface Error {
+    response: {
+      status: number;
+    };
+  }
+  const session = await getServerSession(authOptions);
+  try {
+    const data = formData;
+    // const regdNo = formData.regdNo;
+    if (session) {
+      if (!data) {
+        console.log('No initial data found.');
+        return;
+      } else {
+        try {
+          const request = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/refund-excess-fee`,
+            data,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${session.user.accessToken}`,
+              },
+            },
+          );
+          return request.status;
+        } catch (e: any) {
+          return e.response.status;
+        }
+      }
+    } else {
+      return 401;
+    }
+  } catch (error: any) {
+    console.log(error);
+    return 500;
+  }
+};
+
 export const handleOtherFeesPayment = async (formData: any) => {
   const session = await getServerSession(authOptions);
   try {

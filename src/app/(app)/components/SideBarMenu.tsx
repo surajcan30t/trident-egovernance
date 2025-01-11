@@ -17,8 +17,9 @@ import {
   type LucideIcon
 } from 'lucide-react';
 
+import { FC, SVGProps } from 'react';
 import { PiStudentBold } from 'react-icons/pi';
-
+import { useEffect } from 'react';
 import { NavMain } from '@/app/(app)/components/nav-main';
 import { TeamSwitcher } from '@/app/(app)/components/team-switcher';
 import {
@@ -28,16 +29,21 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { useSession } from 'next-auth/react';
-import { useEffect } from 'react';
 import * as Icons from 'lucide-react';
+import Image from 'next/image';
 
 
 type IconName = keyof typeof Icons;
 interface MenuItem {
   title: string;
   url: string;
-  logo: IconName
+  logo?: FC<SVGProps<SVGSVGElement>>;
   children?: MenuItem[]; // Optional, no `null`
+}
+
+interface NavHead {
+  role: string;
+  icon: FC<SVGProps<SVGSVGElement>>;
 }
 
 interface Token {
@@ -81,8 +87,7 @@ const data = {
     {
       title: 'Orc Warrior Ground',
       url: '#',
-      logo: SquareTerminal,
-      isActive: true,
+      logo: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="6" height="16" x="4" y="2" rx="2"/><rect width="6" height="9" x="14" y="9" rx="2"/><path d="M22 22H2"/></svg>`, // Replace with actual IconName
       children: [
         {
           title: 'History',
@@ -107,8 +112,8 @@ const data = {
     {
       title: 'Models',
       url: '#',
-      logo: Bot,
-      items: [
+      logo: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="6" height="16" x="4" y="2" rx="2"/><rect width="6" height="9" x="14" y="9" rx="2"/><path d="M22 22H2"/></svg>`, // Replace with actual IconName
+      children: [
         {
           title: 'Genesis',
           url: '#',
@@ -126,8 +131,8 @@ const data = {
     {
       title: 'Documentation',
       url: '#',
-      logo: BookOpen,
-      items: [
+      logo: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="6" height="16" x="4" y="2" rx="2"/><rect width="6" height="9" x="14" y="9" rx="2"/><path d="M22 22H2"/></svg>`, // Replace with actual IconName
+      children: [
         {
           title: 'Introduction',
           url: '#',
@@ -149,8 +154,15 @@ const data = {
     {
       title: 'Settings',
       url: '#',
-      logo: Settings2,
-      items: [
+      logo: `<svg
+    width="24"
+    height="24"
+    fill="currentColor"
+    viewBox="0 0 1024 1024"
+  >
+    <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372zm117.7-588.6c-15.9-3.5-34.4-5.4-55.3-5.4-106.7 0-178.9 55.7-198.6 149.9H344c-4.4 0-8 3.6-8 8v27.2c0 4.4 3.6 8 8 8h26.4c-.3 4.1-.3 8.4-.3 12.8v36.9H344c-4.4 0-8 3.6-8 8V568c0 4.4 3.6 8 8 8h30.2c17.2 99.2 90.4 158 200.2 158 20.9 0 39.4-1.7 55.3-5.1 3.7-.8 6.4-4 6.4-7.8v-42.8c0-5-4.6-8.8-9.5-7.8-14.7 2.8-31.9 4.1-51.8 4.1-68.5 0-114.5-36.6-129.8-98.6h130.6c4.4 0 8-3.6 8-8v-27.2c0-4.4-3.6-8-8-8H439.2v-36c0-4.7 0-9.4.3-13.8h135.9c4.4 0 8-3.6 8-8v-27.2c0-4.4-3.6-8-8-8H447.1c17.2-56.9 62.3-90.4 127.6-90.4 19.9 0 37.1 1.5 51.7 4.4a8 8 0 0 0 9.6-7.8v-42.8c0-3.8-2.6-7-6.3-7.8z" />
+  </svg>`, // Replace with actual IconName
+      children: [
         {
           title: 'General',
           url: '#',
@@ -198,35 +210,38 @@ type DynamicIconProps = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
   const menuBlade: any = session?.user?.menuBlade;
-  const [navMain, setNavMain] = React.useState<MenuItem[]>([]);
-  const DynamicIcon: React.FC<DynamicIconProps> = ({ iconName }) => {
-    const IconComponent = Icons[iconName] as React.FC<React.SVGProps<SVGSVGElement>>;
-    return IconComponent ? <IconComponent /> : null;
-  };
-  useEffect(() => {
+  const navHead: NavHead | undefined = React.useMemo(() => {
     if (menuBlade?.urls) {
-      const getNavMain = menuBlade.urls.map(({ title, url, logo, children }: MenuItem) => ({
+      return {role: menuBlade.role, icon: menuBlade.icon}
+    }
+  }, [menuBlade?.urls]);
+  // Combine useEffect and useMemo to avoid double rendering
+  const navMain = React.useMemo(() => {
+    if (menuBlade?.urls) {
+      return menuBlade.urls.map(({ title, url, logo, children }: MenuItem) => ({
         title,
         url,
-        logo: <DynamicIcon iconName={logo} />,
+        logo,
         children: children
           ? children.map(({ title, url, logo, children }: MenuItem) => ({
             title,
             url,
-            logo: <DynamicIcon iconName={logo} />,
+            logo,
             children,
           }))
           : null,
       }));
-      console.log(getNavMain)
-      setNavMain(getNavMain);
     }
+    return [];
   }, [menuBlade?.urls]);
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <div className='w-full flex justify-center items-center'>
+          <Image src={'/tgi.png'} alt='logo' width={200} height={100} />
+        </div>
+        {navHead && <TeamSwitcher items={navHead} />}
       </SidebarHeader>
       <SidebarContent>
         {navMain.length > 0 && <NavMain items={navMain} />}
@@ -259,3 +274,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 // ]
 
 
+{/* <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-align-end-horizontal"><rect width="6" height="16" x="4" y="2" rx="2"/><rect width="6" height="9" x="14" y="9" rx="2"/><path d="M22 22H2"/></svg>
+
+<svg
+    width="24"
+    height="24"
+    fill="currentColor"
+    viewBox="0 0 1024 1024"
+  >
+    <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372zm117.7-588.6c-15.9-3.5-34.4-5.4-55.3-5.4-106.7 0-178.9 55.7-198.6 149.9H344c-4.4 0-8 3.6-8 8v27.2c0 4.4 3.6 8 8 8h26.4c-.3 4.1-.3 8.4-.3 12.8v36.9H344c-4.4 0-8 3.6-8 8V568c0 4.4 3.6 8 8 8h30.2c17.2 99.2 90.4 158 200.2 158 20.9 0 39.4-1.7 55.3-5.1 3.7-.8 6.4-4 6.4-7.8v-42.8c0-5-4.6-8.8-9.5-7.8-14.7 2.8-31.9 4.1-51.8 4.1-68.5 0-114.5-36.6-129.8-98.6h130.6c4.4 0 8-3.6 8-8v-27.2c0-4.4-3.6-8-8-8H439.2v-36c0-4.7 0-9.4.3-13.8h135.9c4.4 0 8-3.6 8-8v-27.2c0-4.4-3.6-8-8-8H447.1c17.2-56.9 62.3-90.4 127.6-90.4 19.9 0 37.1 1.5 51.7 4.4a8 8 0 0 0 9.6-7.8v-42.8c0-3.8-2.6-7-6.3-7.8z" />
+  </svg> */}

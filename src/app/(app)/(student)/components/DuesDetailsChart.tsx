@@ -48,15 +48,15 @@ function ChartComponent({ data }: { data: any }) {
   const paid = duesSummary.totalPaid;
   // const due = 0;
   const due = duesSummary.currentDues;
-  const excess = paid > due ? paid - due : NaN;
   // const pending = 500;
   const pending = duesSummary.amountDue;
-  const degreeAngle = (paid / due) * 360;
+  const excess = pending < 0 ? pending : NaN;
+  const degreeAngle =  360 - ((pending / due) *360);
   const chartData = [
     {
       browser: 'safari',
       amountPaid: paid,
-      amountPending: pending,
+      amountPending: (pending < 0 ? 0 : pending).toLocaleString(),
       fill: 'mediumseagreen',
     },
   ];
@@ -146,7 +146,7 @@ function ChartComponent({ data }: { data: any }) {
               Amount pending
             </div>
             <span className="font-bold text-lg">
-              &#8377; {pending.toLocaleString()}
+              &#8377; {(pending < 0 ? 0 : pending).toLocaleString()}
             </span>
           </div>
           <div className="flex flex-col justify-center items-center">
@@ -191,6 +191,7 @@ export default function DuesDetailsChart() {
               },
             },
           );
+          console.log('response.data',response.data)
           setDuesSummary(response.data || null);
         } catch (error) {
           // Optionally set an error state or default value

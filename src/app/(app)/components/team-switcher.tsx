@@ -3,15 +3,7 @@
 import * as React from 'react';
 import { ChevronsUpDown, Plus } from 'lucide-react';
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { FC, SVGProps } from 'react';
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -20,16 +12,15 @@ import {
 } from '@/components/ui/sidebar';
 
 export function TeamSwitcher({
-  teams,
+  items,
 }: {
-  teams: {
-    name: string;
-    logo: React.ElementType;
-    plan: string;
-  }[];
+  items: {
+    role: string;
+    icon: FC<SVGProps<SVGSVGElement>>;
+  };
 }) {
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
+  const [activeTeam, setActiveTeam] = React.useState(items);
 
   return (
     <SidebarMenu>
@@ -38,11 +29,16 @@ export function TeamSwitcher({
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
-            <activeTeam.logo className="size-4 text-black" />
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg border-2 text-sidebar-primary-foreground">
+          {activeTeam.icon && (
+                      <span
+                        className="icon"
+                        dangerouslySetInnerHTML={{ __html: activeTeam.icon }}
+                      />
+                    )}
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{activeTeam.name}</span>
+            <span className="truncate font-semibold">{activeTeam.role}</span>
           </div>
           {/*<ChevronsUpDown className="ml-auto" />*/}
         </SidebarMenuButton>
