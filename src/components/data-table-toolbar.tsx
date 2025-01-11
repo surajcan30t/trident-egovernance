@@ -3,13 +3,14 @@
 import * as React from "react"
 import type { DataTableFilterField } from "@/../../types/types"
 import type { Table } from "@tanstack/react-table"
-import { X } from "lucide-react"
+import { Download, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableFacetedFilter } from "@/components/data-table-faceted-filter"
 import { DataTableViewOptions } from "@/components/data-table-view-options"
+import { exportTableToCSV } from "@/lib/export-csv"
 
 interface DataTableToolbarProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -112,6 +113,20 @@ export function DataTableToolbar<TData>({
       </div>
       <div className="flex items-center gap-2">
         {children}
+        <Button
+        variant="outline"
+        size="sm"
+        onClick={() =>
+          exportTableToCSV(table, {
+            filename: "Dues_Status",
+            excludeColumns: ["select", "actions"],
+          })
+        }
+        className="gap-2"
+      >
+        <Download className="size-4" aria-hidden="true" />
+        Export
+      </Button>
         <DataTableViewOptions table={table} />
       </div>
     </div>

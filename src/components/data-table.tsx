@@ -1,24 +1,57 @@
 import * as React from 'react';
 
-import { DataTablePagination  } from './data-table-pagination';
-import { flexRender, type Table as TanstackTable } from '@tanstack/react-table';
+import { DataTablePagination } from './data-table-pagination';
+import { flexRender, getFilteredRowModel, getPaginationRowModel, getFacetedRowModel, getFacetedUniqueValues, getSortedRowModel, type Table as TanstackTable, getCoreRowModel, useReactTable, SortingState, VisibilityState, ColumnFiltersState, ColumnDef } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 
-interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
-  table: TanstackTable<TData>;
+interface DataTableProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
-export function DataTable<TData>({
-   table,
-   className,
-   children,
-   ...props
-}: DataTableProps<TData>) {
-return (
-  <div
+export function DataTable<TData, TValue>({
+  data,
+  columns,
+  className,
+  children,
+  ...props
+}: DataTableProps<TData, TValue>) {
+
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      sorting,
+      columnVisibility,
+      rowSelection,
+      columnFilters,
+    },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+  });
+
+  return (
+    <div
       className={cn("w-full space-y-2.5 overflow-auto", className)}
       {...props}
     >
@@ -49,7 +82,7 @@ return (
                   ))}
                 </TableRow>
               ))
-            ):(
+            ) : (
               <TableRow>
                 <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
                   No results.

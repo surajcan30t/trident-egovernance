@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
 import { AppSidebar } from '@/app/(app)/components/SideBarMenu';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const data = {
   description: '',
@@ -33,7 +34,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Toaster />
           {/* Main content area */}
           <main className="flex-1 p-2">
-            <div className="p-1 h-full">{children}</div>
+            <NuqsAdapter>
+              <div className="p-1 h-full">{children}</div>
+            </NuqsAdapter>
           </main>
           <Footer />
         </div>

@@ -19,6 +19,17 @@ import {
   type Updater,
   type VisibilityState,
 } from "@tanstack/react-table"
+import { getSortingStateParser } from "@/lib/parsers"
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryState,
+  useQueryStates,
+  type Parser,
+  type UseQueryStateOptions,
+} from "nuqs"
+import { startTransition } from "react"
 
 interface UseDataTableProps<TData>
   extends Omit<
@@ -76,10 +87,26 @@ export function useDataTable<TData>({
   pageCount = -1,
   filterFields = [],
   scroll = false,
+  // history = undefined,
   onFilterChange,
   initialState,
   ...props
 }: UseDataTableProps<TData>) {
+
+  const queryStateOptions = React.useMemo<
+    Omit<UseQueryStateOptions<string>, "parse">
+  >(() => {
+    return {
+      // history,
+      scroll,
+      startTransition,
+    }
+  }, [
+    // history,
+    scroll,
+    startTransition,
+  ])
+  
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(
     initialState?.rowSelection ?? {}
   )
@@ -90,9 +117,14 @@ export function useDataTable<TData>({
   const [perPage, setPerPage] = React.useState<number>(
     initialState?.pagination?.pageSize ?? props.data.length
   )
-  const [sorting, setSorting] = React.useState<ExtendedSortingState<TData>>(
-    initialState?.sorting ?? []
+
+  const [sorting, setSorting] = useQueryState(
+    "sort",
+    getSortingStateParser<TData>()
+      .withOptions(queryStateOptions)
+      .withDefault(initialState?.sorting ?? [])
   )
+
 
   const [filterValues, setFilterValues] = React.useState<Record<string, string | string[]>>({})
 
@@ -106,7 +138,7 @@ export function useDataTable<TData>({
   function onSortingChange(updaterOrValue: Updater<SortingState>) {
     if (typeof updaterOrValue === "function") {
       const newSorting = updaterOrValue(sorting) as ExtendedSortingState<TData>
-      setSorting(newSorting)
+      void setSorting(newSorting)
     }
   }
 
@@ -137,6 +169,7 @@ export function useDataTable<TData>({
 
   const onColumnFiltersChange = React.useCallback(
     (updaterOrValue: Updater<ColumnFiltersState>) => {
+      
       setColumnFilters((prev) => {
         const next =
           typeof updaterOrValue === "function"
@@ -172,7 +205,6 @@ export function useDataTable<TData>({
         }
 
         setPage(1)
-
         return next
       })
     },
@@ -213,9 +245,11 @@ export function useDataTable<TData>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    manualPagination: false,
+    manualPagination: true,
     manualSorting: true,
     manualFiltering: true,
+    enableColumnFilters: true,
+    enableSorting: true,
   })
 
   return { table }
