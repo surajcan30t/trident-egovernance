@@ -58,6 +58,9 @@ const config = {
           ring: 'hsl(var(--sidebar-ring))',
         },
       },
+      boxShadow: {
+        neumorphism: '10px 10px 10px #bebebe, -10px -10px 20px #ffffff',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],
