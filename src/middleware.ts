@@ -1,7 +1,3 @@
-// import { NextResponse } from "next/server";
-// import type { NextRequest } from "next/server";
-// import { getToken } from "next-auth/jwt";
-
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
@@ -20,49 +16,6 @@ interface MenuBlade {
   allowedRoutes: string[];
 }
 
-// export default withAuth(
-//   async function middleware(req) {
-//     console.log('correct url: ', req.nextUrl.pathname);
-//     const token = req.nextauth.token as Token; // Type assertion to Token interface
-//     console.log('Token:', token);
-//
-//     const userRole = token?.userType?.jobTitle;
-//
-//     // If the user is logged in and requests the home page ('/')
-//     if (userRole && req.nextUrl.pathname === '/') {
-//       const redirectionRoute = serverRoutesArr[0]; // Redirect to the zeroth index route based on the user role
-//       console.log('Redirecting logged-in user to:', redirectionRoute);
-//
-//       // Prevent access to home page and redirect logged-in users to their role-based page
-//       return NextResponse.redirect(new URL(redirectionRoute, req.url));
-//     }
-//
-//     // Role-based redirection if visiting any other page
-//     if (
-//       userRole &&
-//       serverRoutesArr.length > 0 &&
-//       req.nextUrl.pathname.startsWith('/')
-//     ) {
-//       const redirectionRoute = serverRoutesArr[0]; // Redirect to the zeroth index route
-//       console.log('Redirecting to:', redirectionRoute);
-//
-//       // Prevent redirect loop by checking if the user is already on the correct route
-//       if (req.nextUrl.pathname !== redirectionRoute) {
-//         return NextResponse.redirect(new URL(redirectionRoute, req.url));
-//       }
-//     }
-//
-//     // If no valid token or role, allow access to public pages like the home page ('/')
-//     return NextResponse.next();
-//   },
-//   {
-//     callbacks: {
-//       authorized: ({ token }) => {
-//         return !!token; // Allow access if token exists
-//       },
-//     },
-//   },
-// );
 
 export default withAuth(
   async function middleware(req) {
@@ -110,6 +63,51 @@ export default withAuth(
     },
   },
 );
+
+// Do not uncomment this. This is not required
+// export default withAuth(
+//   async function middleware(req) {
+//     console.log('correct url: ', req.nextUrl.pathname);
+//     const token = req.nextauth.token as Token; // Type assertion to Token interface
+//     console.log('Token:', token);
+//
+//     const userRole = token?.userType?.jobTitle;
+//
+//     // If the user is logged in and requests the home page ('/')
+//     if (userRole && req.nextUrl.pathname === '/') {
+//       const redirectionRoute = serverRoutesArr[0]; // Redirect to the zeroth index route based on the user role
+//       console.log('Redirecting logged-in user to:', redirectionRoute);
+//
+//       // Prevent access to home page and redirect logged-in users to their role-based page
+//       return NextResponse.redirect(new URL(redirectionRoute, req.url));
+//     }
+//
+//     // Role-based redirection if visiting any other page
+//     if (
+//       userRole &&
+//       serverRoutesArr.length > 0 &&
+//       req.nextUrl.pathname.startsWith('/')
+//     ) {
+//       const redirectionRoute = serverRoutesArr[0]; // Redirect to the zeroth index route
+//       console.log('Redirecting to:', redirectionRoute);
+//
+//       // Prevent redirect loop by checking if the user is already on the correct route
+//       if (req.nextUrl.pathname !== redirectionRoute) {
+//         return NextResponse.redirect(new URL(redirectionRoute, req.url));
+//       }
+//     }
+//
+//     // If no valid token or role, allow access to public pages like the home page ('/')
+//     return NextResponse.next();
+//   },
+//   {
+//     callbacks: {
+//       authorized: ({ token }) => {
+//         return !!token; // Allow access if token exists
+//       },
+//     },
+//   },
+// );
 
 // interface UserType {
 //   jobTitle: string;
