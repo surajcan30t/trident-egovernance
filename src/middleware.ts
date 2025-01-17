@@ -16,7 +16,6 @@ interface MenuBlade {
   allowedRoutes: string[];
 }
 
-
 export default withAuth(
   async function middleware(req) {
     const token = req.nextauth.token; // Extract the token
