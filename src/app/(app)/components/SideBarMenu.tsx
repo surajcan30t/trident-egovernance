@@ -239,7 +239,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <div className='w-full flex justify-center items-center'>
-          <Image src={'/tgi.png'} alt='logo' width={200} height={100} />
+          <Image src={'/tgi.png'} alt='logo' width={150} height={100} />
         </div>
         {navHead && <TeamSwitcher items={navHead} />}
       </SidebarHeader>
