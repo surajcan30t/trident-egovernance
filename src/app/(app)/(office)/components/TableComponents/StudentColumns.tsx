@@ -123,7 +123,7 @@ export const columns: ColumnDef<Students>[] = [
     ),
     cell: ({ row }) => {
       const course = courses.find(
-        (course) => course.value === row.getValue('course'),
+        (course) => {console.log(course.value === row.getValue('course')), course.value === row.getValue('course')},
       );
 
       if (!course) {
@@ -137,6 +137,7 @@ export const columns: ColumnDef<Students>[] = [
       );
     },
     filterFn: (row, id, value) => {
+      console.log('inside filterFn',row.getValue(id), value)
       return value.includes(row.getValue(id));
     },
   },
