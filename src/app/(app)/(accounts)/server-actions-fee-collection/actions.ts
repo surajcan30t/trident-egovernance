@@ -501,3 +501,42 @@ export const handleFeeStructureGeneration = async (
     message: 'Your session has expired. Please login again.',
   };
 };
+
+//accounts-section/create-fee-type
+export const handleCreateNewFeeType = async (feeTypeData: any) => {
+  const session = await getServerSession(authOptions);
+  if (session) {
+    const formattedFeeTypeData = [
+      {
+        description: feeTypeData.description,
+        type: feeTypeData.type,
+        feeGroup: feeTypeData.feeGroup,
+        mrHead: feeTypeData.mrHead,
+        partOf: feeTypeData.partOf,
+        semester: parseInt(feeTypeData.semester),
+      },
+    ];
+    try {
+      const request = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/create-fee-types`,
+        formattedFeeTypeData,
+        {
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+        },
+      );
+      const status = request.status;
+      const message = request.data.message;
+      console.log('data', JSON.stringify(formattedFeeTypeData, null, 2));
+      return { status, message };
+    } catch (error) {
+      console.log(error);
+      return { status: 500, message: 'Internal Server Error' };
+    }
+  }
+  return {
+    status: 401,
+    message: 'Your session has expired. Please login again.',
+  };
+};
