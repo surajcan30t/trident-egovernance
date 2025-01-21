@@ -44,7 +44,7 @@ const SessionWiseSelector = () => {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
 
-    router.push(`/feecollection/feecollectiondetails?from=${null}&to=${null}&sessionId=${data.financialYear}`)
+    router.push(`/accounts/feecollectiondetails?from=${null}&to=${null}&sessionId=${data.financialYear}`)
     
   }
 
