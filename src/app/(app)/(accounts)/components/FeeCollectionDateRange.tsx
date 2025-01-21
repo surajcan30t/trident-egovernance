@@ -22,7 +22,7 @@ const FeeCollectionDateRange = () => {
         if (!fromDate || !toDate) {
             return;
         }
-        router.push(`/feecollection/feecollectiondetails?from=${fromDate.toISOString()}&to=${toDate.toISOString()}`)
+        router.push(`/accounts/feecollectiondetails?from=${fromDate.toISOString()}&to=${toDate.toISOString()}`)
     }
     return (
         <>

@@ -44,14 +44,14 @@ import Link from 'next/link';
 
 */
 
-const feeTypeListData: any[] = [
-  { description: 'BLAZER, UNIFORM FEE', type: 'COMPULSORY_FEES', feeGroup: 'TACTFACILITIES', mrHead: 'TACTF', partOf: 'FEES', semester: 1 },
-  { description: 'CAUTION MONEY', type: 'COMPULSORY_FEES', feeGroup: 'CAUTIONMONEY', mrHead: 'TAT', partOf: 'FEES', semester: 1 },
-  { description: 'OTHER FEES - SEM1', type: 'COMPULSORY_FEES', feeGroup: 'MISCFEE', mrHead: 'TAT', partOf: 'FEES', semester: 1 },
-  { description: 'OTHER FEES - SEM2', type: 'COMPULSORY_FEES', feeGroup: 'MISCFEE', mrHead: 'TAT', partOf: 'FEES', semester: 2 },
-  { description: 'COURSE/TUITION FEE - SEM1', type: 'COMPULSORY_FEES', feeGroup: 'COURSEFEE', mrHead: 'TAT', partOf: 'FEES', semester: 1 },
-  { description: 'COURSE/TUITION FEE - SEM2', type: 'COMPULSORY_FEES', feeGroup: 'COURSEFEE', mrHead: 'TAT', partOf: 'FEES', semester: 2 },
-]
+// const feeTypeListData: any[] = [
+//   { description: 'BLAZER, UNIFORM FEE', type: 'COMPULSORY_FEES', feeGroup: 'TACTFACILITIES', mrHead: 'TACTF', partOf: 'FEES', semester: 1 },
+//   { description: 'CAUTION MONEY', type: 'COMPULSORY_FEES', feeGroup: 'CAUTIONMONEY', mrHead: 'TAT', partOf: 'FEES', semester: 1 },
+//   { description: 'OTHER FEES - SEM1', type: 'COMPULSORY_FEES', feeGroup: 'MISCFEE', mrHead: 'TAT', partOf: 'FEES', semester: 1 },
+//   { description: 'OTHER FEES - SEM2', type: 'COMPULSORY_FEES', feeGroup: 'MISCFEE', mrHead: 'TAT', partOf: 'FEES', semester: 2 },
+//   { description: 'COURSE/TUITION FEE - SEM1', type: 'COMPULSORY_FEES', feeGroup: 'COURSEFEE', mrHead: 'TAT', partOf: 'FEES', semester: 1 },
+//   { description: 'COURSE/TUITION FEE - SEM2', type: 'COMPULSORY_FEES', feeGroup: 'COURSEFEE', mrHead: 'TAT', partOf: 'FEES', semester: 2 },
+// ]
 
 const generateRegdYearOptions = () => {
   const currentYear = 1;
@@ -91,7 +91,7 @@ const FormSchema = z.object({
 function SelectRegdYear({ form, token }: { form: UseFormReturn<z.infer<typeof FormSchema>>, token: string }) {
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [feeTypeList, setFeeTypeList] = useState<any[]>([]);
+  const [feeTypeLists, setFeeTypeLists] = useState<Record<string, any[]>>({});
 
   const { append, remove, fields } = useFieldArray({
     control: form.control,
@@ -100,21 +100,20 @@ function SelectRegdYear({ form, token }: { form: UseFormReturn<z.infer<typeof Fo
 
   const handleGetParticulars = async (regdYear: string) => {
     try {
-      const response = await axios.get(`/accounts-section/get-student-feeType-list?year=${regdYear}`,
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-feeType-list?year=${regdYear}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         }
       )
-      setFeeTypeList(response.data)
+      setFeeTypeLists(prev => ({
+        ...prev,
+        [regdYear]: response.data
+      }))
     } catch (error) {
       console.log(error)
     }
-  }
-
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    console.log(data)
   }
 
   return (
@@ -166,7 +165,7 @@ function SelectRegdYear({ form, token }: { form: UseFormReturn<z.infer<typeof Fo
                         }
                       </Button>
                     </div>
-                    <FeeStructureFormYearwise index={index} form={form} />
+                    <FeeStructureFormYearwise index={index} form={form} feeTypeListData={feeTypeLists[form.getValues(`feeTypeForm.${index}.regdYear`)] || []} />
                   </div>
                   <Button type="button" variant={'outline'} onClick={() => remove(index)}><Trash2Icon className="w-4 h-4 text-red-500" /></Button>
                 </div>
@@ -185,7 +184,7 @@ function SelectRegdYear({ form, token }: { form: UseFormReturn<z.infer<typeof Fo
 
 }
 
-function FeeStructureFormYearwise({ index, form }: { index: number, form: UseFormReturn<z.infer<typeof FormSchema>> }) {
+function FeeStructureFormYearwise({ index, form, feeTypeListData }: { index: number, form: UseFormReturn<z.infer<typeof FormSchema>>, feeTypeListData: any }) {
 
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -385,7 +384,9 @@ export default function FeeStructureGenerationForm({ token, feeStructureGenerati
     console.log(initialData)
     const response = await handleFeeStructureGeneration(initialData, data)
     if (response.status === 200) {
+      window.localStorage.removeItem('step');
       window.localStorage.removeItem('batchData');
+      window.localStorage.removeItem('feeStructureGenerationData');
       toast({
         title: 'Success',
         description: 'Fee Structure Generated Successfully',

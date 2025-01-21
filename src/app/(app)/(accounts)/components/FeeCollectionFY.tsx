@@ -45,7 +45,7 @@ const FeeCollectionFY = () => {
     const fromDate = new Date(parseInt(startYear), 4, 1); // Month is 0-based, so 3 = April 1st of first year
     const toDate = new Date(parseInt(startYear) + 1, 2, 31); // March 31st of second year
     
-    router.push(`/feecollection/feecollectiondetails?from=${startYear}-04-01&to=${endYear}-03-31&sessionId=${null}`)
+    router.push(`/accounts/feecollectiondetails?from=${startYear}-04-01&to=${endYear}-03-31&sessionId=${null}`)
   }
 
   return (

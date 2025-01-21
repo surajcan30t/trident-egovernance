@@ -12,7 +12,7 @@ const FeeCollectionThisMonth = () => {
       from: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`,
       to: `${today.toISOString()}`
     }
-    router.push(`/feecollection/feecollectiondetails?from=${defaultQuery.from}&to=${defaultQuery.to}`)
+    router.push(`/accounts/feecollectiondetails?from=${defaultQuery.from}&to=${defaultQuery.to}`)
   }
   return(
     <>

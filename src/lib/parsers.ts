@@ -1,4 +1,4 @@
-import type { ExtendedSortingState, Filter } from '../../types/types';
+import type { ExtendedSortingState, Filter } from '../../types-global/types';
 import { type Row } from '@tanstack/react-table';
 import { createParser } from 'nuqs/server';
 import { z } from 'zod';

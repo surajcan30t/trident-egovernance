@@ -2,6 +2,7 @@
 
 import { CheckCircleIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 const Page = (props: any) => {
   const { searchParams } = props;
@@ -69,8 +70,10 @@ const Page = (props: any) => {
       <div className="head-section w-[98%] mb-8 ">
         <div className="flex flex-row justify-center items-center gap-4">
           <div className="flex-shrink-0">
-            <img
+            <Image
               id="Image1"
+              width={100}
+              height={100}
               src="https://tridentpublicdata.s3.ap-south-1.amazonaws.com/logos/tat-logo.jpg"
               className="h-24 w-24 object-contain"
               alt="TAT Logo"

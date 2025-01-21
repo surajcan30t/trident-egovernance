@@ -8,7 +8,7 @@ const FeeCollectionToday = () => {
   const router = useRouter();
   const handleToday = () => {
     const today = new Date();
-    router.push(`/feecollection/feecollectiondetails?from=${today.toISOString()}&to=${today.toISOString()}`)
+    router.push(`/accounts/feecollectiondetails?from=${today.toISOString()}&to=${today.toISOString()}`)
   }
   return(
     <Button variant={'trident'} onClick={handleToday}>Today</Button>
