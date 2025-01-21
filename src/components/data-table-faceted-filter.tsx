@@ -1,4 +1,4 @@
-import type { Option } from "@/../../types/types"
+import type { Option } from "../../types-global/types"
 import type { Column } from "@tanstack/react-table"
 import { Check, PlusCircle } from "lucide-react"
 
@@ -20,6 +20,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
+import { useEffect } from "react"
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>

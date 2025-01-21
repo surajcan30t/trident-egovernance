@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import type { DataTableFilterField, ExtendedSortingState } from "@/../../types/types"
+import type { DataTableFilterField, ExtendedSortingState } from "../../types-global/types"
 import {
   getCoreRowModel,
   getFacetedRowModel,
@@ -30,6 +30,7 @@ import {
   type UseQueryStateOptions,
 } from "nuqs"
 import { startTransition } from "react"
+import { useDebouncedCallback } from "./use-debounced-callback"
 
 interface UseDataTableProps<TData>
   extends Omit<
@@ -77,6 +78,10 @@ interface UseDataTableProps<TData>
    */
   scroll?: boolean
 
+  debounceMs?: number
+
+  startTransition?: React.TransitionStartFunction
+
   onFilterChange?: (filters: { id: string; value: string | string[] }[]) => void
   initialState?: Omit<Partial<TableState>, "sorting"> & {
     sorting?: ExtendedSortingState<TData>
@@ -88,6 +93,8 @@ export function useDataTable<TData>({
   filterFields = [],
   scroll = false,
   // history = undefined,
+  debounceMs = 500,
+  startTransition,
   onFilterChange,
   initialState,
   ...props
@@ -125,8 +132,30 @@ export function useDataTable<TData>({
       .withDefault(initialState?.sorting ?? [])
   )
 
+  const filterParsers = React.useMemo(() => {
+    return filterFields.reduce<
+      Record<string, Parser<string> | Parser<string[]>>
+    >((acc, field) => {
+      if (field.options) {
+        // Faceted filter
+        acc[field.id] = parseAsArrayOf(parseAsString, ",").withOptions(
+          queryStateOptions
+        )
+      } else {
+        // Search filter
+        acc[field.id] = parseAsString.withOptions(queryStateOptions)
+      }
+      return acc
+    }, {})
+  }, [filterFields, queryStateOptions])
 
-  const [filterValues, setFilterValues] = React.useState<Record<string, string | string[]>>({})
+
+  const [filterValues, setFilterValues] = useQueryStates(filterParsers)
+
+  const debouncedSetFilterValues = useDebouncedCallback(
+    setFilterValues,
+    debounceMs
+  )
 
   const pagination: PaginationState = {
     pageIndex: page - 1,

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import type { DataTableFilterField } from "@/../../types/types"
+import type { DataTableFilterField } from "../../types-global/types"
 import type { Table } from "@tanstack/react-table"
 import { Download, X } from "lucide-react"
 
