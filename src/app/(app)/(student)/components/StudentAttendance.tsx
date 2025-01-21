@@ -73,14 +73,21 @@ function ChartComponent({ data, semester }: { data: any, semester: string }) {
   const [selectedSem, setSelectedSem] = useState<string>(semester);
   console.log(semester)
   const semesters = Object.keys(data);
-  const chartData = data[selectedSem].map(
+  const chartData = data[selectedSem] ? data[selectedSem].map(
     ({ subAbbr, attendancePercentage, totalAttended, totalClasses }: AttendanceSummary) => ({
       subject: subAbbr,
       attendance: parseFloat(attendancePercentage.toFixed(2)),
       classAttended: totalAttended,
       totalClasses: totalClasses,
     })
-  );
+  ) : data[(parseInt(selectedSem) - 1).toString()].map(
+    ({ subAbbr, attendancePercentage, totalAttended, totalClasses }: AttendanceSummary) => ({
+      subject: subAbbr,
+      attendance: parseFloat(attendancePercentage.toFixed(2)),
+      classAttended: totalAttended,
+      totalClasses: totalClasses,
+    })
+    )
   return (
     <Card className="w-full md:w-2/5">
       <CardHeader className="flex flex-row items-stretch space-y-0 p-0 ">
