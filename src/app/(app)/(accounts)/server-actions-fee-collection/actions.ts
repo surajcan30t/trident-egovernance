@@ -505,18 +505,22 @@ export const handleFeeStructureGeneration = async (
 //accounts-section/create-fee-type
 export const handleCreateNewFeeType = async (feeTypeData: any) => {
   const session = await getServerSession(authOptions);
+  console.log('process started');
   if (session) {
-    const formattedFeeTypeData = [
-      {
+    console.log('Session available');
+
+    const formattedFeeTypeData = feeTypeData.newFees.map(
+      (feeTypeData: any) => ({
         description: feeTypeData.description,
         type: feeTypeData.type,
         feeGroup: feeTypeData.feeGroup,
         mrHead: feeTypeData.mrHead,
         partOf: feeTypeData.partOf,
         semester: parseInt(feeTypeData.semester),
-      },
-    ];
+      }),
+    );
     try {
+      console.log('inside try block');
       const request = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/create-fee-types`,
         formattedFeeTypeData,
@@ -524,6 +528,7 @@ export const handleCreateNewFeeType = async (feeTypeData: any) => {
           headers: {
             Authorization: `Bearer ${session.user.accessToken}`,
           },
+          timeout: 3000,
         },
       );
       const status = request.status;

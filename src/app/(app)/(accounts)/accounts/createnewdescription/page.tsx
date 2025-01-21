@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm, UseFormReturn } from "react-hook-form"
 import { z } from "zod"
+import { toast } from "@/hooks/use-toast"
 import { useParticulars } from "@/app/(app)/(accounts)/components/FeeDetailsFilterProvider"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,6 +20,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { useState } from "react"
 import { handleCreateNewFeeType } from "../../server-actions-fee-collection/actions"
 import { Trash2Icon } from "lucide-react"
+import PulseLoader from "react-spinners/PulseLoader"
 
 const FeeCreationSchema = z.object({
   description: z.string().toUpperCase().min(2, {
@@ -188,17 +190,15 @@ function ProfileForm({ form }: { form: UseFormReturn<z.infer<typeof formSchema>>
       })
       }
       <Button type="button" variant={'outline'} className='bg-slate-500 text-white' onClick={() => append({ description: '', feeGroup: '', mrHead: 'TAT', partOf: '', semester: '', type: '' })}>
-        Add More
+        Add {fields.length < 1 ? 'New Fee' : 'Another Fee'}
       </Button>
     </>
   )
 }
 
 function ProfileFormArray() {
-
   const { partOf, feeGroups } = useParticulars()
-  console.log(feeGroups, 'feeGroups', partOf, 'partOf')
-  const [feeGroupOptions, setFeeGroupOptions] = useState<string[]>(feeGroups)
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -212,8 +212,23 @@ function ProfileFormArray() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true)
     const response = await handleCreateNewFeeType(values)
-    console.log('response', response)
+    setLoading(false)
+    if (response.status === 200) {
+      toast({
+        title: 'Success',
+        description: 'Fee Type Created Successfully',
+        variant: 'success',
+      })
+    }
+    else {
+      toast({
+        title: 'Error',
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
   }
 
   return (
@@ -224,7 +239,7 @@ function ProfileFormArray() {
             <ProfileForm form={form} />
           </div>
           <div className="flex justify-end items-center p-4">
-            <Button variant="trident" type="submit">Submit</Button>
+            <Button variant="trident" type="submit">{loading ? <PulseLoader color="#ffffff" margin={2} size={6} /> : 'Submit'}</Button>
           </div>
         </form>
       </Form>
