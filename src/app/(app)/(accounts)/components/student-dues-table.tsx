@@ -5,7 +5,7 @@ import { DataTable } from '@/components/data-table'
 import { columns } from './fee-data-table-components/dues-details-columns'
 import { DataTableSkeleton } from '@/components/data-table-skeleton';
 import { useDataTable } from '@/hooks/use-data-table'
-import { DataTableFilterField } from '@/../../types/types';
+import { DataTableFilterField } from '../../../../../types-global/types';
 import { StudentDuesDetails } from '../feecollection-schemas/schema';
 import { DataTableToolbar } from '@/components/data-table-toolbar';
 
