@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'ais.tact.ac.in',
       },
+      {
+        protocol: 'https',
+        hostname: 'tridentpublicdata.s3.ap-south-1.amazonaws.com'
+      }
     ],
   },
   productionBrowserSourceMaps: false, // Disable source maps
