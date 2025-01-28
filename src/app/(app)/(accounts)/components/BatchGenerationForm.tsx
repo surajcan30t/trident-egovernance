@@ -38,8 +38,8 @@ import { useParticulars } from './FeeDetailsFilterProvider';
 */
 
 const generateAdmissionYearOptions = () => {
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 5 }, (_, index) => currentYear + index);
+  const currentYear = new Date().getFullYear() - 5;
+  const years = Array.from({ length: 15 }, (_, index) => currentYear + index);
   return years.map(year => ({ label: year.toString(), value: year.toString() }));
 }
 
@@ -69,8 +69,8 @@ export default function BatchGenerationForm({batchGenerationSubmit}: {batchGener
   const FormSchema = z
     .object({
       admissionYear: z.enum(generateAdmissionYearOptions().map(option => option.value) as [string, ...string[]]),
-      course: z.enum(['BTECH', 'MTECH', 'MBA', 'MCA']),//z.enum(courseOptions as [string, ...string[]]), 
-      branch: z.enum(['CST', 'CSE', 'CSAIML', 'CSDS']),//z.enum(branchOptions as [string, ...string[]]), 
+      course: z.enum(courseOptions as [string, ...string[]]),//z.enum(['BTECH', 'MTECH', 'MBA', 'MCA']),
+      branch: z.enum(branchOptions as [string, ...string[]]),//z.enum(['CST', 'CSE', 'CSAIML', 'CSDS']), 
       studentType: z.enum(studentTypeOptions as [string, ...string[]]),
     }).refine(
       (data) => {
@@ -168,10 +168,10 @@ export default function BatchGenerationForm({batchGenerationSubmit}: {batchGener
                           </SelectItem>
                         ))
                       }
-                      <SelectItem value="BTECH">B.Tech.</SelectItem>
+                      {/* <SelectItem value="BTECH">B.Tech.</SelectItem>
                       <SelectItem value="MTECH">M.Tech.</SelectItem>
                       <SelectItem value="MBA">MBA</SelectItem>
-                      <SelectItem value="MCA">MCA</SelectItem>
+                      <SelectItem value="MCA">MCA</SelectItem> */}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -203,10 +203,10 @@ export default function BatchGenerationForm({batchGenerationSubmit}: {batchGener
                           </SelectItem>
                         ))
                       }
-                      <SelectItem value="CST">CST</SelectItem>
+                      {/* <SelectItem value="CST">CST</SelectItem>
                       <SelectItem value="CSE">CSE</SelectItem>
                       <SelectItem value="CSAIML">CSAIML</SelectItem>
-                      <SelectItem value="CSDS">CSDS</SelectItem>
+                      <SelectItem value="CSDS">CSDS</SelectItem> */}
                       {branchOption.length === 0 && <SelectItem disabled value="SELECT">Select a course first</SelectItem>}
                     </SelectContent>
                   </Select>

@@ -35,7 +35,7 @@ const GenerateFeeStructureMultistepForm = ({ token }: { token: string }) => {
 
   return (
     <div className='w-full flex flex-col justify-center items-center gap-y-5'>
-      {step === 1 && <BatchGenerationForm batchGenerationSubmit={handleBatchGeneration} />}
+      <BatchGenerationForm batchGenerationSubmit={handleBatchGeneration} />
       {step === 2 && <FeeStructureGenerationForm token={token} feeStructureGenerationSubmit={handleFeeStructureGeneration} />}
     </div>
   )

@@ -124,6 +124,7 @@ export const handleDuesFeePayment = async (formData: any) => {
       return;
     } else {
       try {
+        console.log(session.user);
         const responseGetNewMr = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/get-new-mrNo`,
           {
@@ -144,6 +145,7 @@ export const handleDuesFeePayment = async (formData: any) => {
               headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${session.user.accessToken}`,
+                graphToken: `Bearer ${session.user.graphToken}`,
               },
             },
           );
