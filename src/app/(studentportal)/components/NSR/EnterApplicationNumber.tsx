@@ -77,7 +77,7 @@ const EnterApplicationNumber = () => {
             break;
         }
       }
-      else{
+      else {
         setError(response?.message || 'An error occurred during login');
       }
     } catch (error: any) {
@@ -144,28 +144,28 @@ const EnterApplicationNumber = () => {
         </Form>
         {error && <p className="text-red-600 font-semibold">{error}</p>}
       </div>
-      {/*<div>*/}
-      {/*  <h1>Multi Student Registration</h1>*/}
-      {/*  <button*/}
-      {/*    className="border bg-blue-200"*/}
-      {/*    onClick={() => {*/}
-      {/*      multiReg(1);*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    Multi Register*/}
-      {/*  </button>*/}
-      {/*</div>*/}
-      {/*<div>*/}
-      {/*  <h1>Multi Student Submit</h1>*/}
-      {/*  <button*/}
-      {/*    className="border bg-blue-200"*/}
-      {/*    onClick={() => {*/}
-      {/*      multiSub(1);*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    Multi Submit*/}
-      {/*  </button>*/}
-      {/*</div>*/}
+      <div>
+        <h1>Multi Student Registration</h1>
+        <button
+          className="border bg-blue-200"
+          onClick={() => {
+            multiReg(1);
+          }}
+        >
+          Multi Register
+        </button>
+      </div>
+      <div>
+        <h1>Multi Student Submit</h1>
+        <button
+          className="border bg-blue-200"
+          onClick={() => {
+            multiSub(1);
+          }}
+        >
+          Multi Submit
+        </button>
+      </div>
     </>
   );
 };

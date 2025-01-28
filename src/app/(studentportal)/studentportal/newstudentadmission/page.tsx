@@ -1,10 +1,9 @@
-// 'use client'
 import NewStudentRegistrationData from '../../components/NSR/NewStudentRegistrationData';
 import axios, { AxiosResponse } from 'axios';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import React from 'react';
 
-// Define the structure of the dashboard data returned by the API
 interface Student {
   jeeApplicationNo: string;
   regdNo: string;
@@ -39,6 +38,9 @@ const studentData = async (): Promise<Student | null> => {
 
 // The page component
 const Page: React.FC = async () => {
+  if (!cookies().get('NSR-Authorization')) {
+    redirect('/studentportal')
+  }
   const data = await studentData(); // Fetch the dashboard data
   return (
     <div>

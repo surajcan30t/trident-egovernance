@@ -2,6 +2,7 @@ import React from 'react'
 import NsrOptionalFacilityForm from '../../components/NSR/NsrOptionalFacilityForm'
 import axios, { AxiosResponse } from 'axios';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 
 interface Student {
@@ -38,6 +39,9 @@ const studentData = async (): Promise<Student | null> => {
   }
 };
 const page = async() => {
+  if (!cookies().get('NSR-Authorization')) {
+    redirect('/studentportal')
+  }
   const data = await studentData();
   return (
     <div className='w-full h-full my-5 p-0 flex flex-col justify-center items-center'>
