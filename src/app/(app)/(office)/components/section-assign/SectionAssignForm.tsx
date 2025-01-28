@@ -9,10 +9,12 @@ import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import { array, z } from 'zod'
 import { useParticulars } from '@/app/(app)/(accounts)/components/FeeDetailsFilterProvider'
+import { useRouter } from 'next/navigation'
 
 
 const SectionAssignForm = () => {
   const { branches } = useParticulars()
+  const router = useRouter()
 
   const branch = [...new Set(Object.values(branches).flatMap(branchObj => Object.values(branchObj).map(b => b.branchCode)))];
 
@@ -47,43 +49,17 @@ const SectionAssignForm = () => {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data)
+    router.push(`/office/assignsection?course=${data.course}&branch=${data.branchCode}&section=${data.section.toUpperCase()}&sem=${data.sem}`)
   }
 
   return (
-    <div className='flex flex-col justify-center items-center'>
+    <div className='w-full flex flex-col justify-center items-center'>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full my-10 flex flex-col items-center gap-3"
+          className="w-full my-10 flex flex-row justify-between items-end gap-3"
         >
-          <div className="w-full lg:grid lg:grid-cols-2 lg:gap-2 lg:gap-y-1">
-            {/* Branch */}
-            <FormField
-              control={form.control}
-              name="branchCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Branch</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a Branch" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {
-                        branch.map((b: string, index: number) => (
-                          <SelectItem key={index} value={b}>{b}</SelectItem>))
-                      }
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+          <div className="w-full lg:grid lg:grid-cols-4 lg:gap-2 lg:gap-y-1">
             {/* course */}
             <FormField
               control={form.control}
@@ -100,9 +76,37 @@ const SectionAssignForm = () => {
                         <SelectValue placeholder="Select a course" />
                       </SelectTrigger>
                     </FormControl>
+                    <FormMessage />
                     <SelectContent>
                       {
                         course.map((b: string, index: number) => (
+                          <SelectItem key={index} value={b}>{b}</SelectItem>))
+                      }
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            {/* Branch */}
+            <FormField
+              control={form.control}
+              name="branchCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Branch</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Branch" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <FormMessage />
+                    <SelectContent>
+                      {
+                        branch.map((b: string, index: number) => (
                           <SelectItem key={index} value={b}>{b}</SelectItem>))
                       }
                     </SelectContent>
@@ -126,6 +130,7 @@ const SectionAssignForm = () => {
                         <SelectValue placeholder="Select a Semester" />
                       </SelectTrigger>
                     </FormControl>
+                    <FormMessage />
                     <SelectContent>
                       {
                         sem.map((b: number, index: number) => (
@@ -142,17 +147,33 @@ const SectionAssignForm = () => {
               name="section"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>section</FormLabel>
+                  <FormLabel>Section</FormLabel>
                   <FormControl>
-                    <div className="relative w-full">
-                      <Input className="uppercase" placeholder="" {...field} list="sectionOptions" />
-                      <datalist className='h-[30%]' id="sectionOptions">
-                        {
-                          Object.values(section()).flatMap(sections => Object.values(sections)).map((b: string, index: number) => (<option className='bg-gray-100 text-gray-900 hover:bg-gray-300 px-3 py-2 rounded-md' key={index} value={b}>{b}</option>))
-                        }
-                      </datalist>
+                    <div className="relative w-full flex items-center gap-2">
+                      <Input
+                        className="uppercase flex-1 placeholder:normal-case"
+                        placeholder="Enter or Select a Section"
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                      <Select onValueChange={(value) => field.onChange(value)}>
+                        <FormControl>
+                          <SelectTrigger className="w-12">
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Object.values(section())
+                            .flatMap((sections) => Object.values(sections))
+                            .map((b: string, index: number) => (
+                              <SelectItem key={index} value={b}>
+                                {b}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -160,8 +181,8 @@ const SectionAssignForm = () => {
 
           <Button
             variant={'trident'}
-            className="w-1/3 m-3"
-            size="lg"
+            className=""
+            size="default"
             type="submit"
           >
             Submit

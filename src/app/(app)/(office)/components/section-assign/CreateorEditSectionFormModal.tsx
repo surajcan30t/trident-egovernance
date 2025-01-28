@@ -32,7 +32,8 @@ const downloadCsvTemplate = () => {
 };
 
 
-export function EditSectionFormModal({ message, open, setOpen }: { message: string, open: boolean, setOpen: (value: boolean) => void }) {
+export function EditSectionFormModal({ message, open, setOpen, method }: { message: string, open: boolean, setOpen: (value: boolean) => void, method: string }) {
+  console.log('method', method)
   const searchParams = useSearchParams();
 
   const { section, course, branch, sem } = {
@@ -89,7 +90,7 @@ export function EditSectionFormModal({ message, open, setOpen }: { message: stri
         }
         formData.append('data', JSON.stringify(uploadData));
         // Make API call to upload CSV file
-        const response = (await handleBulkSectionUpload(formData)) as Resp;
+        const response = (await handleBulkSectionUpload(formData, method)) as Resp;
         console.log('Response:', response);
         if (response.status === 422) {
           setUploadStatus(null);
@@ -168,7 +169,7 @@ export function EditSectionFormModal({ message, open, setOpen }: { message: stri
             <Input
               type="file"
               accept=".csv" // Ensure that only CSV files can be selected
-              className="w-full"
+              className="w-full text-blue-800"
               onChange={handleFileChange}
             />
             <Button variant={'trident'} onClick={handleUpload}>
