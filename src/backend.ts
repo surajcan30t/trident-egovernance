@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import Papa from 'papaparse';
 import axios from 'axios';
+import { z } from 'zod';
 
 export const session = async ({ session, token }: any) => {
   session.user.id = token.id;
@@ -228,6 +229,77 @@ export const handleBulkStudentUpload = async (
       return serverResponse;
     } catch (error) {
       console.error('Error in handleBulkStudentUpload:', error);
+    }
+  } else {
+    const serverResponse = {
+      status: 401,
+      message: 'Unauthorized',
+    } as Response;
+    return serverResponse;
+  }
+};
+
+export const handleBulkSectionUpload = async (
+  formData: FormData,
+  method: string,
+): Promise<object | void> => {
+  interface Response {
+    status: number;
+    message: string;
+    description: string;
+  }
+  if (method !== 'create' && method !== 'update') {
+    return;
+  }
+  const jsonRecords = formData.get('data');
+  console.log('Uploading FormData:', jsonRecords, '\nMethod:', method);
+  const session = await getServerSession(authOptions);
+  if (session) {
+    try {
+      // Get the CSV file from FormData using the correct key
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/sections/${method}`,
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+
+          body: jsonRecords,
+        },
+      );
+      const response = await request.json();
+      console.log('Response:', response);
+
+      if (response.status === 400 || response.status === 422) {
+        console.log('400 block executed');
+        const serverResponse = {
+          status: response.status,
+          message: response.detail,
+          description: response.description,
+        } as Response;
+        return serverResponse;
+      }
+      if (response.status === 500) {
+        console.log('500 block executed');
+        const serverResponse = {
+          status: response.status,
+          message: 'Error in creating sections',
+          description: response.description,
+        } as Response;
+        return serverResponse;
+      } else {
+        console.log('200 block executed');
+        const serverResponse = {
+          status: 200,
+          message: 'Upload Successful',
+        } as Response;
+        return serverResponse;
+      }
+    } catch (error) {
+      console.error('Error in section upload:', error);
     }
   } else {
     const serverResponse = {
