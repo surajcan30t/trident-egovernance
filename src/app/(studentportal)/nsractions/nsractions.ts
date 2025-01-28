@@ -679,7 +679,28 @@ interface Student {
   studentDocsData: Document[];
 }
 
-function generateRandomStudentData(index: number): Student {
+const randomNameGenerator = (len: number) => {
+  let res = '';
+  for (let i = 0; i < len; i++) {
+    const random = Math.floor(Math.random() * 27);
+    res += String.fromCharCode(97 + random);
+  }
+  return res;
+};
+
+const getStudentDetailsFromBackend = async () => {
+  try {
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND}/test/get-student-test/BTECH/CST`,
+    );
+    const data = response.data;
+    return data;
+  } catch (error) {
+    return;
+  }
+};
+
+function generateRandomStudentData(data: any, index: number): Student {
   const randomDate = (): Date =>
     new Date(new Date().getTime() - Math.random() * 1e12);
   const formatDate = (date: Date): string => {
@@ -695,44 +716,38 @@ function generateRandomStudentData(index: number): Student {
   const randomNumber = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;
   const hostelOption = Math.random() > 0.5 ? 'YES' : 'NO';
-
+  const Caste = ['GENERAL', 'OBC', 'SC', 'ST'];
+  const Religion = ['HINDU', 'MUSLIM', 'CHRISTIAN'];
   return {
-    jeeApplicationNo: `YZXa${index}${index}${index}${index}`,
-    regdNo: `YZXa${index}${index}${index}${index}`,
+    jeeApplicationNo: data.regdNo,
+    regdNo: data.regdNo,
     ojeeCouncellingFeePaid: Math.random() > 0.5 ? 'YES' : 'NO',
-    studentName: `Bulky Students${index}`,
-    gender: Math.random() > 0.5 ? 'MALE' : 'FEMALE',
-    branchCode:
-      Math.random() > 0.5
-        ? 'CSE'
-        : Math.random() > 0.5
-          ? 'CST'
-          : Math.random() > 0.5
-            ? 'CSDS'
-            : 'MECH',
-    admissionYear: '2024',
-    degreeYop: randomNumber(2027, 2028),
-    phNo: `98765${randomNumber(10000, 99999)}`,
-    email: `student${index}@example.com`,
-    dob: randomDate().toISOString().split('T')[0],
-    hostelier: 'NO',
-    hostelOption,
-    hostelChoice: hostelOption === 'YES' ? 'ONCAMPUS' : 'NONE',
-    transportAvailed: Math.random() > 0.5 ? 'YES' : 'NO',
-    status: 'CONTINUING',
-    batchId: null,
-    currentYear: randomNumber(1, 4),
-    aadhaarNo: randomNumber(100000000000, 999999999999),
-    indortrng: Math.random() > 0.5 ? 'YES' : 'NO',
-    plpoolm: Math.random() > 0.5 ? 'YES' : 'NO',
-    cfPayMode: Math.random() > 0.5 ? 'YEARLY' : 'SEMESTER',
-    religion: 'HINDU',
+    studentName: data.name,
+    gender: data.gender,
+    branchCode: data.branchCode,
+    admissionYear: new Date().getFullYear().toString(),
+    degreeYop: new Date().getFullYear() + 4,
+    phNo: data.phone,
+    email: data.email,
+    dob: data.dob,
+    hostelier: data.hostelier,
+    hostelOption: data.hostelier,
+    hostelChoice: data.hostelier === 'YES' ? 'ONCAMPUS' : 'NONE',
+    transportAvailed: data.transportAvailed,
+    status: data.status,
+    batchId: data.batchId,
+    currentYear: data.currentYear,
+    aadhaarNo: data.aadhaarNo,
+    indortrng: data.indOrTrng,
+    plpoolm: data.plPoolM,
+    cfPayMode: data.cfPayMode,
+    religion: Religion[Math.floor(Math.random() * Religion.length)],
     rank: randomNumber(1, 1000000),
     rankType: 'JEE',
-    course: 'BTECH',
+    course: data.course,
     tfw: Math.random() > 0.5 ? 'TFW' : 'NTFW',
     admissionType: 'JEEMAIN',
-    studentType: 'REGULAR',
+    studentType: data.studentType,
     tenthPercentage: randomNumber(60, 100),
     tenthYOP: randomNumber(2015, 2020),
     twelvthPercentage: randomNumber(60, 100),
@@ -744,7 +759,7 @@ function generateRandomStudentData(index: number): Student {
     fname: `Father${index}`,
     mname: `Mother${index}`,
     lgName: `Guardian${index}`,
-    permanentAddress: `Address${index}`,
+    permanentAddress: `Address${randomNumber(1, 50)}`,
     permanentCity: `City${randomNumber(1, 50)}`,
     permanentState: `State${randomNumber(1, 30)}`,
     permanentPincode: randomNumber(100000, 999999),
@@ -756,132 +771,139 @@ function generateRandomStudentData(index: number): Student {
     ojeeRollNo: null,
     ojeeRank: null,
     aieeeRank: String(randomNumber(1, 1000)),
-    caste: 'GENERAL',
+    caste: Caste[Math.floor(Math.random() * Caste.length)],
     categoryCode: null,
     categoryRank: null,
     allotmentId: `Allot${index}`,
-    transportOpted: Math.random() > 0.5 ? 'YES' : 'NO',
-    pickUpPoint: Math.random() > 0.5 ? `Route ${randomNumber(1, 30)}` : null,
-    studentDocsData: Array.from({ length: 3 }, () => ({
+    transportOpted: data.transportAvailed,
+    pickUpPoint: data.transportAvailed === 'YES' ? 'BBSR' : 'N/A',
+    studentDocsData: Array.from({ length: 1 }, () => ({
       docLink: `https://images.unsplash.com/photo-1633526543814-9718c8922b7a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fGRvY3VtZW50fGVufDB8fDB8fHwy`,
-      docType: '10thCertificate',
+      docType: 'PassportPhoto',
       uploadDate: randomDate(),
     })),
   };
 }
 
-function generateRandomStudentDataForMe(index: number): Student {
-  const randomDate = (): Date =>
-    new Date(new Date().getTime() - Math.random() * 1e12);
-  const formatDate = (date: Date): string => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-  const randomString = (length: number): string =>
-    Math.random()
-      .toString(36)
-      .substring(2, 2 + length);
-  const randomNumber = (min: number, max: number): number =>
-    Math.floor(Math.random() * (max - min + 1)) + min;
-  const hostelOption = 'NO';
+// function generateRandomStudentDataForMe(index: number): Student {
+//   const randomDate = (): Date =>
+//     new Date(new Date().getTime() - Math.random() * 1e12);
+//   const formatDate = (date: Date): string => {
+//     const day = String(date.getDate()).padStart(2, '0');
+//     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+//     const year = date.getFullYear();
+//     return `${day}-${month}-${year}`;
+//   };
+//   const randomString = (length: number): string =>
+//     Math.random()
+//       .toString(36)
+//       .substring(2, 2 + length);
+//   const randomNumber = (min: number, max: number): number =>
+//     Math.floor(Math.random() * (max - min + 1)) + min;
+//   const hostelOption = 'NO';
 
-  return {
-    jeeApplicationNo: `2101289370`,
-    regdNo: `2101289370`,
-    ojeeCouncellingFeePaid: Math.random() > 0.5 ? 'YES' : 'NO',
-    studentName: `Swayam Prakash Mohanty`,
-    gender: 'MALE',
-    branchCode: 'CST',
-    admissionYear: '2021',
-    degreeYop: 2025,
-    phNo: `9938771133`,
-    email: `mohantyswayam2001@gmail.com `,
-    dob: randomDate().toISOString().split('T')[0],
-    hostelier: 'NO',
-    hostelOption,
-    hostelChoice: 'NONE',
-    transportAvailed: 'NO',
-    status: 'CONTINUING',
-    batchId: null,
-    currentYear: randomNumber(1, 4),
-    aadhaarNo: randomNumber(100000000000, 999999999999),
-    indortrng: 'YES',
-    plpoolm: 'YES',
-    cfPayMode: 'SEMESTER',
-    religion: 'HINDU',
-    rank: randomNumber(1, 1000000),
-    rankType: 'JEE',
-    course: 'BTECH',
-    tfw: Math.random() > 0.5 ? 'TFW' : 'NTFW',
-    admissionType: 'JEEMAIN',
-    studentType: 'REGULAR',
-    tenthPercentage: randomNumber(60, 100),
-    tenthYOP: 2018,
-    twelvthPercentage: randomNumber(60, 100),
-    twelvthYOP: 2020,
-    diplomaPercentage: null,
-    diplomaYOP: null,
-    graduationPercentage: randomNumber(60, 100),
-    graduationYOP: 2025,
-    fname: `Father${index}`,
-    mname: `Mother${index}`,
-    lgName: `Guardian${index}`,
-    permanentAddress: `Address${index}`,
-    permanentCity: `City${randomNumber(1, 50)}`,
-    permanentState: `State${randomNumber(1, 30)}`,
-    permanentPincode: randomNumber(100000, 999999),
-    parentContact: `87654${randomNumber(10000, 99999)}`,
-    parentEmailId: `parent${index}@example.com`,
-    presentAddress: null,
-    district: `District${randomNumber(1, 50)}`,
-    ojeeCounsellingFeePaid: 'YES',
-    ojeeRollNo: null,
-    ojeeRank: null,
-    aieeeRank: String(randomNumber(1, 1000)),
-    caste: 'GENERAL',
-    categoryCode: null,
-    categoryRank: null,
-    allotmentId: `Allot${index}`,
-    transportOpted: 'NO',
-    pickUpPoint: null,
-    studentDocsData: Array.from({ length: 3 }, () => ({
-      docLink: `https://images.unsplash.com/photo-1633526543814-9718c8922b7a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fGRvY3VtZW50fGVufDB8fDB8fHwy`,
-      docType: '10thCertificate',
-      uploadDate: randomDate(),
-    })),
-  };
-}
+//   return {
+//     jeeApplicationNo: `2101289370`,
+//     regdNo: `2101289370`,
+//     ojeeCouncellingFeePaid: Math.random() > 0.5 ? 'YES' : 'NO',
+//     studentName: `Swayam Prakash Mohanty`,
+//     gender: 'MALE',
+//     branchCode: 'CST',
+//     admissionYear: '2021',
+//     degreeYop: 2025,
+//     phNo: `9938771133`,
+//     email: `mohantyswayam2001@gmail.com `,
+//     dob: randomDate().toISOString().split('T')[0],
+//     hostelier: 'NO',
+//     hostelOption,
+//     hostelChoice: 'NONE',
+//     transportAvailed: 'NO',
+//     status: 'CONTINUING',
+//     batchId: null,
+//     currentYear: randomNumber(1, 4),
+//     aadhaarNo: randomNumber(100000000000, 999999999999),
+//     indortrng: 'YES',
+//     plpoolm: 'YES',
+//     cfPayMode: 'SEMESTER',
+//     religion: 'HINDU',
+//     rank: randomNumber(1, 1000000),
+//     rankType: 'JEE',
+//     course: 'BTECH',
+//     tfw: Math.random() > 0.5 ? 'TFW' : 'NTFW',
+//     admissionType: 'JEEMAIN',
+//     studentType: 'REGULAR',
+//     tenthPercentage: randomNumber(60, 100),
+//     tenthYOP: 2018,
+//     twelvthPercentage: randomNumber(60, 100),
+//     twelvthYOP: 2020,
+//     diplomaPercentage: null,
+//     diplomaYOP: null,
+//     graduationPercentage: randomNumber(60, 100),
+//     graduationYOP: 2025,
+//     fname: `Father${index}`,
+//     mname: `Mother${index}`,
+//     lgName: `Guardian${index}`,
+//     permanentAddress: `Address${index}`,
+//     permanentCity: `City${randomNumber(1, 50)}`,
+//     permanentState: `State${randomNumber(1, 30)}`,
+//     permanentPincode: randomNumber(100000, 999999),
+//     parentContact: `87654${randomNumber(10000, 99999)}`,
+//     parentEmailId: `parent${index}@example.com`,
+//     presentAddress: null,
+//     district: `District${randomNumber(1, 50)}`,
+//     ojeeCounsellingFeePaid: 'YES',
+//     ojeeRollNo: null,
+//     ojeeRank: null,
+//     aieeeRank: String(randomNumber(1, 1000)),
+//     caste: 'GENERAL',
+//     categoryCode: null,
+//     categoryRank: null,
+//     allotmentId: `Allot${index}`,
+//     transportOpted: 'NO',
+//     pickUpPoint: null,
+//     studentDocsData: Array.from({ length: 3 }, () => ({
+//       docLink: `https://images.unsplash.com/photo-1633526543814-9718c8922b7a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fGRvY3VtZW50fGVufDB8fDB8fHwy`,
+//       docType: '10thCertificate',
+//       uploadDate: randomDate(),
+//     })),
+//   };
+// }
 
 export const multiStudentRegistration = async () => {
-  const students: Student[] = Array.from({ length: 1 }, (_, index) =>
-    generateRandomStudentDataForMe(index + 1),
-  );
-  console.log(students);
-  for (const student of students) {
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/post`,
-        student,
-      );
-      console.log(response.status);
-    } catch (error: any) {
-      console.error(error.message);
+  const dataFromDB = await getStudentDetailsFromBackend();
+  if (dataFromDB.length < 0) return;
+  else {
+    for (let i = 0; i < 5; i++) {
+      const data = dataFromDB[i];
+      const student: Student = generateRandomStudentData(data, i);
+      console.log(student);
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND}/NSR/post`,
+          student,
+        );
+        console.log(response.status);
+      } catch (error: any) {
+        console.error(error.message);
+      }
     }
   }
 };
 
 export const multiFinalSubmit = async () => {
-  try {
-    for (let i = 1; i <= 1; i++) {
-      const regdNum = `YZXa${i}${i}${i}${i}`;
-      const request = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent/2101289370`,
-      );
-      console.log('request', request.status);
+  const dataFromDB = await getStudentDetailsFromBackend();
+  if (dataFromDB.length < 0) return;
+  else {
+    try {
+      for (let i = 0; i < 5; i++) {
+        const regdNum = dataFromDB[i].regdNo;
+        const request = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent/${regdNum}`,
+        );
+        console.log('request for student', regdNum, 'status:', request.status);
+      }
+    } catch (error: any) {
+      console.log(error);
     }
-  } catch (error: any) {
-    console.log(error.response.data);
   }
 };

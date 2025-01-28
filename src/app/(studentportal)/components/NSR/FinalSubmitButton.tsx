@@ -4,9 +4,11 @@ import { nsrFinalSubmit } from '../../nsractions/nsractions';
 import React, { useState } from 'react';
 import { toast } from '@/hooks/use-toast';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { useRouter } from 'next/navigation';
 
 const FinalSubmitButton = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
@@ -19,6 +21,7 @@ const FinalSubmitButton = () => {
           variant: 'success',
         })
         setIsLoading(false);
+        router.push('/studentportal/newstudentpayment')
       } else {
         toast({
           title: 'Error',

@@ -109,6 +109,12 @@ export const studentreportSchema = z.object({
   studentDocsOnlyDTOS: z.array(documentSchema),
 });
 
+export const studentSectionData = z.object({
+  collegeRollNo: z.number(),
+  regdNo: z.string(),
+  labGroup: z.number(),
+});
+
 export type StudentReport = z.infer<typeof studentreportSchema>;
 export type StudentOnly = z.infer<typeof studentOnlySchema>;
 export type PersonalDetailsOnly = z.infer<typeof personalDetailsOnlySchema>;
@@ -120,6 +126,7 @@ export type HostelOnly = z.infer<typeof hostelOnlySchema>;
 export type TransportOnly = z.infer<typeof transportOnlySchema>;
 export const documentsSchema = z.array(documentSchema);
 export type Documents = z.infer<typeof documentsSchema>;
+export type StudentSectionData = z.infer<typeof studentSectionData>;
 
 // jeeApplicationNo: z.string(),
 //   regdNo: z.string(),

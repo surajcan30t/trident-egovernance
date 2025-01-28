@@ -4,7 +4,7 @@ import Navbar from '@/components/LandingNavbar';
 import Image from 'next/image';
 import TypewriterComponent from 'typewriter-effect';
 import { GraduationCap, BookOpen, Users } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -36,6 +36,8 @@ export default function Home() {
       router.replace(redirectUrl);
     }
     else {
+      console.log('else block in / executed')
+      signOut()
       router.replace('/')
     }
   }, [status, session, router]);

@@ -57,8 +57,6 @@ export const FeesDetailsFilterProvider: React.FC<{ children: React.ReactNode }> 
     }
   }>({});
   const [loading, setLoading] = useState(true);
-
-  console.log(token)
   useEffect(() => {
     const fetchParticulars = async () => {
       try {
@@ -73,7 +71,7 @@ export const FeesDetailsFilterProvider: React.FC<{ children: React.ReactNode }> 
       setFeeGroups(data.feeGroups);
       setPartOf(data.partOfs);
       } catch (error) {
-        console.error('Error fetching fee groups and part of:', error);
+        return;
       }
     };
     fetchParticulars();
@@ -85,7 +83,7 @@ export const FeesDetailsFilterProvider: React.FC<{ children: React.ReactNode }> 
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/public/branches`, {
           method: 'GET',
           cache: 'no-cache',
-        }).then(res => res.json()) as CourseData[];  // Changed type here
+        }).then(res => res.json()) as CourseData[]; 
 
         const courseBranchMap: {
           [course: string]: {
@@ -95,8 +93,7 @@ export const FeesDetailsFilterProvider: React.FC<{ children: React.ReactNode }> 
             }
           }
         } = {};
-        
-        // No need for optional chaining since response is an array
+
         response.forEach((courseData) => {
           const branchMap: {
             [branch: string]: {
@@ -114,12 +111,11 @@ export const FeesDetailsFilterProvider: React.FC<{ children: React.ReactNode }> 
   
           courseBranchMap[courseData.course] = branchMap;
         });
-        // Set courses directly from the array
         setDistinctCourses(response.map(c => c.course));
         setBranches(courseBranchMap);
 
       } catch (error) {
-        console.error('Error fetching courses:', error);
+        return
       } finally {
         setLoading(false);
       }

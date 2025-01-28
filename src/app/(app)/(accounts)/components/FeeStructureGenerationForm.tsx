@@ -354,7 +354,7 @@ function FeeStructureFormYearwise({ index, form, feeTypeListData }: { index: num
             </div>
           ))}
           <div className='w-full flex justify-center items-center'>
-          <Button type="button" variant={'outline'} className='bg-slate-500 text-white' onClick={() => append({ description: '', amount: '', payType: 'YEARLY', tfwType: 'TFW', comments: '', tatFees: 0, tactFees: 0 })}>
+            <Button type="button" variant={'outline'} className='bg-slate-500 text-white' onClick={() => append({ description: '', amount: '', payType: 'YEARLY', tfwType: 'ALL', comments: '', tatFees: 0, tactFees: 0 })}>
             Add Fees
           </Button>
           </div>

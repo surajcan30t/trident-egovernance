@@ -123,7 +123,7 @@ export const RedirectOtherFeeCollectionForm = () => {
         });
       } else {
         router.push(
-          '/feecollection/otherfeecollection?registrationNo=' + data.regdNo,
+          '/accounts/otherfeecollection?registrationNo=' + data.regdNo,
         );
       }
     } catch (e) {
@@ -190,7 +190,7 @@ export function RedirectStudentFeeCollectionForm() {
         });
       } else {
         router.push(
-          '/feecollection/studentfeecollection?registrationNo=' + data.regdNo,
+          '/accounts/studentfeecollection?registrationNo=' + data.regdNo,
         );
       }
     } catch (e) {
