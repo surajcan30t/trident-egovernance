@@ -21,9 +21,7 @@ export const studentDataFetcher = async (): Promise<Students[] | undefined> => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${session.user.accessToken}`,
           },
-          next: {
-            revalidate: 0,
-          },
+          cache: 'no-cache',
         },
       );
 
@@ -31,7 +29,7 @@ export const studentDataFetcher = async (): Promise<Students[] | undefined> => {
         throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      console.log('response: ');
+      console.log('response: ', data);
 
       return data;
     } else {
@@ -90,7 +88,7 @@ export const totalAdmissionsReportFetcher = async (
   try {
     if (session) {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/office/get-total-admission-data-reports?course=${course}&branch=${branch}`,
+        `${process.env.NEXT_PUBLIC_BACKEND}/office/get-total-admission-data-reports?${course ? `&course=${course}` : ''}${branch ? `&branch=${branch}` : ''}`,
         {
           method: 'GET',
           headers: {
