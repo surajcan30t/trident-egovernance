@@ -9,10 +9,10 @@ import { DataTableRowActions } from './data-table-row-actions';
 
 const courses = [
   {
-    value: 'BTECH',
+    value: 'B.TECH.',
   },
   {
-    value: 'MTECH',
+    value: 'M.TECH.',
   },
   {
     value: 'BCA',
@@ -123,7 +123,7 @@ export const columns: ColumnDef<Students>[] = [
     ),
     cell: ({ row }) => {
       const course = courses.find(
-        (course) => {console.log(course.value === row.getValue('course')), course.value === row.getValue('course')},
+        (course) => course.value === row.getValue('course'),
       );
 
       if (!course) {
@@ -137,14 +137,13 @@ export const columns: ColumnDef<Students>[] = [
       );
     },
     filterFn: (row, id, value) => {
-      console.log('inside filterFn',row.getValue(id), value)
       return value.includes(row.getValue(id));
     },
   },
   {
     accessorKey: 'branchCode',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Course" />
+      <DataTableColumnHeader column={column} title="Branch" />
     ),
     cell: ({ row }) => {
       const branch = branches.find(
