@@ -29,8 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </SidebarProvider>
         </aside>
         <div className="flex flex-col w-full">
-          {/* Sidebar */}
-          <Navbar /> {/* Navbar remains at the top */}
+          <Navbar />
           <Toaster />
           {/* Main content area */}
           <main className="flex-1 p-2">
