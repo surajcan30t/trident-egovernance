@@ -1,6 +1,5 @@
-'use client'
+'use client';
 import Papa from 'papaparse';
-
 
 interface Response {
   status: number;
@@ -8,8 +7,10 @@ interface Response {
   data: Array<JSON> | [];
 }
 
-
-export const handleCsvtoJsonConversion = (file: File, toUpperCase: String[] | null) => {
+export const handleCsvtoJsonConversion = (
+  file: File,
+  toUpperCase: String[] | null,
+) => {
   if (!file) {
     return Promise.reject({
       status: 400,
@@ -25,7 +26,6 @@ export const handleCsvtoJsonConversion = (file: File, toUpperCase: String[] | nu
         header: true, // Indicates the first row contains headers
         skipEmptyLines: true, // Skip empty rows
         transform: (value, field: string) => {
-
           // Check if the value is empty, if so, return null
           if (value === '') return null;
 
