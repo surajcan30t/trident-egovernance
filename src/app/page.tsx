@@ -7,6 +7,7 @@ import { GraduationCap, BookOpen, Users } from 'lucide-react';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { toast } from '@/hooks/use-toast';
 
 const features = [
   {
@@ -35,9 +36,16 @@ export default function Home() {
       const redirectUrl = session.user.menuBlade.redirectUrl;
       router.replace(redirectUrl);
     }
-    else {
-      console.log('else block in / executed')
+    else if (status === 'authenticated' && !session?.user?.menuBlade) {
+      console.log('else if block in / executed')
       signOut()
+      toast({
+        title: "Server Error",
+        description: "Unable to get basic details",
+        variant: "destructive"
+      })
+    }
+    else {
       router.replace('/')
     }
   }, [status, session, router]);
