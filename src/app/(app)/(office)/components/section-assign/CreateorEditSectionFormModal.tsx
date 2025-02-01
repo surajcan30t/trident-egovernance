@@ -33,14 +33,14 @@ const downloadCsvTemplate = () => {
 
 
 export function EditSectionFormModal({ message, open, setOpen, method }: { message: string, open: boolean, setOpen: (value: boolean) => void, method: string }) {
-  console.log('method', method)
   const searchParams = useSearchParams();
 
-  const { section, course, branch, sem } = {
+  const { section, course, branch, sem, session } = {
     section: searchParams.get('section') as string,
     course: parseCourse(searchParams.get('course') as string),
     branch: searchParams.get('branch') as string,
-    sem: searchParams.get('sem') as string
+    sem: searchParams.get('sem') as string,
+    session: searchParams.get('session') as string
   }
 
   const [file, setFile] = useState<File | null>(null);
@@ -66,7 +66,6 @@ export function EditSectionFormModal({ message, open, setOpen, method }: { messa
     }
     const parsedJson: Response | undefined = await handleCsvtoJsonConversion(file, null);
     if (parsedJson?.status === 400) {
-      console.log('Error parsing CSV file');
       return;
     }
     try {
@@ -80,18 +79,17 @@ export function EditSectionFormModal({ message, open, setOpen, method }: { messa
         description: string;
       }
       if (Array.isArray(data) && data.length > 0) {
-        console.log('Data to be uploaded:');
         const uploadData = {
           section: section,
           course: course,
           branchCode: branch,
           sem: sem,
+          session: session,
           studentSectionData: data
         }
         formData.append('data', JSON.stringify(uploadData));
         // Make API call to upload CSV file
         const response = (await handleBulkSectionUpload(formData, method)) as Resp;
-        console.log('Response:', response);
         if (response.status === 422) {
           setUploadStatus(null);
           setError(null);
@@ -108,13 +106,11 @@ export function EditSectionFormModal({ message, open, setOpen, method }: { messa
           );
           return;
         } else if (response.status === 200) {
-          console.log('Upload successful');
           setUploadStatus(response.message);
           setLoading(false);
           return;
         }
         else {
-          console.log('Upload unsuccessful');
           setUploadStatus(null);
           setLoading(false);
           setError('Unable to upload the file. Please try again.');
@@ -126,7 +122,6 @@ export function EditSectionFormModal({ message, open, setOpen, method }: { messa
         return;
       }
     } catch (err) {
-      console.error(err);
       setError('Error uploading the file. Please try again.');
       setLoading(false);
     } finally {

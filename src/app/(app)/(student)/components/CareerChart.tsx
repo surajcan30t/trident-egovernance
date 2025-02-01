@@ -107,7 +107,6 @@ const CareerChart = () => {
               },
             },
           );
-          console.log(response2.data)
         } catch (error) {
           // Optionally set an error state or default value
           setCareerGrowthSummary(null);

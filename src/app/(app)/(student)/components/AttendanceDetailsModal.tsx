@@ -16,8 +16,7 @@ interface AttendanceSummary {
   attendancePercentage: number;
 }
 
-export default function AttendanceDetailsModal({data}:{data: AttendanceSummary[]}) {
-  console.log(data)
+export default function AttendanceDetailsModal({ data }: { data: AttendanceSummary[] }) {
   return (
     <>
       <Table className=" rounded-xl shadow-lg border-r border-l">

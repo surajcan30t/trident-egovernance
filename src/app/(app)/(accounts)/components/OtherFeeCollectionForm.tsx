@@ -95,7 +95,7 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
         );
         const status = await response.status;
         if (status !== 200) {
-          console.log('Error: ');
+          ('Error: ');
           return;
         } else {
           const data = await response.json();
@@ -103,7 +103,6 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
           return data;
         }
       } catch (e) {
-        console.log(e);
       }
     };
     otherFeeMenuFetcher();
@@ -162,7 +161,6 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
         router.refresh()
       }
     } catch (e) {
-      console.log(e);
     } finally {
       setLoading(false);
     }

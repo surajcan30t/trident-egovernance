@@ -223,9 +223,7 @@ function CollectionDetails({ mrNo }: { mrNo: string }) {
 
         const response = JSON.parse(text);
         setCollectionDetails(response);
-        console.log('response', response);
       } catch (error) {
-        console.error('Error fetching collection details:', error);
         setCollectionDetails([]);
       }
     };

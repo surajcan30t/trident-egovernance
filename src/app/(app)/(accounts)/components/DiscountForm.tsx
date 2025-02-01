@@ -74,7 +74,6 @@ const DiscountForm = ({ regdNo, description }: { regdNo: string, description: st
       }
     } catch (e) {
       setLoading(false);
-      console.log(e);
     } finally {
       setLoading(false);
     }

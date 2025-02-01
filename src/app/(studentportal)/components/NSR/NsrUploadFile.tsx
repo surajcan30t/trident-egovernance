@@ -200,7 +200,6 @@ const NsrUploadFile = (initial: any) => {
       setIsUploading(newUploadingState);
     }
   }
-  console.log("Value", form.getValues());
   return (
     <>
       <Form {...form}>

@@ -115,6 +115,17 @@ export const studentSectionData = z.object({
   labGroup: z.number(),
 });
 
+export const ongoingSessionsSchema = z.object({
+  sessionId: z.string(),
+  startDate: z.string(),
+  endDate: z.string() || null,
+  course: z.string(),
+  regdYear: z.number(),
+  prevSessionId: z.string(),
+  admissionYear: z.number(),
+  studentType: z.string(),
+});
+
 export type StudentReport = z.infer<typeof studentreportSchema>;
 export type StudentOnly = z.infer<typeof studentOnlySchema>;
 export type PersonalDetailsOnly = z.infer<typeof personalDetailsOnlySchema>;
@@ -127,70 +138,4 @@ export type TransportOnly = z.infer<typeof transportOnlySchema>;
 export const documentsSchema = z.array(documentSchema);
 export type Documents = z.infer<typeof documentsSchema>;
 export type StudentSectionData = z.infer<typeof studentSectionData>;
-
-// jeeApplicationNo: z.string(),
-//   regdNo: z.string(),
-//   admissionDate: z.date(),
-//   ojeeCouncellingFeePaid: z.string().nullable(), // Originally BooleanString in Java, so allowing string and null
-//   studentName: z.string(),
-//   gender: z.string().nullable(), // Originally an enum in Java, allowing string and null
-//   branchCode: z.string().nullable(),
-//   admissionYear: z.string().nullable(),
-//   degreeYop: z.number().nullable(), // Originally Integer in Java, allowing null
-//   phNo: z.string(), // To handle leading zeroes
-//   email: z.string().email(),
-//   dob: z.string().nullable(),
-//   rollNo: z.string(),
-//   hostelier: z.string().nullable(), // BooleanString type in Java, allowing string and null
-//   hostelOption: z.string().nullable(), // BooleanString type in Java
-//   hostelChoice: z.string().nullable(), // Assuming a string type
-//   transportAvailed: z.string().nullable(), // BooleanString type in Java
-//   status: z.string().nullable(),
-//   batchId: z.string().nullable(),
-//   currentYear: z.number().nullable(),
-//   aadhaarNo: z.number(), // Long in Java
-//   indortrng: z.string().nullable(), // BooleanString type in Java
-//   plpoolm: z.string().nullable(), // BooleanString type in Java
-//   cfPayMode: z.string().nullable(), // CfPaymentMode type in Java, simplified as string
-//   religion: z.string().nullable(), // Enum type in Java, simplified as string
-//   rank: z.number().nullable(), // Long in Java
-//   rankType: z.string().nullable(), // RankType in Java, simplified as string
-//   course: z.string(), // Enum in Java, simplified as string
-//   tfw: z.string().nullable(), // Enum in Java
-//   admissionType: z.string().nullable(), // Enum in Java
-//   studentType: z.string().nullable(), // Enum in Java
-//
-//   tenthPercentage: z.number().nullable(),
-//   tenthYOP: z.number().nullable(),
-//   twelvthPercentage: z.number().nullable(),
-//   twelvthYOP: z.number().nullable(),
-//   diplomaPercentage: z.number().nullable(),
-//   diplomaYOP: z.number().nullable(),
-//   graduationPercentage: z.number().nullable(),
-//   graduationYOP: z.number().nullable(),
-//
-//   fname: z.string(), // Father's name
-//   mname: z.string(), // Mother's name
-//   lgName: z.string(), // Legal guardian's name
-//   permanentAddress: z.string(),
-//   permanentCity: z.string(),
-//   permanentState: z.string(),
-//   permanentPincode: z.number(),
-//   parentContact: z.string(), // Phone number as string
-//   parentEmailId: z.string().email(),
-//   presentAddress: z.string().nullable(),
-//   district: z.string(),
-//
-//   ojeeCounsellingFeePaid: z.string().nullable(),
-//   ojeeRollNo: z.string().nullable(),
-//   ojeeRank: z.string().nullable(),
-//   aieeeRank: z.string().nullable(),
-//   caste: z.string(),
-//   reportingDate: z.date().nullable(),
-//   categoryCode: z.string().nullable(),
-//   categoryRank: z.number().nullable(),
-//   allotmentId: z.string(),
-//
-//   transportOpted: z.string().nullable(), // BooleanString in Java
-//   pickUpPoint: z.string().nullable(),
-//   studentDocsData: z.array(DocumentSchema)
+export type OngoingSessions = z.infer<typeof ongoingSessionsSchema>;

@@ -69,8 +69,7 @@ const StudentDocsForm = ({
   table: string;
   data: Documents;
   registrationNo: string
-}) => {
-  console.log(data)
+  }) => {
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState<boolean[]>([
     false,
@@ -103,12 +102,9 @@ const StudentDocsForm = ({
 
       // Create form data and call the server-side singleUpload function
       const formData = new FormData()
-      console.log(1)
       formData.append(`file${index}`, file);
-      const payload = {formData: formData, registrationNo: registrationNo, docId: data[index]?.docId ?? null}
-      console.log(3)
+      const payload = { formData: formData, registrationNo: registrationNo, docId: data[index]?.docId ?? null }
       // data[index]?.docId ? formData.append('docId', data[index].docId.toString()) : formData.append('docId', '')
-      console.log(4)
 
       const uploadResponse = await singleUpload(index, payload); // Call server action
 
@@ -165,10 +161,8 @@ const StudentDocsForm = ({
       setIsUploading(newUploadingState);
     }
   }
-  console.log('Value', form.getValues());
 
   return (
-    console.log(data),
     (
       <>
         <Form {...form}>

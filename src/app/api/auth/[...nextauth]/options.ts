@@ -87,6 +87,12 @@ async function handleApiResponse<T>(
   return response.json();
 }
 
+async function handleImageResponse(response: Response): Promise<string> {
+  if (!response.ok) return 'null';
+  const blob = await response.blob();
+  return URL.createObjectURL(blob); // Convert to Blob URL
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     AzureADProvider({
@@ -114,40 +120,56 @@ export const authOptions: NextAuthOptions = {
       }
 
       token.accessToken = account.access_token;
-      console.log('TOKEN::', token);
+      // console.log('TOKEN::', token);
       console.log('ACCOUNT::', account);
       try {
-        const [userTypeResponse, menuBladeResponse] = await Promise.all([
-          fetchWithTimeout(
-            `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-information`,
-            {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${token.accessToken}`,
+        const [userTypeResponse, menuBladeResponse, profilePictureResponse] =
+          await Promise.all([
+            fetchWithTimeout(
+              `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-information`,
+              {
+                method: 'GET',
+                headers: {
+                  Authorization: `Bearer ${token.accessToken}`,
+                },
               },
-            },
-          ),
-          fetchWithTimeout(
-            `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-menu-blade`,
-            {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${token.accessToken}`,
+            ),
+            fetchWithTimeout(
+              `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-menu-blade`,
+              {
+                method: 'GET',
+                headers: {
+                  Authorization: `Bearer ${token.accessToken}`,
+                },
               },
-            },
-          ),
-        ]);
+            ),
+            fetchWithTimeout(
+              `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-photo`,
+              {
+                method: 'GET',
+                headers: {
+                  Authorization: `Bearer ${token.accessToken}`,
+                },
+              },
+            ),
+          ]);
+
+        console.log(profilePictureResponse);
 
         // Handle API responses
-        const [userType, menuBlade] = await Promise.all([
+        const [userType, menuBlade, profilePicture] = await Promise.all([
           handleApiResponse(
             userTypeResponse,
             'Failed to fetch user information',
           ),
           handleApiResponse(menuBladeResponse, 'Failed to fetch menu blade'),
+          handleImageResponse(profilePictureResponse),
         ]);
 
-        if (!!userType) {
+        console.log('got profile picture', profilePicture);
+
+        if (!userType) {
+          console.log('!!user type', !userType);
           return {
             ...token,
             error: 'Authentication Failed',
@@ -155,8 +177,13 @@ export const authOptions: NextAuthOptions = {
           };
         }
 
+        console.log('set user type');
+
         token.userType = userType;
         token.menuBlade = menuBlade;
+        profilePicture === 'null'
+          ? (token.picture = null)
+          : (token.picture = profilePicture);
 
         // Only proceed with Graph token if user has a job title
         if (

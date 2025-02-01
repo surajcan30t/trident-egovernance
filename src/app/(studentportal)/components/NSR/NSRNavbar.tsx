@@ -45,7 +45,6 @@ const SignIn = () => {
   useEffect(() => {
     const checkLoginState = async () => {
       const status = await isAuthenticated();
-      console.log(status);
       status ? setIsLoggedIn(true) : setIsLoggedIn(false);
     };
     checkLoginState();

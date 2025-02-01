@@ -73,9 +73,9 @@ export default function Navbar() {
             </div>
           </div>
           <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetContent side="right" className="bg-slate-500 text-white">
+            <SheetContent side="right" className="bg-slate-200 text-black">
               <SheetHeader>
-                <SheetTitle className="text-white">User profile</SheetTitle>
+                <SheetTitle className="text-black">User profile</SheetTitle>
               </SheetHeader>
               <User />
             </SheetContent>

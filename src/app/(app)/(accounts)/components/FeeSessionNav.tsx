@@ -5,7 +5,6 @@ const FeeSessionNav = () => {
   const [activeYear, setActiveYear] = useState('');
   useEffect(() => {
     const currentYear = Math.floor(Math.random() * 4 + 1);
-    console.log('Current Year: ', currentYear)
     setActiveYear(currentYear.toString());
   }, [])
 

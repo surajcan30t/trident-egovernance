@@ -92,7 +92,6 @@ export default function BatchGenerationForm({batchGenerationSubmit}: {batchGener
 
   useEffect(() => {
     const selectedCourse = form.watch('course');
-    console.log(selectedCourse)
     setBranchOption(selectedCourse ? Object.values(branches[selectedCourse] || {}).map((branch: any) => branch.branchCode) : []);
   }, [form.watch('course')])
 

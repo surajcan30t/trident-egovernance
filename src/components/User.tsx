@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface User {
   name: string;
@@ -52,23 +52,31 @@ type CardProps = React.ComponentProps<typeof Card>;
 
 const User: React.FC<CardProps> =  ({ className, ...props }) => {
   const { data: session } = useSession()
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const jobTitle = session?.user?.userType?.userJobInformationDto?.jobTitle
   console.log(session)
   const student: boolean = jobTitle === 'STUDENT';
+
+  useEffect(() => {
+    if (session?.user?.image) {
+      // If the image is already a Blob URL, directly use it
+      const imageUrl = session.user.image;
+      setImageUrl(`http://localhost:3000/${imageUrl}`);
+    }
+  }, [session?.user?.image]);
+
   return (
-
-
     <Card className={cn('w-full h-fit', className)} {...props}>
       <CardContent className=" w-full h-full grid gap-4 bg-indigo-200 shadow-md shadow-gray-600 rounded-lg">
         <div className="flex flex-col space-x-4 items-center">
           <div className="relative w-[150px] h-[150px] rounded-full overflow-hidden shrink-0">
+            {<></>}
             <Image
               className="object-cover"
-              src={'/user.png'}
+              src={imageUrl || ''}
               alt="user"
-              fill
               sizes="50vw"
-              priority
+              fill
             />
           </div>
           <div className="flex flex-col justify-center">

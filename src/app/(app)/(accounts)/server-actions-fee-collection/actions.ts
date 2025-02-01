@@ -145,7 +145,7 @@ export const handleDuesFeePayment = async (formData: any) => {
               headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${session.user.accessToken}`,
-                graphToken: `Bearer ${session.user.graphToken}`,
+                oboToken: `Bearer ${session.user.graphToken}`,
               },
             },
           );

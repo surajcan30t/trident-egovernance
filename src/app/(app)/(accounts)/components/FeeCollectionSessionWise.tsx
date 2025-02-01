@@ -16,7 +16,6 @@ function generateFinancialYears(startYear:any) {
   const financialYears = [];
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
-  console.log(currentMonth);
   const sessionYear = currentMonth >= 10 ? currentYear + 1 : currentYear;
 
   for (let year = startYear; year <= sessionYear; year++) {

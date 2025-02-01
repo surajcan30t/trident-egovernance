@@ -20,7 +20,6 @@ const StudentDataTable = () => {
     async function getData(course:string, branch: string): Promise<TotalAdmissionsReport[] | undefined> {
       try {
         const response = await totalAdmissionsReportFetcher(course, branch);
-        console.log(response);
         if(response){
           setData(response);
         }
@@ -31,7 +30,6 @@ const StudentDataTable = () => {
           });
         }
       } catch (err) {
-        console.log(err);
         return undefined;
       }
     }

@@ -77,7 +77,7 @@ const Navbar = () => {
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <SheetContent
                 side="right"
-                className="bg-slate-500 text-white h-fit"
+                className="bg-slate-200 text-white h-fit"
               >
                 <SheetHeader>
                   <SheetTitle className="text-white">User profile</SheetTitle>

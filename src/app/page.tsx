@@ -37,7 +37,6 @@ export default function Home() {
       router.replace(redirectUrl);
     }
     else if (status === 'authenticated' && !session?.user?.menuBlade) {
-      console.log('else if block in / executed')
       signOut()
       toast({
         title: "Server Error",
@@ -56,7 +55,7 @@ export default function Home() {
         <Navbar />
         <div className="absolute top-0 w-full h-full">
           <Image
-            src="/tricol.jpg"
+            src="/tricol.png"
             className="object-cover opacity-100"
             alt="logo"
             fill
