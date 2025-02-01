@@ -38,8 +38,6 @@ export const handleCsvtoJsonConversion = (
           return value;
         },
         complete: (result) => {
-          console.log('Parsed JSON data:', result.data);
-
           // Resolve the Promise when parsing is successful
           resolve({
             status: 200,
@@ -48,8 +46,6 @@ export const handleCsvtoJsonConversion = (
           });
         },
         error: (error) => {
-          console.error('Error parsing CSV:', error);
-
           // Reject the Promise if parsing fails
           reject({
             status: 400,
@@ -59,8 +55,6 @@ export const handleCsvtoJsonConversion = (
         },
       });
     } catch (err) {
-      console.error(err);
-
       // Reject the Promise in case of a general error
       reject({
         status: 400,

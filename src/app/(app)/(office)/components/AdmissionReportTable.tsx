@@ -17,7 +17,6 @@ const StudentDataTable = () => {
     async function getData(year:string): Promise<AdmissionReport[] | undefined> {
       try {
         const response = await admissionReportFetcher(year);
-        console.log(response);
         if(response){
           setData(response);
         }
@@ -29,7 +28,6 @@ const StudentDataTable = () => {
           });
         }
       } catch (err) {
-        console.log(err);
         return undefined;
       }
     }

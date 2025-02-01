@@ -18,7 +18,6 @@ const StudentDataTable = ({sessionType}:{sessionType:string}) => {
     async function getData(): Promise<SessionwiseReport[] | undefined> {
       try {
         const response = await sessionwiseContinuingReportFetcher(sessionType);
-        console.log(response);
         if(response){
           setData(response);
         }
@@ -29,7 +28,6 @@ const StudentDataTable = ({sessionType}:{sessionType:string}) => {
           });
         }
       } catch (err) {
-        console.log(err);
         return undefined;
       }
     }

@@ -47,12 +47,10 @@ const FeeCollectionTable = ({ regdNo }: { regdNo: string | null }) => {
         );
         const result = await response.json();
         const sortedResult = result.sort((a: any, b: any) => a.mrNo - b.mrNo);
-        console.log('sorted result', sortedResult);
         setData(sortedResult);
 
         return result;
       } catch (e) {
-        console.error(e);
       }
     };
     getCollectionDetails(regdNo);
@@ -67,7 +65,6 @@ const FeeCollectionTable = ({ regdNo }: { regdNo: string | null }) => {
         {years &&
           years.map((year, index: number) => {
             const yearData = data[year];
-            console.log('index', index);
             // Skip rendering if there's no data for the year
             if (!yearData) return null;
 
@@ -156,7 +153,6 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
   );
 
   if (duesError || collectionError) {
-    console.log('Due Error:', duesError, 'Collection Error: ', collectionError)
     return <div>Oops!! Something went wrong</div>;
   }
 
@@ -350,7 +346,6 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                         Fee Collection Details
                       </h2>
                       {collectionData ? (
-                        console.log('Collection details', collectionData),
                         <Card key={year} className="mb-4">
                           <CardHeader>
                             <CardDescription>

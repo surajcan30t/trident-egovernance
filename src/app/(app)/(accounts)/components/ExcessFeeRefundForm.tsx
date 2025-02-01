@@ -74,7 +74,6 @@ export function ExcessFeeRefundForm({ regdNo }: { regdNo: string }) {
 
   const refundModeSelected = form.watch('refundMode');
   useEffect(() => {
-    console.log('Refund Mode:', refundModeSelected);
 
     if (refundModeSelected === 'CHEQUE') {
       setShowDDFields(true);
@@ -96,7 +95,6 @@ export function ExcessFeeRefundForm({ regdNo }: { regdNo: string }) {
           description: 'This student is not eligible for a refund. Please check the registration number and try again.',
         });
       } else {
-        console.log("successful")
         toast({
           variant: 'success',
           title: 'Success',
@@ -106,7 +104,6 @@ export function ExcessFeeRefundForm({ regdNo }: { regdNo: string }) {
       }
     } catch (e) {
       setLoading(false);
-      console.log(e);
     } finally {
       setLoading(false);
     }

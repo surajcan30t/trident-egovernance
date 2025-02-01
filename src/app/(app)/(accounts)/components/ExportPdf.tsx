@@ -31,7 +31,6 @@ export default function ExportPdf(): JSX.Element {
     if(status === 'authenticated'){
       setIsLoading(true);
       try {
-        console.log('Before response:', new Date().getSeconds());
         const response = await fetch('/api/generate-pdf', {
           method: 'POST',
           headers: {
@@ -45,9 +44,7 @@ export default function ExportPdf(): JSX.Element {
         }
 
         // Download the PDF
-        console.log('After response:', new Date().getSeconds());
         const blob = await response.blob();
-        console.log('After blob creation:', new Date().getSeconds());
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -56,7 +53,6 @@ export default function ExportPdf(): JSX.Element {
         a.click();
         document.body.removeChild(a);
       } catch (error) {
-        console.error('Error:', error);
       } finally {
         setIsLoading(false);
       }
@@ -65,7 +61,6 @@ export default function ExportPdf(): JSX.Element {
   const handlePrint = () => {
     const printSection = document.getElementById('print-section');
     if (!printSection) {
-      console.error('Print section not found!');
       return;
     }
     //
@@ -97,7 +92,6 @@ export default function ExportPdf(): JSX.Element {
           setPersonalDetails(data);
           return data;
         } catch (e) {
-          console.error(e);
         }
       };
       const fetchMrDetails = async (moneyReceiptNo: string) => {
@@ -113,7 +107,6 @@ export default function ExportPdf(): JSX.Element {
             },
           );
           const data = await response.json();
-          console.log('Mr details data',data)
           setMrDetails(data);
           settatAmount(data.tatTotalAmount.amount)
           settatAmountInwords(data.tatTotalAmount.amountInWords)
@@ -121,7 +114,6 @@ export default function ExportPdf(): JSX.Element {
           settactFAmountInwords(data.tactFTotalAmount.amountInWords)
           return data;
         } catch (e) {
-          console.error(e);
         }
       };
       regdNo && fetchPersonalDetails(regdNo);

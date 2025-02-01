@@ -112,7 +112,6 @@ function SelectRegdYear({ form, token }: { form: UseFormReturn<z.infer<typeof Fo
         [regdYear]: response.data
       }))
     } catch (error) {
-      console.log(error)
     }
   }
 
@@ -381,7 +380,6 @@ export default function FeeStructureGenerationForm({ token, feeStructureGenerati
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setLoading(true)
     const initialData = window.localStorage.getItem('batchData')
-    console.log(initialData)
     const response = await handleFeeStructureGeneration(initialData, data)
     if (response.status === 200) {
       window.localStorage.removeItem('step');

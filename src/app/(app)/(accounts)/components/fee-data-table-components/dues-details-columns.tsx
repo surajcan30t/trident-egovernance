@@ -54,7 +54,6 @@ export const columns: ColumnDef<StudentDuesDetails>[] = [
       const filteredRegdYear = filterFields['regdYear'].find(
         (regdYear) => Number(regdYear) === Number(row.original.regdYear)
       );
-      console.log('filteredregdyear', filteredRegdYear);
       if (!filteredRegdYear) return null;
       return (
         <div className="flex space-x-2">
@@ -66,7 +65,6 @@ export const columns: ColumnDef<StudentDuesDetails>[] = [
     },
     filterFn: (row, id, value) => {
       const rowValue = Number(row.getValue(id)); // Convert to Number for comparison
-      console.log('Row Value:', rowValue, 'Filter Value:', value);
       return Array.isArray(value) && value.includes(rowValue);
     },
   },

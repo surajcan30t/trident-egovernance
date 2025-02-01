@@ -60,12 +60,13 @@ const years = [
   },
 ];
 
-interface DataTableToolbarProps<TData> {
+interface DataTableToolbarProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
   table: Table<TData>;
 }
 
 export function DataTableToolbar<TData>({
   table,
+  children
 }: DataTableToolbarProps<TData>) {
   const [branches, setBranches] = useState<{ value: string }[]>([]); // State to hold branch options
   const [globalFilter, setGlobalFilter] = useState('');
@@ -134,6 +135,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
+      {children}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

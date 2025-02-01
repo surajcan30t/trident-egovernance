@@ -81,7 +81,6 @@ const EnterApplicationNumber = () => {
         setError(response?.message || 'An error occurred during login');
       }
     } catch (error: any) {
-      console.log(error);
       // setError(error);
     } finally {
       setLoading(false);
@@ -90,12 +89,10 @@ const EnterApplicationNumber = () => {
 
   async function multiReg(data: number) {
     const response = await multiStudentRegistration();
-    console.log(response);
 
   }
   async function multiSub(data: number) {
     const response = await multiFinalSubmit();
-    console.log(response);
 
   }
 

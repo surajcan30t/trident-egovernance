@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 
 const SectionTable = () => {
   const searchParams = useSearchParams()
-  console.log('srarchparams', searchParams)
   const [sectionData, setSectinoData] = useState<StudentSectionData[] | []>([])
   const [showEditModal, setShowEditModal] = useState<boolean>(false)
   const [notFoundError, setNotFoundError] = useState<string>('')
@@ -25,7 +24,6 @@ const SectionTable = () => {
           setLoading(true)
           const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/get-section-data?course=${parsedCourse}&branchCode=${searchParams.get('branch')}&sem=${searchParams.get('sem')}&section=${searchParams.get('section')}`)
           const data = await response.json()
-          console.log('data', data)
           if (response.status === 200) {
             setSectinoData(data.studentSectionData.sort((a: any, b: any) => a.collegeRollNo - b.collegeRollNo))
           }
@@ -78,8 +76,8 @@ const SectionTable = () => {
               </>
           }
           <div className='flex flex-col gap-2 justify-center items-end'>
-            <Button variant={'trident'} size={'lg'} onClick={() => { setShowEditModal(true), setMethod('create') }}>Create New Section</Button>
-            {sectionData.length > 0 && <Button variant={'trident'} size={'lg'} onClick={() => { setShowEditModal(true), setMethod('update') }}>Update Existing Section</Button>}
+            <Button className='w-full' variant={'trident'} size={'lg'} onClick={() => { setShowEditModal(true), setMethod('create') }}>Create New Section</Button>
+            {sectionData.length > 0 && <Button className='w-full' variant={'trident'} size={'lg'} onClick={() => { setShowEditModal(true), setMethod('update') }}>Update Existing Section</Button>}
           </div>
         </div>
         <EditSectionFormModal method={method} message={notFoundError} open={showEditModal} setOpen={setShowEditModal} />

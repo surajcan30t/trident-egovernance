@@ -24,7 +24,6 @@ const getStudentByRegdNo = async (regdNo: string) => {
       return null;
     }
   } catch (e) {
-    console.log('error', e);
   }
 };
 const page = async ({ params }: { params: { regdno: string } }) => {

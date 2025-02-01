@@ -163,7 +163,6 @@ export default function SemesterResultGraph() {
             },
           );
           setGPASummary(response.data || null);
-          console.log(response.data)
         } catch (error) {
           // Optionally set an error state or default value
           setGPASummary(null);

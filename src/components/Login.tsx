@@ -12,13 +12,10 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const handleSignIn = async () => {
-    console.log("button clicked")
     const result = await signIn('azure-ad');
     // if (result?.ok) {
-    //   console.log("sign in successful redirecting user")
     //   router.push('/office/dashboard');
     // }
-    console.log(result);
   };
 
   const { data: session } = useSession();

@@ -99,7 +99,6 @@ const NSRBulkUploadForm = () => {
             return value;
           },
           complete: (result) => {
-            console.log('Parsed JSON data:', result.data);
             setParsedData(result.data); // Set parsed data to state
             setError(null); // Reset error message on successful upload
 
@@ -111,7 +110,6 @@ const NSRBulkUploadForm = () => {
             });
           },
           error: (error) => {
-            console.error('Error parsing CSV:', error);
             setError('Error parsing CSV file. Please check the format.');
 
             // Reject the Promise if parsing fails
@@ -123,7 +121,6 @@ const NSRBulkUploadForm = () => {
           },
         });
       } catch (err) {
-        console.error(err);
         setError('Error uploading the file. Please try again.');
 
         // Reject the Promise in case of a general error
@@ -139,7 +136,6 @@ const NSRBulkUploadForm = () => {
   const handleUpload = async () => {
     const parsedJson: Response | undefined = await handleConversion();
     if (parsedJson?.status === 400) {
-      console.log('Error parsing CSV file');
       return;
     }
     try {
@@ -153,11 +149,9 @@ const NSRBulkUploadForm = () => {
         description: string;
       }
       if (Array.isArray(data) && data.length > 0) {
-        console.log('Data to be uploaded:');
         formData.append('data', JSON.stringify(data));
         // Make API call to upload CSV file
         const response = (await handleBulkStudentUpload(formData)) as Resp;
-        console.log('Response:', response);
         if (response.status === 422) {
           setUploadStatus(null);
           setError(null);
@@ -184,7 +178,6 @@ const NSRBulkUploadForm = () => {
         return;
       }
     } catch (err) {
-      console.error(err);
       setError('Error uploading the file. Please try again.');
       setLoading(false);
     } finally {

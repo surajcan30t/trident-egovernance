@@ -191,7 +191,6 @@ export default function DuesDetailsChart() {
               },
             },
           );
-          console.log('response.data',response.data)
           setDuesSummary(response.data || null);
         } catch (error) {
           // Optionally set an error state or default value

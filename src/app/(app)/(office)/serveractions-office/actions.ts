@@ -29,7 +29,6 @@ export const studentDataFetcher = async (): Promise<Students[] | undefined> => {
         throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      console.log('response: ', data);
 
       return data;
     } else {

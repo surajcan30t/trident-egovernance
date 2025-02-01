@@ -28,7 +28,6 @@ const getStudentDuesDetails = async (token: string, query: Query) => {
       console.log('response', response)
       return response;
     } catch (error) {
-      console.log(error);
     }
   }
 };

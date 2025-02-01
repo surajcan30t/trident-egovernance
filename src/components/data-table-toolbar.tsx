@@ -49,6 +49,8 @@ export function DataTableToolbar<TData>({
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
+  const [globalFilter, setGlobalFilter] = React.useState('');
+
   // Memoize computation of searchableColumns and filterableColumns
   const { searchableColumns, filterableColumns } = React.useMemo(() => {
     return {
@@ -56,6 +58,13 @@ export function DataTableToolbar<TData>({
       filterableColumns: filterFields.filter((field) => field.options),
     }
   }, [filterFields])
+
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const filterValue = event.target.value;
+    console.log(table.setGlobalFilter(filterValue))
+    setGlobalFilter(filterValue);
+    table.setGlobalFilter(filterValue);
+  };
 
   return (
     <div
@@ -66,27 +75,12 @@ export function DataTableToolbar<TData>({
       {...props}
     >
       <div className="flex flex-1 items-center gap-2">
-        {searchableColumns.length > 0 &&
-          searchableColumns.map(
-            (column) =>
-              table.getColumn(column.id ? String(column.id) : "") && (
-                <Input
-                  key={String(column.id)}
-                  placeholder={column.placeholder}
-                  value={
-                    (table
-                      .getColumn(String(column.id))
-                      ?.getFilterValue() as string) ?? ""
-                  }
-                  onChange={(event) =>
-                    table
-                      .getColumn(String(column.id))
-                      ?.setFilterValue(event.target.value)
-                  }
-                  className="h-8 w-40 lg:w-64"
-                />
-              )
-          )}
+        <Input
+          placeholder="Search..."
+          value={globalFilter}
+          onChange={handleFilterChange}
+          className="h-8 w-[150px] lg:w-[250px] bg-white"
+        />
         {filterableColumns.length > 0 &&
           filterableColumns.map(
             (column) =>

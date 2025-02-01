@@ -12,8 +12,7 @@ export default function Redirect(){
       const redirectUrl = menuBlade.redirectUrl
       router.replace(redirectUrl);
     }
-    else{
-      signOut();
+    else {
       router.replace('/')
     }
   }, [status, session, router]);

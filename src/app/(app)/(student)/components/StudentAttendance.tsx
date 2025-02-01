@@ -71,7 +71,6 @@ const chartConfig = {
 
 function ChartComponent({ data, semester }: { data: any, semester: string }) {
   const [selectedSem, setSelectedSem] = useState<string>(semester);
-  console.log(semester)
   const semesters = Object.keys(data);
   const chartData = data[selectedSem] ? data[selectedSem].map(
     ({ subAbbr, attendancePercentage, totalAttended, totalClasses }: AttendanceSummary) => ({
@@ -200,9 +199,7 @@ const StudentAttendance = () => {
 
       if (status === 'authenticated' && session?.user?.accessToken) {
         try {
-          console.log('sem', session.user.userType.collegeInformation.semester)
           setCursem(session.user.userType.collegeInformation.semester.toString());
-          console.log('semester', curSem)
           const token = session.user.accessToken;
           const response = await axios.get(
             `${process.env.NEXT_PUBLIC_BACKEND}/student-portal/get-attendance-summary`,
@@ -222,7 +219,6 @@ const StudentAttendance = () => {
 
     // Only call the function if we have a valid session
     if (status === 'authenticated') {
-      console.log('Status:', status)
       getAttendanceDetails();
     }
   }, [status, session]);

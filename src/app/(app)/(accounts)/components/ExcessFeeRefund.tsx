@@ -55,14 +55,13 @@ const StudentDetails = () => {
           },
         );
         const data = await response.json();
-        console.log(data);
         setStatusCode(data.status);
         setStatusMessage(data.detail);
         setRender(true);
         setStudentData(data);
         return data;
       } catch (e) {
-        console.error(e);
+
       }
     };
 
@@ -136,7 +135,6 @@ export function ExcessFeeRefund() {
     try {
       router.push(`/feecollection/excessfeerefund?registrationNo=${data.regdNo}`);
     } catch (e) {
-      console.log(e);
       setRender(false);
     }
   }
