@@ -16,7 +16,7 @@ export interface SearchParams {
 
 export interface Option {
   label: string;
-  value: string;
+  value: string | number;
   icon?: React.ComponentType<{ className?: string }>;
   count?: number;
 }
