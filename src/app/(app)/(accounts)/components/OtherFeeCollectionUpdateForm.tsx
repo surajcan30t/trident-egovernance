@@ -24,8 +24,8 @@ import {
 import {
   handleUpdateOtherFeePayment,
 } from '@/app/(app)/(accounts)/server-actions-fee-collection/actions';
-import PulseLoader from 'react-spinners/PulseLoader';
 import { useSession } from 'next-auth/react';
+import { Loader } from 'lucide-react';
 
 const FormSchema = z
   .object({
@@ -382,9 +382,9 @@ export function OtherFeeCollectionUpdateForm({ data }: { data: any }) {
               />
             )}
             <Button variant={'trident'} size={'lg'} type="submit">
-              {loading ? (<PulseLoader
-                color="#ffffff"
-                size={5}
+              {loading ? (<Loader
+                className="mr-2 size-4 animate-spin"
+                aria-hidden="true"
               />) :
                 'Update'
               }

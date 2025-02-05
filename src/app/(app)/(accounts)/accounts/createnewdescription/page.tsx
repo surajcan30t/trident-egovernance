@@ -19,8 +19,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState } from "react"
 import { handleCreateNewFeeType } from "../../server-actions-fee-collection/actions"
-import { Trash2Icon } from "lucide-react"
-import PulseLoader from "react-spinners/PulseLoader"
+import { Loader, Trash2Icon } from "lucide-react"
 
 const FeeCreationSchema = z.object({
   description: z.string().toUpperCase().min(2, {
@@ -239,7 +238,10 @@ function ProfileFormArray() {
             <ProfileForm form={form} />
           </div>
           <div className="flex justify-end items-center p-4">
-            <Button variant="trident" type="submit">{loading ? <PulseLoader color="#ffffff" margin={2} size={6} /> : 'Submit'}</Button>
+            <Button variant="trident" type="submit">{loading ? <Loader
+              className="mr-2 size-4 animate-spin"
+              aria-hidden="true"
+            /> : 'Submit'}</Button>
           </div>
         </form>
       </Form>

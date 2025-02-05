@@ -5,7 +5,6 @@ import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '@/hooks/use-toast';
-import PulseLoader from 'react-spinners/PulseLoader';
 import {
   Form,
   FormControl,
@@ -27,6 +26,7 @@ import {
   handleOtherFeesPayment,
 } from '@/app/(app)/(accounts)/server-actions-fee-collection/actions';
 import { useSession } from 'next-auth/react';
+import { Loader } from 'lucide-react';
 
 const FormSchema = z
   .object({
@@ -338,9 +338,9 @@ export function OtherFeeCollectionForm({ regdNo }: { regdNo: string }) {
               />
             )}
             <Button variant={'trident'} size={'lg'} type="submit">
-              {loading ? (<PulseLoader
-                color="#ffffff"
-                size={5}
+              {loading ? (<Loader
+                className="mr-2 size-4 animate-spin"
+                aria-hidden="true"
               />) :
                 'Confirm'
               }

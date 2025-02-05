@@ -20,11 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-import PulseLoader from 'react-spinners/PulseLoader';
 import axios from 'axios';
 import { Input } from '@/components/ui/input';
-import { PlusIcon, Router, Trash2Icon } from 'lucide-react';
+import { Loader, PlusIcon, Router, Trash2Icon } from 'lucide-react';
 import { useFieldArray } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import { handleFeeStructureGeneration } from '../server-actions-fee-collection/actions';
@@ -156,9 +154,9 @@ function SelectRegdYear({ form, token }: { form: UseFormReturn<z.infer<typeof Fo
                         )}
                       />
                       <Button variant={'trident'} size={'default'} type="button" onClick={() => handleGetParticulars(form.getValues(`feeTypeForm.${index}.regdYear`))} >
-                        {loading ? (<PulseLoader
-                          color="#ffffff"
-                          size={5}
+                        {loading ? (<Loader
+                          className="mr-2 size-4 animate-spin"
+                          aria-hidden="true"
                         />) :
                           'Get Particulars'
                         }
@@ -354,8 +352,8 @@ function FeeStructureFormYearwise({ index, form, feeTypeListData }: { index: num
           ))}
           <div className='w-full flex justify-center items-center'>
             <Button type="button" variant={'outline'} className='bg-slate-500 text-white' onClick={() => append({ description: '', amount: '', payType: 'YEARLY', tfwType: 'ALL', comments: '', tatFees: 0, tactFees: 0 })}>
-            Add Fees
-          </Button>
+              Add Fees
+            </Button>
           </div>
         </div>
       </Form>

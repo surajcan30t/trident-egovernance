@@ -20,6 +20,7 @@ function FilterFields() {
       Object.values(branchObj).map(b => b.branchCode)
     ))
   }
+  console.log('Filter fields: ', filterFields);
   return filterFields
 }
 export const columns: ColumnDef<StudentDuesDetails>[] = [
@@ -104,6 +105,9 @@ export const columns: ColumnDef<StudentDuesDetails>[] = [
           </span>
         </div>
       );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
     },
   },
   {

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { BadgePercent } from 'lucide-react'
+import { BadgePercent, Loader } from 'lucide-react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,7 +26,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import PulseLoader from 'react-spinners/PulseLoader';
 import { handleDiscount } from '../server-actions-fee-collection/actions'
 const FormSchema = z
   .object({
@@ -147,9 +146,9 @@ const DiscountForm = ({ regdNo, description }: { regdNo: string, description: st
                     )}
                   />
                   <Button variant={'trident'} size={'lg'} type="submit">
-                    {loading ? (<PulseLoader
-                      color="#ffffff"
-                      size={5}
+                    {loading ? (<Loader
+                      className="mr-2 size-4 animate-spin"
+                      aria-hidden="true"
                     />) :
                       'Apply'
                     }

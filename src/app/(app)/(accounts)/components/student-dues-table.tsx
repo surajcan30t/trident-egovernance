@@ -15,15 +15,16 @@ const StudentDuesDetailsTable = ({ data }: { data: StudentDuesDetails[] }) => {
 
 	const { branches } = useParticulars();
 	const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+	const branch = [...new Set(Object.values(branches).flatMap(branchObj => Object.values(branchObj).map(b => b.branchCode)))];
 	const filterFields: DataTableFilterField<StudentDuesDetails>[] = [
 		{
 			id: 'regdYear',
 			label: 'Regd Year',
 			options: [
-				{ value: '1', label: '1' },
-				{ value: '2', label: '2' },
-				{ value: '3', label: '3' },
-				{ value: '4', label: '4' }
+				{ value: 1, label: '1' },
+				{ value: 2, label: '2' },
+				{ value: 3, label: '3' },
+				{ value: 4, label: '4' }
 			]
 		},
 		{
@@ -35,9 +36,9 @@ const StudentDuesDetailsTable = ({ data }: { data: StudentDuesDetails[] }) => {
 			}))
 		},
 		{
-      id: 'branch',
-      label: 'Branch',
-      options: selectedCourses.length > 0
+			id: "branch",
+			label: "Branch",
+			options: selectedCourses.length > 0
         ? selectedCourses.flatMap(course => 
             Object.values(branches[course]).map(branchInfo => ({
               value: branchInfo.branchCode,
@@ -45,14 +46,12 @@ const StudentDuesDetailsTable = ({ data }: { data: StudentDuesDetails[] }) => {
             }))
           )
         : []
-    }
+		}
 	]
 
 	const { table } = useDataTable({
 		data,
 		columns,
-		pageCount: Math.ceil(data.length / data.length),
-		filterFields,
 		onFilterChange: (filters) => {
       const courseFilter = filters.find(f => f.id === 'course');
       if (courseFilter) {
@@ -62,7 +61,7 @@ const StudentDuesDetailsTable = ({ data }: { data: StudentDuesDetails[] }) => {
         setSelectedCourses(courseValues);
       }
     }
-  });
+	});
 
 	return (
 		<>
@@ -71,7 +70,7 @@ const StudentDuesDetailsTable = ({ data }: { data: StudentDuesDetails[] }) => {
 					fallback=
 					{<DataTableSkeleton columnCount={5} searchableColumnCount={2} cellWidths={["5rem", "20rem", "12rem", "12rem", "8rem"]} shrinkZero />}>
 					{data ?
-						(<DataTable data={data} columns={columns} className="w-full">
+						(<DataTable table={table} className="w-full">
 							<DataTableToolbar table={table} filterFields={filterFields} />
 						</DataTable>) :
 						(
