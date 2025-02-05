@@ -42,6 +42,7 @@ const FeesDetailsFilterContext = createContext<FeesDetailsFilterContextType | un
 export const FeesDetailsFilterProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { data: session } = useSession();
   const token = session?.user?.accessToken
+  const user = session?.user?.userType?.userJobInformationDto?.jobTitle
   const [filterParticulars, setFilterParticulars] = useState<string[]>([]);
   const [feeGroups, setFeeGroups] = useState<string[]>([]);
   const [partOf, setPartOf] = useState<string[]>([]);
@@ -58,6 +59,7 @@ export const FeesDetailsFilterProvider: React.FC<{ children: React.ReactNode }> 
   }>({});
   const [loading, setLoading] = useState(true);
   useEffect(() => {
+    if (user !== 'ACCOUNTS') return
     const fetchParticulars = async () => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-feeGroups-partOf`, {
