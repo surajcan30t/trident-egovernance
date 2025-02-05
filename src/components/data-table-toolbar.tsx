@@ -37,7 +37,8 @@ interface DataTableToolbarProps<TData>
    *   }
    * ]
    */
-  filterFields?: DataTableFilterField<TData>[]
+  filterFields?: DataTableFilterField<TData>[],
+  fileName?: string
 }
 
 export function DataTableToolbar<TData>({
@@ -45,6 +46,7 @@ export function DataTableToolbar<TData>({
   filterFields = [],
   children,
   className,
+  fileName,
   ...props
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
@@ -107,12 +109,12 @@ export function DataTableToolbar<TData>({
       </div>
       <div className="flex items-center gap-2">
         {children}
-        <Button
+        {fileName && <Button
         variant="outline"
         size="sm"
         onClick={() =>
           exportTableToCSV(table, {
-            filename: "Dues_Status",
+            filename: `${fileName}`,
             excludeColumns: ["select", "actions"],
           })
         }
@@ -120,7 +122,7 @@ export function DataTableToolbar<TData>({
       >
         <Download className="size-4" aria-hidden="true" />
         Export
-      </Button>
+        </Button>}
         <DataTableViewOptions table={table} />
       </div>
     </div>
