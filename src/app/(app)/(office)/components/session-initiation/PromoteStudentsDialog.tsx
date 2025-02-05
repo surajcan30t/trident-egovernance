@@ -49,6 +49,7 @@ export function PromoteStudentsDialog({
       //     description: "Please try again later.",
       //   }
       // )
+      console.log(studentData)
       return
       // }
 
@@ -66,7 +67,7 @@ export function PromoteStudentsDialog({
     <Dialog {...props}>
       {showTrigger ? (
         <DialogTrigger asChild>
-          <Button variant="outline" size="default">
+          <Button variant="outline" className="bg-green-500 text-white" size="default">
             <Plus className="mr-2 size-4" aria-hidden="true" />
             Promote to new session
           </Button>
@@ -87,7 +88,7 @@ export function PromoteStudentsDialog({
           </DialogClose>
           <Button
             aria-label="Promote selected rows"
-            variant="destructive"
+            variant="trident"
             onClick={onPromote}
             disabled={isPromotePending}
           >
@@ -97,7 +98,7 @@ export function PromoteStudentsDialog({
                 aria-hidden="true"
               />
             )}
-            Delete
+            Promote
           </Button>
         </DialogFooter>
       </DialogContent>

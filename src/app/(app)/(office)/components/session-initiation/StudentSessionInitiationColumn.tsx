@@ -49,6 +49,11 @@ export const columns: ColumnDef<SessionWiseStudentData>[] = [
     header: () => <div className="">Name</div>,
     cell: ({ row }) => <div className="">{row.getValue('studentName')}</div>,
   },
+  {
+    accessorKey: 'branchCode',
+    header: () => <div className="">Branch</div>,
+    cell: ({ row }) => <div className="">{row.getValue('branchCode')}</div>,
+  },
   // {
   //   id: "actions",
   //   cell: ({ row }) => <DataTableRowActions row={row} />,
