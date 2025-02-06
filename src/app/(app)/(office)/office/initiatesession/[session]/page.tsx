@@ -20,7 +20,6 @@ const getData = async (token: string, admissionYear: string, course: string, reg
     }
     else {
       const data = await response.json()
-      console.log(data)
       return { status: response.status, data: data }
     }
   } catch (error) {
