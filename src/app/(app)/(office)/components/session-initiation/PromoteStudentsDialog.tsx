@@ -16,6 +16,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useParams, useSearchParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 interface SessionWiseStudentData {
   regdNo: string,
@@ -25,41 +27,69 @@ interface SessionWiseStudentData {
 interface PromoteStudentDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
   studentData: Row<SessionWiseStudentData>["original"][]
+  unSelectedStudentData?: Row<SessionWiseStudentData>["original"][]
   showTrigger?: boolean
   onSuccess?: () => void
 }
 
 export function PromoteStudentsDialog({
   studentData,
+  unSelectedStudentData,
   showTrigger = true,
   onSuccess,
   ...props
 }: PromoteStudentDialogProps) {
+  const { data: session } = useSession()
+  const searchParams = useSearchParams()
+  const path = useParams()
+  const prevSessionId = path.session
+  const admYear = searchParams.get('admissionYear')
+  const startDate = searchParams.get('startDate')
+  const sessionId = searchParams.get('sessionId')
+  const course = searchParams.get('course')
+  const studentType = searchParams.get('studentType')
+  const currentYear = searchParams.get('regdYear')
+
   const [isPromotePending, startPromoteTransition] = React.useTransition()
 
   function onPromote() {
     startPromoteTransition(async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/initiate`, {
+        body: JSON.stringify({
+          admYear,
+          prevSessionId,
+          startDate,
+          sessionId,
+          course,
+          regdNos: studentData.map(regdNo => regdNo.regdNo),
+          studentType,
+          currentYear
+        }),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+      })
+      if (response.status !== 200) {
+        toast(
+          {
+            variant: "destructive",
+            title: "Something went wrong.",
+            description: "Please try again later.",
+          }
+        )
+      }
+      else {
 
-
-      // if (error) {
-      // toast(
-      //   {
-      //     variant: "destructive",
-      //     title: "Something went wrong.",
-      //     description: "Please try again later.",
-      //   }
-      // )
-      console.log(studentData)
-      return
-      // }
-
-      props.onOpenChange?.(false)
-      toast({
-        variant: "success",
-        title: "Promoted successfully.",
-        description: `Promoted ${studentData.length} students to new session.`,
+        props.onOpenChange?.(false)
+        toast({
+          variant: "success",
+          title: "Promoted successfully.",
+          description: `Promoted ${studentData.length} students to new session.`,
       })
       onSuccess?.()
+      }
     })
   }
 
