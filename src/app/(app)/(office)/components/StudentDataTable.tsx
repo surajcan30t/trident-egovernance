@@ -10,9 +10,7 @@ import { DataTableFilterField } from '../../../../../types-global/types';
 
 
 const StudentDataTable = ({ studentData }: { studentData: Students[] | undefined }) => {
-  let data: Students[] = [];
-  if (!data.length) data = studentData || [];
-  else return
+  let data: Students[] = studentData ? studentData : [];
 
   const { branches } = useParticulars();
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
