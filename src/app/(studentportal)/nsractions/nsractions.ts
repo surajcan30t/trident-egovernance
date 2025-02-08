@@ -613,8 +613,7 @@ export const nsrFinalSubmit = async () => {
     if (request.status === 200) {
       deleteDBSavedUrlMap(applicationNo?.value as string);
       return request.status;
-    } else
-      return request.status;
+    } else return request.status;
   } catch (error) {
     console.error('+++++++++++++++Final Submit Error+++++++++++++++\n', error);
   }
