@@ -504,6 +504,15 @@ const urlMapGetter = (uniqueApplicationNo: String, innerKey: Number) => {
   }
 };
 
+const deleteDBSavedUrlMap = (uniqueApplicationNo: String) => {
+  if (globalMap.has(uniqueApplicationNo)) {
+    globalMap.delete(uniqueApplicationNo);
+    return { status: 'Ok', message: 'Map cleared successfully' };
+  } else {
+    return { status: 'Error', message: 'Invalid key provided' };
+  }
+};
+
 // function to upload file to S3
 export const upLoadToS3 = async (inputIndex: Number, userFile: File) => {
   const applicationNo = cookies().get('applicationNo')?.value as string;
@@ -601,7 +610,10 @@ export const nsrFinalSubmit = async () => {
       },
     );
     console.log('request', request);
-    return request.status;
+    if (request.status === 200) {
+      deleteDBSavedUrlMap(applicationNo?.value as string);
+      return request.status;
+    } else return request.status;
   } catch (error) {
     console.error('+++++++++++++++Final Submit Error+++++++++++++++\n', error);
   }

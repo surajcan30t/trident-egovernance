@@ -21,8 +21,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import PulseLoader from 'react-spinners/PulseLoader';
 import { useParticulars } from './FeeDetailsFilterProvider';
+import { Loader } from 'lucide-react';
 
 /**
  * 
@@ -246,10 +246,10 @@ export default function BatchGenerationForm({batchGenerationSubmit}: {batchGener
             />
           </div>
             <Button variant={'trident'} size={'lg'} type="submit">
-              {loading ? (<PulseLoader
-                color="#ffffff"
-                size={5}
-              />) :
+            {loading ? (<Loader
+              className="mr-2 size-4 animate-spin"
+              aria-hidden="true"
+            />) :
                 'Next'
               }
             </Button>

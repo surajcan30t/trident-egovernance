@@ -1,18 +1,23 @@
 import React from 'react'
 import OngoingSessions from '../../components/session-initiation/OngoingSessions'
-import { Table, TableHeader, TableRow, TableHead } from '@/components/ui/table'
+import authValidator from '@/lib/auth/role-validator'
+import Unauthorized from '@/components/Unauthorized'
 
 
 
-const getData = async () => {
+const getData = async (token: string) => {
   // /office/initiate-session/get-complete-ongoing-sessions
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/get-complete-ongoing-sessions`,
       {
-        cache: 'no-cache'
+        cache: 'no-cache',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       }
     )
     if (response.status !== 200) {
+      console.log(response.status)
       return;
     }
     else {
@@ -25,7 +30,15 @@ const getData = async () => {
 }
 
 const page = async () => {
-  const data = await getData()
+  const { session, role, token } = await authValidator();
+  if (!session || !token) {
+    return <Unauthorized />;
+  }
+
+  if (role !== 'OFFICE') {
+    return <Unauthorized />;
+  }
+  const data = await getData(token)
   return (
     <>
       <div className='w-full flex flex-col gap-5 justify-center items-center'>
@@ -57,7 +70,7 @@ const page = async () => {
               &nbsp;
             </div>
           </div>
-          {data.map((session: any, index: number) => (
+          {data && data.map((session: any, index: number) => (
             <div key={index} className='w-full flex flex-row justify-between items-center bg-lime-100 border-dotted border-2 border-slate-500 p-1 rounded-lg'>
               <OngoingSessions data={session} />
             </div>

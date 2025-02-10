@@ -1,14 +1,18 @@
 import React from 'react'
-import OngoingSessions from '../../../components/session-initiation/OngoingSessions'
 import SessionwiseStudentTable from '../../../components/session-initiation/SessionwiseStudentTable';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import authValidator from '@/lib/auth/role-validator';
+import Unauthorized from '@/components/Unauthorized';
 
-const getData = async (admissionYear: string, course: string, regdYear: string, studentType: string) => {
+const getData = async (token: string, admissionYear: string, course: string, regdYear: string, studentType: string) => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/get-student-for-promotion?admYear=${admissionYear}&course=${course}&regdyear=${regdYear}&studentType=${studentType}`,
       {
-        cache: 'no-cache'
+        cache: 'no-cache',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       }
     )
     if (response.status !== 200) {
@@ -30,7 +34,15 @@ const page = async ({
   params: { session: string };
   searchParams: { [key: string]: string };
 }) => {
-  const studentData = await getData(searchParams.admissionYear, searchParams.course, searchParams.regdYear, searchParams.studentType)
+  const { session, role, token } = await authValidator();
+  if (!session || !token) {
+    return <Unauthorized />;
+  }
+
+  if (role !== 'OFFICE') {
+    return <Unauthorized />;
+  }
+  const studentData = await getData(token, searchParams.admissionYear, searchParams.course, searchParams.regdYear, searchParams.studentType)
   return (
     <div className='w-full flex flex-col gap-5 justify-center items-center'>
       <div className='w-full flex flex-row gap-2 p-2 bg-slate-200 rounded-lg font-bold'>

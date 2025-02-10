@@ -3,7 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 
 import { Checkbox } from '@/components/ui/checkbox';
-import { DataTableColumnHeader } from '../TableComponents/data-table-column-header';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
 
 
 interface SessionWiseStudentData {
@@ -48,6 +48,11 @@ export const columns: ColumnDef<SessionWiseStudentData>[] = [
     accessorKey: 'studentName',
     header: () => <div className="">Name</div>,
     cell: ({ row }) => <div className="">{row.getValue('studentName')}</div>,
+  },
+  {
+    accessorKey: 'branchCode',
+    header: () => <div className="">Branch</div>,
+    cell: ({ row }) => <div className="">{row.getValue('branchCode')}</div>,
   },
   // {
   //   id: "actions",

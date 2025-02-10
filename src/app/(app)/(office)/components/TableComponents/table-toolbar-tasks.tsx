@@ -23,6 +23,9 @@ export function TableToolbarTasks({
           studentData={table
             .getFilteredSelectedRowModel()
             .rows.map((row) => row.original)}
+          unSelectedStudentData={table
+            .getFilteredRowModel().rows.filter(row => !row.getIsSelected()).map(row => row.original)
+          }
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
       ) : null}

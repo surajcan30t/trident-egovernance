@@ -127,7 +127,6 @@ export const RedirectOtherFeeCollectionForm = () => {
         );
       }
     } catch (e) {
-      console.log(e);
       setRender(false);
     }
   }
@@ -194,7 +193,6 @@ export function RedirectStudentFeeCollectionForm() {
         );
       }
     } catch (e) {
-      console.log(e);
       setRender(false);
     }
   }

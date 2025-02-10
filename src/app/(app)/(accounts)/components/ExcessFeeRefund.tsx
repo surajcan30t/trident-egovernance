@@ -133,7 +133,7 @@ export function ExcessFeeRefund() {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      router.push(`/feecollection/excessfeerefund?registrationNo=${data.regdNo}`);
+      router.push(`/accounts/excessfeerefund?registrationNo=${data.regdNo}`);
     } catch (e) {
       setRender(false);
     }

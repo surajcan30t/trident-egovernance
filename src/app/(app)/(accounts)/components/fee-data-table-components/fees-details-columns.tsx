@@ -1,30 +1,48 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Checkbox } from '@/components/ui/checkbox';
 import { FeesDetailsSchema } from './fees-details-schema';
-import { DataTableColumnHeader } from './data-table-column-header';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
 import { useParticulars } from '@/app/(app)/(accounts)/components/FeeDetailsFilterProvider';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-// import { useEffect } from 'react';
 
 const modes = [
+  {
+    value: 'CARD'
+  },
   {
     value: 'CASH',
   },
   {
     value: 'UPI',
+  },
+  {
+    value: 'DD',
+  },
+  {
+    value: 'CHEQUE'
+  }
+]
+
+const dueYears = [
+  {
+    value: 1
+  },
+  {
+    value: 2,
+  },
+  {
+    value: 3,
+  },
+  {
+    value: 4,
   },
 ]
 
@@ -37,31 +55,6 @@ function ParticularsCell({ value }: { value: string }) {
 }
 
 export const columns: ColumnDef<FeesDetailsSchema>[] = [
-
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //       className="translate-y-[2px]"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //       className="translate-y-[2px]"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
 
   {
     accessorKey: 'mrNo',
@@ -96,9 +89,7 @@ export const columns: ColumnDef<FeesDetailsSchema>[] = [
   },
   {
     accessorKey: 'paymentMode',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Payment Mode" />
-    ),
+    header: () => <div className="">Payment Mode</div>,
     cell: ({ row }) => {
       const filteredMode = modes.find(
         (mode) => mode.value === row.getValue('paymentMode'),
@@ -130,8 +121,25 @@ export const columns: ColumnDef<FeesDetailsSchema>[] = [
   },
   {
     accessorKey: 'dueYear',
-    header: () => <div className="">Year</div>,
-    cell: ({ row }) => <div className="">{row.getValue('dueYear')}</div>,
+    header: () => <div className="">Due Year</div>,
+    cell: ({ row }) => {
+      const dueYear = dueYears.find(
+        (mode) => mode.value === row.getValue('dueYear'),
+      );
+
+      if (!dueYear) {
+        return null;
+      }
+
+      return (
+        <div className="flex items-center">
+          <span>{dueYear.value}</span>
+        </div>
+      );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
   },
 
   // {

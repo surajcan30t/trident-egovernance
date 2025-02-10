@@ -4,8 +4,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/data-table-column-header';
 import { useParticulars } from '@/app/(app)/(accounts)/components/FeeDetailsFilterProvider';
 import { StudentDuesDetails } from '@/app/(app)/(accounts)/feecollection-schemas/schema';
-// import { DataTableFilterField } from '@/../../types/types';
-// import { useState } from 'react';
 
 type FilterFields = {
   [key: string]: number[] | string[]
@@ -104,6 +102,9 @@ export const columns: ColumnDef<StudentDuesDetails>[] = [
           </span>
         </div>
       );
+    },
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
     },
   },
   {

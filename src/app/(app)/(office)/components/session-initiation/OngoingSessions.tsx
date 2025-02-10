@@ -1,20 +1,15 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import React, { useState } from 'react'
+import React from 'react'
 import { useRouter } from 'next/navigation';
 import { parseCourse } from '@/lib/course-parser';
 
-interface SessionWiseStudentData {
-  regdNo: string,
-  studentName: string
-}
 
 const OngoingSessions = ({
   data
 }: {
   data: any
-}) => {
-  const [studentData, setStudentData] = useState<SessionWiseStudentData[]>([]);
+  }) => {
   const router = useRouter()
 
   return (
@@ -42,11 +37,8 @@ const OngoingSessions = ({
           <div className='w-1/6 p-1 rounded-lg text-center'>
             {data.endDate ? data.endDate : 'N/A'}
           </div>
-          <Button onClick={() => router.push(`/office/initiatesession/${data.prevSessionId}?course=${parseCourse(data.course)}&admissionYear=${data.admissionYear}&regdYear=${data.regdYear}&studentType=${data.studentType}`)} className='w-1/3' size='default' variant='modify'>Promote</Button>
+          <Button onClick={() => router.push(`/office/initiatesession/${data.prevSessionId}?course=${parseCourse(data.course)}&admissionYear=${data.admissionYear}&regdYear=${data.regdYear}&startDate=${data.startDate}&studentType=${data.studentType}&sessionId=${data.sessionId}`)} className='w-1/3' size='default' variant='modify'>Promote</Button>
         </div>
-        {/* <div>
-          <SessionwiseStudentTable studentData={studentData} />
-        </div> */}
       </div>
     </>
   )

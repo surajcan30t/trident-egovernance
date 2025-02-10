@@ -17,7 +17,6 @@ const page = (props: any) => {
     sessionId: searchParams?.sessionId === 'null' ? null : (searchParams.sessionId || null)
   };
 
-  console.log('query', query);
   return (
     <>
       <main className="flex flex-col items-center border">

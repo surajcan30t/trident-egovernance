@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { handleDuesFeePayment } from '@/app/(app)/(accounts)/server-actions-fee-collection/actions';
-import PulseLoader from 'react-spinners/PulseLoader';
+import { Loader } from 'lucide-react';
 
 const FormSchema = z
   .object({
@@ -74,7 +74,6 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
 
   const paymentModeSelected = form.watch('paymentMode');
   useEffect(() => {
-    console.log('Payment Mode:', paymentModeSelected);
 
     if (paymentModeSelected === 'DD') {
       setShowDDFields(true);
@@ -96,7 +95,6 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
           description: 'Something went wrong',
         });
       } else {
-        console.log("successful")
         toast({
           variant: 'success',
           title: 'Success',
@@ -106,7 +104,6 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
       }
     } catch (e) {
       setLoading(false);
-      console.log(e);
     } finally {
       setLoading(false);
     }
@@ -264,9 +261,9 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
               />
             )}
             <Button variant={'trident'} size={'lg'} type="submit">
-              {loading ? (<PulseLoader
-                color="#ffffff"
-                size={5}
+              {loading ? (<Loader
+                className="mr-2 size-4 animate-spin"
+                aria-hidden="true"
               />) :
                 'Confirm'
               }
