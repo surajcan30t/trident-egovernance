@@ -22,7 +22,7 @@ interface DataTablePaginationProps<TData> {
 
 export function DataTablePagination<TData>({
   table,
-  pageSizeOptions = [10, 20, 50],
+  pageSizeOptions = [table.getRowCount(), 10, 20, 50],
 }: DataTablePaginationProps<TData>) {
   return (
     <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
@@ -50,7 +50,7 @@ export function DataTablePagination<TData>({
             <SelectContent side="top">
               {pageSizeOptions.map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize === table.getCoreRowModel().rows.length ? `All[${table.getCoreRowModel().rows.length}]` : pageSize}
+                  {pageSize === table.getRowCount() ? `All` : pageSize}
                 </SelectItem>
               ))}
             </SelectContent>

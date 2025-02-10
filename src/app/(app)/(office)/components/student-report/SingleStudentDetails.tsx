@@ -12,7 +12,7 @@ import StudentCareerDetailsForm from '@/app/(app)/(office)/components/student-re
 const SingleStudentDetails = ({ studentData }: { studentData: StudentReport }) => {
   return (
     <>
-      <div>
+      <div className='w-full'>
         <StudentComponent studentOnly={studentData?.studentOnlyDTO}/>
         <PersonalDetailsComponent personalDetails={studentData?.personalDetailsOnlyDTO}/>
         <AdmissionDetailsComponent admissionDetails={studentData?.studentAdmissionDetailsOnlyDTO}/>

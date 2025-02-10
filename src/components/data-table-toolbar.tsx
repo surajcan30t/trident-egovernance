@@ -63,7 +63,6 @@ export function DataTableToolbar<TData>({
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const filterValue = event.target.value;
-    console.log(table.setGlobalFilter(filterValue))
     setGlobalFilter(filterValue);
     table.setGlobalFilter(filterValue);
   };

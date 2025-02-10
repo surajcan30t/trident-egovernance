@@ -3,7 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 
 import { Checkbox } from '@/components/ui/checkbox';
-import { DataTableColumnHeader } from '../TableComponents/data-table-column-header';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
 
 
 interface SessionWiseStudentData {

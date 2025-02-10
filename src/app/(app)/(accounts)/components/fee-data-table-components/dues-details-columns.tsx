@@ -4,8 +4,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/data-table-column-header';
 import { useParticulars } from '@/app/(app)/(accounts)/components/FeeDetailsFilterProvider';
 import { StudentDuesDetails } from '@/app/(app)/(accounts)/feecollection-schemas/schema';
-// import { DataTableFilterField } from '@/../../types/types';
-// import { useState } from 'react';
 
 type FilterFields = {
   [key: string]: number[] | string[]
@@ -20,7 +18,6 @@ function FilterFields() {
       Object.values(branchObj).map(b => b.branchCode)
     ))
   }
-  console.log('Filter fields: ', filterFields);
   return filterFields
 }
 export const columns: ColumnDef<StudentDuesDetails>[] = [

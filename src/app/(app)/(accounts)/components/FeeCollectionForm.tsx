@@ -74,7 +74,6 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
 
   const paymentModeSelected = form.watch('paymentMode');
   useEffect(() => {
-    console.log('Payment Mode:', paymentModeSelected);
 
     if (paymentModeSelected === 'DD') {
       setShowDDFields(true);
@@ -96,7 +95,6 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
           description: 'Something went wrong',
         });
       } else {
-        console.log("successful")
         toast({
           variant: 'success',
           title: 'Success',
@@ -106,7 +104,6 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
       }
     } catch (e) {
       setLoading(false);
-      console.log(e);
     } finally {
       setLoading(false);
     }

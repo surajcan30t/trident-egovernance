@@ -4,23 +4,14 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { TotalAdmissionsReport } from './schema';
-import { DataTableColumnHeader } from './data-table-column-header';
-import { DataTableRowActions } from './data-table-row-actions';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
+import { courses } from '@/lib/filtervalues';
+import { parseCourse } from '@/lib/course-parser';
 
-const courses = [
-  {
-    value: 'BTECH',
-  },
-  {
-    value: 'MTECH',
-  },
-  {
-    value: 'BCA',
-  },
-  {
-    value: 'MCA',
-  },
-];
+
+const parsedCourse = courses.map((course) => ({
+  value: parseCourse(course.value),
+}))
 
 const stypes = [
   {
@@ -48,6 +39,8 @@ const branches = [
     value: 'MECH',
   },
 ];
+
+console.log(branches)
 
 const years = [
   {
@@ -112,7 +105,7 @@ export const columns: ColumnDef<TotalAdmissionsReport>[] = [
       <DataTableColumnHeader column={column} title="Course" />
     ),
     cell: ({ row }) => {
-      const course = courses.find(
+      const course = parsedCourse.find(
         (course) => course.value === row.getValue('course'),
       );
 
@@ -137,7 +130,7 @@ export const columns: ColumnDef<TotalAdmissionsReport>[] = [
     ),
     cell: ({ row }) => {
       const branch = branches.find(
-        (branch) => branch.value === row.getValue('branch'),
+        (branch: any) => branch.value === row.getValue('branch'),
       );
 
       if (!branch) {

@@ -25,7 +25,6 @@ const getStudentDuesDetails = async (token: string, query: Query) => {
         },
       );
       const response = await request.json() as StudentDuesDetails[];
-      console.log('response', response)
       return response;
     } catch (error) {
     }

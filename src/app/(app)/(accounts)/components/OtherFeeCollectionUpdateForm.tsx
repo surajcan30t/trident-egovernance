@@ -71,7 +71,6 @@ const FormSchema = z
 export function OtherFeeCollectionUpdateForm({ data }: { data: any }) {
   const { data: session } = useSession()
   const token = session?.user?.accessToken
-  console.log('Data', data);
   const router = useRouter();
   const [render, setRender] = useState<boolean>(false);
   const [showDDFields, setShowDDFields] = useState<boolean>(false);
@@ -111,7 +110,6 @@ export function OtherFeeCollectionUpdateForm({ data }: { data: any }) {
         );
         const status = await response.status;
         if (status !== 200) {
-          console.log('Error: ');
           return;
         } else {
           const data = await response.json();
@@ -119,7 +117,6 @@ export function OtherFeeCollectionUpdateForm({ data }: { data: any }) {
           return data;
         }
       } catch (e) {
-        console.log(e);
       }
     };
     otherFeeMenuFetcher();
@@ -149,7 +146,6 @@ export function OtherFeeCollectionUpdateForm({ data }: { data: any }) {
 
   const paymentModeSelected = form.watch('paymentMode');
   useEffect(() => {
-    console.log('Payment Mode:', paymentModeSelected);
 
     if (paymentModeSelected === 'DD') {
       setShowDDFields(true);
@@ -166,9 +162,7 @@ export function OtherFeeCollectionUpdateForm({ data }: { data: any }) {
     }, 0);
     setTotalFee(total);
     form.setValue('collectedFee', total.toString());
-    console.log("Collected fee")
   }, [dynamicFieldChanged, form]);
-  console.log("Form error ", form.formState.errors)
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
       setLoading(true)
@@ -189,7 +183,6 @@ export function OtherFeeCollectionUpdateForm({ data }: { data: any }) {
         });
       }
     } catch (e) {
-      console.log(e);
       setRender(false);
       setLoading(false);
     }

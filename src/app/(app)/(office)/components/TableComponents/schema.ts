@@ -12,7 +12,7 @@ export const studentSchema = z.object({
 });
 
 export const admissionReportSchema = z.object({
-  course: z.string(),
+  courses: z.string(),
   branch: z.string(),
   studentType: z.string(),
   generalMale: z.number(),

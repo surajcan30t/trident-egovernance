@@ -4,8 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { AdmissionReport } from './schema';
-import { DataTableColumnHeader } from './data-table-column-header';
-import { DataTableRowActions } from './data-table-row-actions';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
 
 const courses = [
   {
@@ -49,47 +48,7 @@ const branches = [
   },
 ];
 
-const years = [
-  {
-    value: 1,
-  },
-  {
-    value: 2,
-  },
-  {
-    value: 3,
-  },
-  {
-    value: 4,
-  },
-];
-
 export const columns: ColumnDef<AdmissionReport>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //       className="translate-y-[2px]"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //       className="translate-y-[2px]"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
-  //
   {
     accessorKey: 'courses',
     header: ({ column }) => (

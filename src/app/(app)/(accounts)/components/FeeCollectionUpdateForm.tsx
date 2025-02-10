@@ -81,7 +81,6 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
 
   const paymentModeSelected = form.watch('paymentMode');
   useEffect(() => {
-    console.log('Payment Mode:', paymentModeSelected);
 
     if (paymentModeSelected === 'DD') {
       setShowDDFields(true);
@@ -108,7 +107,6 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
         });
       }
     } catch (e) {
-      console.log(e);
       setRender(false);
     }
   }
