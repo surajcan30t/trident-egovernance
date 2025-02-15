@@ -47,7 +47,6 @@ export default withAuth(
       return routeRegex.test(requestedPath);
     });
 
-
     if (!isRouteAllowed) {
       console.log(`Route not allowed. Redirecting to ${redirectUrl}.`);
       return NextResponse.redirect(new URL(redirectUrl, req.url));
