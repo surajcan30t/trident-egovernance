@@ -42,9 +42,10 @@ export default withAuth(
     }
 
     // Check if the requested route is allowed
-    const isRouteAllowed = allowedRoutes.some(
-      (route: string) => route === requestedPath,
-    );
+    const isRouteAllowed = allowedRoutes.some((route: string) => {
+      const routeRegex = new RegExp(`^${route.replace(/:[^/]+/g, '[^/]+')}$`);
+      return routeRegex.test(requestedPath);
+    });
 
     if (!isRouteAllowed) {
       console.log(`Route not allowed. Redirecting to ${redirectUrl}.`);
