@@ -43,12 +43,13 @@ export default withAuth(
 
     // Check if the requested route is allowed
     const isRouteAllowed = allowedRoutes.some((route: string) => {
+      // Convert the route to a regular expression to match the requested path for dynamic routes
       const routeRegex = new RegExp(`^${route.replace(/:[^/]+/g, '[^/]+')}$`);
       return routeRegex.test(requestedPath);
     });
 
     if (!isRouteAllowed) {
-      console.log(`Route not allowed. Redirecting to ${redirectUrl}.`);
+      console.log(`${requestedPath} Route not allowed. Redirecting to ${redirectUrl}.`);
       return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 
@@ -66,10 +67,7 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|.*\\.png$|favicon.ico|login|studentportal|verifymr|accounts/studentfeecollection/mr).*)(.+)',
-    // '/student/:path*',
-    // '/newstudentregistration',
-    // '/office/:path*',
-    // '/accounts/:path*',
+    '/((?!api|_next/static|_next/image|.*\\.png\\.jpg$|favicon.ico|tgi.png|login|studentportal|verifymr|accounts/studentfeecollection/mr).*)(.+)',
+    // "/(?!api|_next/static|_next/image|.*\.(png|jpe?g|gif|webp|avif|svg|bmp|ico)$|favicon.ico|login|studentportal|verifymr|accounts/studentfeecollection/mr)(.*)"
   ],
 };

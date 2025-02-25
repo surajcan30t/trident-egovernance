@@ -45,6 +45,12 @@ interface UserType {
   };
 }
 
+interface RotatedTokens {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+}
+
 async function fetchWithTimeout(
   url: string,
   options: RequestInit,
@@ -93,6 +99,82 @@ async function handleImageResponse(response: Response): Promise<string> {
   return URL.createObjectURL(blob); // Convert to Blob URL
 }
 
+async function refreshAccessToken(refreshToken: string): Promise<RotatedTokens> {
+  console.log('Refresh AccessToken function called')
+  const response = await fetchWithTimeout(
+    requiredEnvVars.AZURE_AD_TOKEN_URI!,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
+        client_secret: requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        scope: requiredEnvVars.AZURE_AD_SCOPE as string,
+      }),
+    },
+  );
+
+  const tokens = await handleApiResponse<GraphTokenResponse>(
+    response,
+    'Failed to rotate refresh token'
+  );
+
+  return {
+    access_token: tokens.access_token,
+    refresh_token: tokens.refresh_token,
+    expires_at: Date.now() + (tokens.expires_in * 1000),
+  };
+}
+async function fetchUserData(accessToken: string) {
+  const [userTypeResponse, menuBladeResponse, profilePictureResponse] =
+    await Promise.all([
+      fetchWithTimeout(
+        `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-information`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+      fetchWithTimeout(
+        `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-menu-blade`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+      fetchWithTimeout(
+        `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-photo`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      ),
+    ]);
+
+  const [userType, menuBlade, profilePicture] = await Promise.all([
+    handleApiResponse(userTypeResponse, 'Failed to fetch user information'),
+    handleApiResponse(menuBladeResponse, 'Failed to fetch menu blade'),
+    handleImageResponse(profilePictureResponse),
+  ]);
+
+  if (!userType) {
+    throw new AuthenticationError('Failed to fetch user type', 401);
+  }
+
+  return { userType, menuBlade, profilePicture };
+}
+
+
 export const authOptions: NextAuthOptions = {
   providers: [
     AzureADProvider({
@@ -102,6 +184,7 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope: requiredEnvVars.AZURE_AD_SCOPE as string,
+          max_age: 60,
         },
       },
       issuer: requiredEnvVars.AZURE_AD_ISSUER as string,
@@ -109,87 +192,92 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 60 * 60,
-    updateAge: 0,
+    maxAge: 60 * 60 * 24 * 30,
+    updateAge: 60 * 60 * 24,
   },
   secret: requiredEnvVars.NEXTAUTH_SECRET as string,
+
+
   callbacks: {
     async jwt({ token, account }): Promise<JWT> {
-      if (!account) {
-        return token;
-      }
+      // Initial sign in
+      if (account) {
+        try {
+          // Fetch required user data immediately during sign in
+          const { userType, menuBlade, profilePicture } = await fetchUserData(account.access_token!);
 
-      token.accessToken = account.access_token;
-      // console.log('TOKEN::', token);
-      console.log('ACCOUNT::', account);
-      try {
-        const [userTypeResponse, menuBladeResponse, profilePictureResponse] =
-          await Promise.all([
-            fetchWithTimeout(
-              `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-information`,
+          let graphToken;
+          // Handle Graph token for ACCOUNTS users
+          if ((userType as UserType)?.userJobInformationDto?.jobTitle === 'ACCOUNTS') {
+            const graphTokenResponse = await fetchWithTimeout(
+              requiredEnvVars.AZURE_AD_TOKEN_URI!,
               {
-                method: 'GET',
+                method: 'POST',
                 headers: {
-                  Authorization: `Bearer ${token.accessToken}`,
+                  'Content-Type': 'application/x-www-form-urlencoded',
                 },
+                body: new URLSearchParams({
+                  client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
+                  client_secret: requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
+                  grant_type: 'refresh_token',
+                  refresh_token: account.refresh_token!,
+                  scope: 'https://graph.microsoft.com/.default',
+                }),
               },
-            ),
-            fetchWithTimeout(
-              `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-menu-blade`,
-              {
-                method: 'GET',
-                headers: {
-                  Authorization: `Bearer ${token.accessToken}`,
-                },
-              },
-            ),
-            fetchWithTimeout(
-              `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-photo`,
-              {
-                method: 'GET',
-                headers: {
-                  Authorization: `Bearer ${token.accessToken}`,
-                },
-              },
-            ),
-          ]);
+            );
 
-        console.log(profilePictureResponse);
+            const graphTokenData = await handleApiResponse<GraphTokenResponse>(
+              graphTokenResponse,
+              'Failed to fetch Graph token',
+            );
+            graphToken = graphTokenData.access_token;
+          }
 
-        // Handle API responses
-        const [userType, menuBlade, profilePicture] = await Promise.all([
-          handleApiResponse(
-            userTypeResponse,
-            'Failed to fetch user information',
-          ),
-          handleApiResponse(menuBladeResponse, 'Failed to fetch menu blade'),
-          handleImageResponse(profilePictureResponse),
-        ]);
-
-        console.log('got profile picture', profilePicture);
-
-        if (!userType) {
-          console.log('!!user type', !userType);
           return {
             ...token,
-            error: 'Authentication Failed',
+            accessToken: account.access_token,
+            refreshToken: account.refresh_token,
+            expiresAt: account.expires_at! * 1000,
+            userType,
+            menuBlade,
+            picture: profilePicture === 'null' ? null : profilePicture,
+            graphToken,
+          };
+        } catch (error) {
+          console.error('Initial authentication error:', error);
+          return {
+            ...token,
+            error: 'AuthenticationError',
             expires: 0,
           };
         }
+      }
 
-        console.log('set user type');
+      // Return previous token if the access token has not expired yet
+      if (Date.now() < (token.expiresAt as number)) {
+        return token;
+      }
+
+      try {
+        // Access token has expired, try to update it using refresh token
+        const rotatedTokens = await refreshAccessToken(
+          token.refreshToken as string,
+        );
+
+        // Update token with new values
+        token.accessToken = rotatedTokens.access_token;
+        token.refreshToken = rotatedTokens.refresh_token;
+        token.expiresAt = rotatedTokens.expires_at;
+
+        // Fetch user data with new access token
+        const { userType, menuBlade, profilePicture } = await fetchUserData(rotatedTokens.access_token);
 
         token.userType = userType;
         token.menuBlade = menuBlade;
-        profilePicture === 'null'
-          ? (token.picture = null)
-          : (token.picture = profilePicture);
+        token.picture = profilePicture === 'null' ? null : profilePicture;
 
-        // Only proceed with Graph token if user has a job title
-        if (
-          (token.userType as UserType | undefined)?.userJobInformationDto
-            ?.jobTitle === 'ACCOUNTS'
-        ) {
+        // Handle Graph token for ACCOUNTS users
+        if ((userType as UserType)?.userJobInformationDto?.jobTitle === 'ACCOUNTS') {
           const graphTokenResponse = await fetchWithTimeout(
             requiredEnvVars.AZURE_AD_TOKEN_URI!,
             {
@@ -201,7 +289,7 @@ export const authOptions: NextAuthOptions = {
                 client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
                 client_secret: requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
                 grant_type: 'refresh_token',
-                refresh_token: account.refresh_token!,
+                refresh_token: rotatedTokens.refresh_token,
                 scope: 'https://graph.microsoft.com/.default',
               }),
             },
@@ -214,23 +302,22 @@ export const authOptions: NextAuthOptions = {
           token.graphToken = graphToken.access_token;
         }
 
-        console.log('TOKEN\t\t', token);
         return token;
       } catch (error) {
-        console.error('Authentication error:', error);
+        console.error('Token rotation failed:', error);
 
-        // Handle specific error types
-        if (error instanceof AuthenticationError) {
-          if (error.statusCode === 401) {
-            // Token expired or invalid
-            delete token.accessToken;
-            delete token.userType;
-            delete token.menuBlade;
-            delete token.graphToken;
-          }
-        }
-        // Return token even if there's an error to prevent complete authentication failure
-        return token;
+        // Delete token information on error
+        delete token.accessToken;
+        delete token.refreshToken;
+        delete token.expiresAt;
+        delete token.userType;
+        delete token.menuBlade;
+        delete token.graphToken;
+
+        return {
+          ...token,
+          error: 'RefreshAccessTokenError',
+        };
       }
     },
 
@@ -240,6 +327,7 @@ export const authOptions: NextAuthOptions = {
         session.user.menuBlade = token.menuBlade || null;
         session.user.accessToken = token.accessToken as string;
         session.user.graphToken = token.graphToken as string;
+        session.error = token.error
       }
       return session;
     },
@@ -248,3 +336,5 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+
