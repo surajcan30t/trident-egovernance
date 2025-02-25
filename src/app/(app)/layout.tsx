@@ -24,9 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <>
       <div className="flex flex-row">
         <aside className="sticky top-0 z-30 h-[calc(100vh-0rem)] w-0 md:w-[17%] flex-shrink-0">
-            <SidebarProvider>
-              <AppSidebar />
-            </SidebarProvider>
+          <AppSidebar />
         </aside>
         <div className="flex flex-col w-full">
           <Navbar />

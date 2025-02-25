@@ -17,14 +17,16 @@ import {
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
 import User from './User';
+import { SidebarTrigger } from './ui/sidebar';
 
 export default function Navbar() {
   const { data: session } = useSession();
   const fallBackName = session?.user?.name
     ? session.user.name
-        .split(/[\s-]+/)
-        .map((word) => word.charAt(0).toUpperCase())
-        .join('')
+      .split(/[\s-]+/)
+      .map((word) => word.charAt(0).toUpperCase())
+      .slice(0, 3)
+      .join('')
     : '';
   const [sheetOpen, setSheetOpen] = useState(false);
   if (session) {
@@ -38,7 +40,10 @@ export default function Navbar() {
 								<Image src="/tgi.png" alt="logo" width={80} height={80} />
 							</div> */}
 
-              {/* Desktop Logo */}
+              {/* Sidebar Trigger only for Mobile */}
+              <div className='md:hidden'>
+                <SidebarTrigger className='text-black' />
+              </div>
 
               {/* Center Title */}
               <div className="text-xl md:text-3xl lg:text-4xl text-[#39a3e5] font-extrabold flex-grow-0">
@@ -47,7 +52,7 @@ export default function Navbar() {
 
               {/* Avatar */}
               <div className="w-auto flex items-center gap-2">
-                <span className="text-base text-slate-600">
+                <span className="hidden md:block text-base text-slate-600">
                   Hey! &#128075; {session?.user?.name} {''}
                 </span>
                 <DropdownMenu>
