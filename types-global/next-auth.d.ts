@@ -35,7 +35,7 @@ interface UserType {
 
 declare module 'next-auth' {
   interface Session {
-    error?: string | unknown,
+    error?: string | unknown;
     user: {
       name?: string | null;
       email?: string | null;

@@ -49,7 +49,9 @@ export default withAuth(
     });
 
     if (!isRouteAllowed) {
-      console.log(`${requestedPath} Route not allowed. Redirecting to ${redirectUrl}.`);
+      console.log(
+        `${requestedPath} Route not allowed. Redirecting to ${redirectUrl}.`,
+      );
       return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 

@@ -99,34 +99,33 @@ async function handleImageResponse(response: Response): Promise<string> {
   return URL.createObjectURL(blob); // Convert to Blob URL
 }
 
-async function refreshAccessToken(refreshToken: string): Promise<RotatedTokens> {
-  console.log('Refresh AccessToken function called')
-  const response = await fetchWithTimeout(
-    requiredEnvVars.AZURE_AD_TOKEN_URI!,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
-        client_secret: requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-        scope: requiredEnvVars.AZURE_AD_SCOPE as string,
-      }),
+async function refreshAccessToken(
+  refreshToken: string,
+): Promise<RotatedTokens> {
+  console.log('Refresh AccessToken function called');
+  const response = await fetchWithTimeout(requiredEnvVars.AZURE_AD_TOKEN_URI!, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-  );
+    body: new URLSearchParams({
+      client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
+      client_secret: requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+      scope: requiredEnvVars.AZURE_AD_SCOPE as string,
+    }),
+  });
 
   const tokens = await handleApiResponse<GraphTokenResponse>(
     response,
-    'Failed to rotate refresh token'
+    'Failed to rotate refresh token',
   );
 
   return {
     access_token: tokens.access_token,
     refresh_token: tokens.refresh_token,
-    expires_at: Date.now() + (tokens.expires_in * 1000),
+    expires_at: Date.now() + tokens.expires_in * 1000,
   };
 }
 async function fetchUserData(accessToken: string) {
@@ -174,7 +173,6 @@ async function fetchUserData(accessToken: string) {
   return { userType, menuBlade, profilePicture };
 }
 
-
 export const authOptions: NextAuthOptions = {
   providers: [
     AzureADProvider({
@@ -197,18 +195,22 @@ export const authOptions: NextAuthOptions = {
   },
   secret: requiredEnvVars.NEXTAUTH_SECRET as string,
 
-
   callbacks: {
     async jwt({ token, account }): Promise<JWT> {
       // Initial sign in
       if (account) {
         try {
           // Fetch required user data immediately during sign in
-          const { userType, menuBlade, profilePicture } = await fetchUserData(account.access_token!);
+          const { userType, menuBlade, profilePicture } = await fetchUserData(
+            account.access_token!,
+          );
 
           let graphToken;
           // Handle Graph token for ACCOUNTS users
-          if ((userType as UserType)?.userJobInformationDto?.jobTitle === 'ACCOUNTS') {
+          if (
+            (userType as UserType)?.userJobInformationDto?.jobTitle ===
+            'ACCOUNTS'
+          ) {
             const graphTokenResponse = await fetchWithTimeout(
               requiredEnvVars.AZURE_AD_TOKEN_URI!,
               {
@@ -218,7 +220,8 @@ export const authOptions: NextAuthOptions = {
                 },
                 body: new URLSearchParams({
                   client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
-                  client_secret: requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
+                  client_secret:
+                    requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
                   grant_type: 'refresh_token',
                   refresh_token: account.refresh_token!,
                   scope: 'https://graph.microsoft.com/.default',
@@ -270,14 +273,18 @@ export const authOptions: NextAuthOptions = {
         token.expiresAt = rotatedTokens.expires_at;
 
         // Fetch user data with new access token
-        const { userType, menuBlade, profilePicture } = await fetchUserData(rotatedTokens.access_token);
+        const { userType, menuBlade, profilePicture } = await fetchUserData(
+          rotatedTokens.access_token,
+        );
 
         token.userType = userType;
         token.menuBlade = menuBlade;
         token.picture = profilePicture === 'null' ? null : profilePicture;
 
         // Handle Graph token for ACCOUNTS users
-        if ((userType as UserType)?.userJobInformationDto?.jobTitle === 'ACCOUNTS') {
+        if (
+          (userType as UserType)?.userJobInformationDto?.jobTitle === 'ACCOUNTS'
+        ) {
           const graphTokenResponse = await fetchWithTimeout(
             requiredEnvVars.AZURE_AD_TOKEN_URI!,
             {
@@ -327,7 +334,7 @@ export const authOptions: NextAuthOptions = {
         session.user.menuBlade = token.menuBlade || null;
         session.user.accessToken = token.accessToken as string;
         session.user.graphToken = token.graphToken as string;
-        session.error = token.error
+        session.error = token.error;
       }
       return session;
     },
@@ -336,5 +343,3 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
-
-
