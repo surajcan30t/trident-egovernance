@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Chakra_Petch, Exo_2, Space_Mono } from 'next/font/google';
 import './globals.css';
 import SessionWrapper from '@/components/SessionWrapper';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 
 const exo2 = Exo_2({ subsets: ['latin'] });
@@ -22,7 +23,9 @@ export default function RootLayout({
         <SessionWrapper>
           <div className="flex flex-col min-h-screen">
             {/* <Navbar /> */}
-            <main className="flex-grow m-0 p-0">{children}</main>
+            <SidebarProvider>
+              <main className="flex-grow m-0 p-0">{children}</main>
+            </SidebarProvider>
             {/* <Footer /> */}
           </div>
         </SessionWrapper>

@@ -55,7 +55,7 @@ export default function Home() {
         <Navbar />
         <div className="absolute top-0 w-full h-full">
           <Image
-            src="/tricol.png"
+            src="/tricol.jpg"
             className="object-cover opacity-100"
             alt="logo"
             fill

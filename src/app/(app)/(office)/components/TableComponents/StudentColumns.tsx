@@ -5,6 +5,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Students } from './schema';
 import { DataTableColumnHeader } from '@/components/data-table-column-header';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 const courses = [
   {
@@ -226,8 +228,22 @@ export const columns: ColumnDef<Students>[] = [
     header: () => <div className="">Parent Contact No.</div>,
     cell: ({ row }) => <div className="">{row.getValue('parentContact')}</div>,
   },
+  {
+    id: 'editStudenData',
+    cell: ({ row }) => <RedirectAction regdNo={row.getValue('regdNo')} />,
+  },
   // {
   //   id: "actions",
   //   cell: ({ row }) => <DataTableRowActions row={row} />,
   // },
 ];
+
+
+function RedirectAction({ regdNo }: { regdNo: string }) {
+  const router = useRouter();
+  return (
+    <>
+      <Button variant='modify' onClick={() => { router.push(`/office/reports/studentreport?registrationNumber=${regdNo}`) }}>Edit</Button>
+    </>
+  )
+}

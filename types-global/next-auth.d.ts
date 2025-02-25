@@ -35,6 +35,7 @@ interface UserType {
 
 declare module 'next-auth' {
   interface Session {
+    error?: string | unknown;
     user: {
       name?: string | null;
       email?: string | null;
@@ -54,17 +55,13 @@ declare module 'next-auth' {
       userJobInformationDto: {
         jobTitle: string;
       };
-      // other user type fields
     };
     menuBlade: {
-      // menu blade structure
       items?: Array<{
         id: string;
         title: string;
-        // other menu item fields
       }>;
     } | null;
-    // Remove default fields if you don't want them
     email?: never;
     name?: never;
     picture?: never;
