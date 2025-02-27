@@ -96,7 +96,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
       <div className="w-[51vw] p-2 rounded-lg shadow-lg border">
         {collectionData && curYear && (
           <Tabs defaultValue={defaultYear} className="w-full">
-            <TabsList className="grid w-full grid-cols-8 gap-x-1 flex justify-center">
+            <TabsList className="w-full gap-x-1 flex justify-center">
               {years &&
                 years.map((year: any) => (
                   <TabsTrigger key={year} value={year} className="capitalize">
@@ -224,7 +224,7 @@ const OtherFeeCollectionDashboardSingleStudent = () => {
     <>
       <div className="w-full flex flex-row gap-x-0">
         <div className="w-2/3 flex flex-col space-y-6">
-          <FeeDuesDetailsTable regdNo={param} />
+          {param && <FeeDuesDetailsTable regdNo={param} />}
         </div>
         <div className="w-1/3 h-fit rounded-lg px-3 py-0">
           <div className="w-full flex flex-col ">

@@ -13,6 +13,7 @@ const page = (props: Props) => {
   return (
     <>
       <div className='w-full h-full flex flex-col p-2 items-center gap-4'>
+        <h1 className='text-2xl font-bold text-start'>Fees Collection</h1>
         <RedirectStudentFeeCollectionForm />
         <FeeCollectionDashboardSingleStudent />
       </div>

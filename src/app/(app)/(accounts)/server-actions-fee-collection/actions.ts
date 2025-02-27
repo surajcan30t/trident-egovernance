@@ -100,8 +100,9 @@ export const feeCollectionSingleStudentDetails = async (
         },
       );
       console.log('registrationNo', registrationNo);
-      console.log('response', response.status);
-      if (response.status !== 200) {
+
+      if (response.status !== 200 || !(await response.json())) {
+        console.log('entered else block');
         return { status: 400 };
       }
       return { status: 200 };
