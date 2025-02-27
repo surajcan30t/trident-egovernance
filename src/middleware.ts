@@ -36,6 +36,13 @@ export default withAuth(
     //
     const { redirectUrl, allowedRoutes } = menuBlade;
     const requestedPath = req.nextUrl.pathname;
+    const imageAssets = ['.jpg', 'jpeg', '.png', '.avif']
+
+    if (imageAssets.some((ext: string) => requestedPath.endsWith(ext))){
+      console.log(requestedPath)
+      return NextResponse.next()
+    }
+
     if (requestedPath === '/') {
       console.log(`User accessing base path. Redirecting to ${redirectUrl}.`);
       return NextResponse.redirect(new URL(redirectUrl, req.url));
@@ -69,7 +76,7 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|.*\\.png\\.jpg$|favicon.ico|tgi.png|login|studentportal|verifymr|accounts/studentfeecollection/mr).*)(.+)',
+    '/((?!api|_next/static|_next/image|.*\\.png$|favicon.ico|login|studentportal|verifymr|accounts/studentfeecollection/mr).*)(.+)',
     // "/(?!api|_next/static|_next/image|.*\.(png|jpe?g|gif|webp|avif|svg|bmp|ico)$|favicon.ico|login|studentportal|verifymr|accounts/studentfeecollection/mr)(.*)"
   ],
 };
