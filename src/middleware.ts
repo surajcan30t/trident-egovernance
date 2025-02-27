@@ -36,11 +36,11 @@ export default withAuth(
     //
     const { redirectUrl, allowedRoutes } = menuBlade;
     const requestedPath = req.nextUrl.pathname;
-    const imageAssets = ['.jpg', 'jpeg', '.png', '.avif']
+    const imageAssets = ['.jpg', 'jpeg', '.png', '.avif'];
 
-    if (imageAssets.some((ext: string) => requestedPath.endsWith(ext))){
-      console.log(requestedPath)
-      return NextResponse.next()
+    if (imageAssets.some((ext: string) => requestedPath.endsWith(ext))) {
+      console.log(requestedPath);
+      return NextResponse.next();
     }
 
     if (requestedPath === '/') {
