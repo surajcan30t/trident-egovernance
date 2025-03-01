@@ -64,6 +64,8 @@ export function PromoteStudentsDialog({
           regdNos: studentData.map(regdNo => regdNo.regdNo),
           studentType,
           currentYear,
+          promotionType: true,
+          // promotionType: false, ## if requesting to /office/initiate-session/promote-not-promoted-students
           notPromoted: unSelectedStudentData?.map(redgNo => redgNo.regdNo),
         }),
         method: 'POST',
