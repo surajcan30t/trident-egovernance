@@ -27,6 +27,29 @@ const getData = async (token: string, admissionYear: string, course: string, reg
   }
 }
 
+// const getDatum = async (token: string) => {
+//   try {
+//     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/get-not-promoted`,
+//       {
+//         cache: 'no-cache',
+//         headers: {
+//           'Authorization': `Bearer ${token}`
+//         }
+//       }
+//     )
+//     if (response.status !== 200) {
+//       return { status: response.status, data: null };
+//     }
+//     else {
+//       const data = await response.json()
+//       // [ { "regdNo": "2101289302", "currentYear": 1, "sessionId": "2025-2026" }, { "regdNo": "2101289309", "currentYear": 1, "sessionId": "2025-2026" } ]
+//       return { status: response.status, data: data }
+//     }
+//   } catch (error) {
+
+//   }
+// }
+
 const page = async ({
   params,
   searchParams
@@ -50,7 +73,7 @@ const page = async ({
           <ArrowLeft />
         </Link>
         <div className='w-full p-1 rounded-lg text-center'>
-          {params.session}
+          {searchParams.sessionId}
         </div>
         <div className='w-full p-1 rounded-lg text-center'>
           {searchParams.course}

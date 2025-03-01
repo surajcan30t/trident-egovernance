@@ -1,8 +1,9 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { parseCourse } from '@/lib/course-parser';
+import { Loader } from 'lucide-react';
 
 
 const OngoingSessions = ({
@@ -10,7 +11,12 @@ const OngoingSessions = ({
 }: {
   data: any
   }) => {
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
+
+  function onButtonClick(data: any){
+    router.push(`/office/initiatesession/${data.prevSessionId}?course=${parseCourse(data.course)}&admissionYear=${data.admissionYear}&regdYear=${data.regdYear}&startDate=${data.startDate}&studentType=${data.studentType}&sessionId=${data.sessionId}`)
+  }
 
   return (
     <>
@@ -37,7 +43,7 @@ const OngoingSessions = ({
           <div className='w-1/6 p-1 rounded-lg text-center'>
             {data.endDate ? data.endDate : 'N/A'}
           </div>
-          <Button onClick={() => router.push(`/office/initiatesession/${data.prevSessionId}?course=${parseCourse(data.course)}&admissionYear=${data.admissionYear}&regdYear=${data.regdYear}&startDate=${data.startDate}&studentType=${data.studentType}&sessionId=${data.sessionId}`)} className='w-1/3' size='default' variant='modify'>Promote</Button>
+          <Button onClick={()=>onButtonClick(data)} className='w-1/3' size='default' variant='modify'>Promote</Button>
         </div>
       </div>
     </>

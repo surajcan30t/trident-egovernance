@@ -63,7 +63,8 @@ export function PromoteStudentsDialog({
           course,
           regdNos: studentData.map(regdNo => regdNo.regdNo),
           studentType,
-          currentYear
+          currentYear,
+          notPromoted: unSelectedStudentData?.map(redgNo => redgNo.regdNo),
         }),
         method: 'POST',
         headers: {
@@ -83,6 +84,7 @@ export function PromoteStudentsDialog({
       else {
 
         props.onOpenChange?.(false)
+        window.location.reload()
         toast({
           variant: "success",
           title: "Promoted successfully.",
