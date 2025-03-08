@@ -17,12 +17,17 @@ import {
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
-  pageSizeOptions?: number[]
+  pageSizeOptions?: Array<Record<string, number>>
 }
 
 export function DataTablePagination<TData>({
   table,
-  pageSizeOptions = [table.getRowCount(), 10, 20, 50],
+  pageSizeOptions = [
+    {'All': table.getRowCount()},
+    {'10': 10},
+    {'50': 50},
+    {'100': 100}
+  ]
 }: DataTablePaginationProps<TData>) {
   return (
     <div className="flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
@@ -48,11 +53,14 @@ export function DataTablePagination<TData>({
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {pageSizeOptions.map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize === table.getRowCount() ? `All` : pageSize}
-                </SelectItem>
-              ))}
+              {pageSizeOptions.map((pageSizeObj, index) => {
+                const [label, value] = Object.entries(pageSizeObj)[0]; // Extract key-value pair
+                return (
+                  <SelectItem key={label} value={`${value}`}>
+                    {label}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
