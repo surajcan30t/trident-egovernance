@@ -703,7 +703,7 @@ const randomNameGenerator = (len: number) => {
 const getStudentDetailsFromBackend = async () => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND}/test/get-student-test/BTECH/CST`,
+      `${process.env.NEXT_PUBLIC_BACKEND}/test/get-student-test/BTECH/CSIT`,
     );
     const data = response.data;
     return data;

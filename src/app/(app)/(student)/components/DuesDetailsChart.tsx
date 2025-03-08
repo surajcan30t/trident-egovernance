@@ -43,13 +43,14 @@ const increaseRadius: number =
 
 function ChartComponent({ data }: { data: any }) {
   const router = useRouter()
-  const duesSummary = data.dueSummary;
+  const duesSummary = (data.dueSummary || 0);
   // const paid = 500;
-  const paid = duesSummary.totalPaid;
+  const paid = (duesSummary.totalPaid || 0);
   // const due = 0;
-  const due = duesSummary.currentDues;
+  const due = (duesSummary.currentDues || 0);
   // const pending = 500;
-  const pending = duesSummary.amountDue;
+  const pending = (duesSummary.amountDue || 0);
+  console.log('data', data)
   const excess = pending < 0 ? pending : NaN;
   const degreeAngle =  360 - ((pending / due) *360);
   const chartData = [

@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/table';
 import {
   MdClass, MdDirectionsBus,
-  MdGroups,
   MdHome,
   MdLocalHotel,
   MdOutlineDateRange,
@@ -23,6 +22,7 @@ import { IoIdCardOutline } from "react-icons/io5";
 import { FaChalkboardTeacher, FaGraduationCap } from 'react-icons/fa';
 import { IoMdFlask } from 'react-icons/io';
 import { SlUser, SlUserFemale } from 'react-icons/sl';
+import ProfilePicture from '../../components/ProfilePicture';
 
 interface User {
   name: string;
@@ -95,14 +95,7 @@ const page = async () => {
               'h-44 w-44 md:h-80 md:w-80 border relative overflow-hidden rounded-2xl'
             }
           >
-            <Image
-              className="object-cover"
-              src={'/user.png'}
-              alt="user"
-              fill
-              sizes="50vw"
-              priority
-            />
+            <ProfilePicture />
           </div>
           <div className={'mt-5'}>
             <h6 className="text-2xl font-bold text-gray-800 text-center">

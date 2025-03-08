@@ -93,12 +93,6 @@ async function handleApiResponse<T>(
   return response.json();
 }
 
-async function handleImageResponse(response: Response): Promise<string> {
-  if (!response.ok) return 'null';
-  const blob = await response.blob();
-  return URL.createObjectURL(blob); // Convert to Blob URL
-}
-
 async function refreshAccessToken(
   refreshToken: string,
 ): Promise<RotatedTokens> {
@@ -129,48 +123,37 @@ async function refreshAccessToken(
   };
 }
 async function fetchUserData(accessToken: string) {
-  const [userTypeResponse, menuBladeResponse, profilePictureResponse] =
-    await Promise.all([
-      fetchWithTimeout(
-        `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-information`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+  const [userTypeResponse, menuBladeResponse] = await Promise.all([
+    fetchWithTimeout(
+      `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-information`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-      ),
-      fetchWithTimeout(
-        `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-menu-blade`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+      },
+    ),
+    fetchWithTimeout(
+      `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-menu-blade`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-      ),
-      fetchWithTimeout(
-        `${requiredEnvVars.NEXT_PUBLIC_BACKEND}/api/get-user-photo`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      ),
-    ]);
+      },
+    ),
+  ]);
 
-  const [userType, menuBlade, profilePicture] = await Promise.all([
+  const [userType, menuBlade] = await Promise.all([
     handleApiResponse(userTypeResponse, 'Failed to fetch user information'),
     handleApiResponse(menuBladeResponse, 'Failed to fetch menu blade'),
-    handleImageResponse(profilePictureResponse),
   ]);
 
   if (!userType) {
     throw new AuthenticationError('Failed to fetch user type', 401);
   }
 
-  return { userType, menuBlade, profilePicture };
+  return { userType, menuBlade };
 }
 
 export const authOptions: NextAuthOptions = {
@@ -201,7 +184,7 @@ export const authOptions: NextAuthOptions = {
       if (account) {
         try {
           // Fetch required user data immediately during sign in
-          const { userType, menuBlade, profilePicture } = await fetchUserData(
+          const { userType, menuBlade } = await fetchUserData(
             account.access_token!,
           );
 
@@ -243,7 +226,6 @@ export const authOptions: NextAuthOptions = {
             expiresAt: account.expires_at! * 1000,
             userType,
             menuBlade,
-            picture: profilePicture === 'null' ? null : profilePicture,
             graphToken,
           };
         } catch (error) {
@@ -273,13 +255,12 @@ export const authOptions: NextAuthOptions = {
         token.expiresAt = rotatedTokens.expires_at;
 
         // Fetch user data with new access token
-        const { userType, menuBlade, profilePicture } = await fetchUserData(
+        const { userType, menuBlade } = await fetchUserData(
           rotatedTokens.access_token,
         );
 
         token.userType = userType;
         token.menuBlade = menuBlade;
-        token.picture = profilePicture === 'null' ? null : profilePicture;
 
         // Handle Graph token for ACCOUNTS users
         if (

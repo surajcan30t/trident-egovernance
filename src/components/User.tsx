@@ -46,7 +46,7 @@ interface User {
     };
   };
 }
-
+ 
 
 type CardProps = React.ComponentProps<typeof Card>;
 
@@ -58,12 +58,34 @@ const User: React.FC<CardProps> =  ({ className, ...props }) => {
   const student: boolean = jobTitle === 'STUDENT';
 
   useEffect(() => {
-    if (session?.user?.image) {
-      // If the image is already a Blob URL, directly use it
-      const imageUrl = session.user.image;
-      setImageUrl(`http://localhost:3000/${imageUrl}`);
+    if (session?.user?.accessToken) {
+      const getProfilePicture = async () => {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND}/api/get-user-photo`,
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${session.user.accessToken}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch image");
+          }
+
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          setImageUrl(url);
+        } catch (error) {
+          console.error("Error fetching image:", error);
+        }
+      };
+
+      getProfilePicture();
     }
-  }, [session?.user?.image]);
+  }, [session?.user?.accessToken]);
 
   return (
     <Card className={cn('w-full h-fit', className)} {...props}>
@@ -71,12 +93,12 @@ const User: React.FC<CardProps> =  ({ className, ...props }) => {
         <div className="flex flex-col space-x-4 items-center">
           <div className="relative w-[150px] h-[150px] rounded-full overflow-hidden shrink-0">
             {<></>}
-            <Image
+            <img
               className="object-cover"
               src={imageUrl || ''}
               alt="user"
               sizes="50vw"
-              fill
+              // fill
             />
           </div>
           <div className="flex flex-col justify-center">

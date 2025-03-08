@@ -1,11 +1,9 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
 
-import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import Login from './Login';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
 import User from './User';
 import { SidebarTrigger } from './ui/sidebar';
@@ -29,6 +27,37 @@ export default function Navbar() {
       .join('')
     : '';
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string>('');
+
+  useEffect(() => {
+    if (session?.user?.accessToken) {
+      const getProfilePicture = async () => {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND}/api/get-user-photo`,
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${session.user.accessToken}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch image");
+          }
+
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          setImageUrl(url);
+        } catch (error) {
+          console.error("Unable to get image:");
+        }
+      };
+
+      getProfilePicture();
+    }
+  }, [session?.user?.accessToken]);
   if (session) {
     return (
       <div className="sticky top-0 z-50">
@@ -58,6 +87,7 @@ export default function Navbar() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Avatar className="h-8 w-8 cursor-pointer">
+                      <AvatarImage src={imageUrl} alt={fallBackName}/>
                       <AvatarFallback className=" bg-slate-700 text-base text-blue-100">
                         {fallBackName}
                       </AvatarFallback>
