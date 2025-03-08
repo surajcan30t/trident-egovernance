@@ -6,17 +6,7 @@ import Unauthorized from '@/components/Unauthorized'
 
 
 const getData = async (token: string) => {
-  // /office/initiate-session/get-complete-ongoing-sessions
   try {
-    const respons = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/api/refresh-menu-data`,
-      {
-        cache: 'no-cache',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      }
-    )
-    console.log(respons.status)
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/get-complete-ongoing-sessions`,
       {
         cache: 'no-cache',
@@ -81,7 +71,7 @@ const page = async () => {
           </div>
           {data && data.map((session: any, index: number) => (
             <div key={index} className='w-full flex flex-row justify-between items-center bg-lime-100 border-dotted border-2 border-slate-500 p-1 rounded-lg'>
-              <OngoingSessions data={session} type='promoted' />
+              <OngoingSessions data={session} type='demoted' />
             </div>
           ))}
         </div>

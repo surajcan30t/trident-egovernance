@@ -7,7 +7,7 @@ import Unauthorized from '@/components/Unauthorized';
 
 const getData = async (token: string, admissionYear: string, course: string, regdYear: string, studentType: string) => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/get-student-for-promotion?admYear=${admissionYear}&course=${course}&regdyear=${regdYear}&studentType=${studentType}`,
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/get-not-promoted?admYear=${admissionYear}&course=${course}&regdyear=${regdYear}&studentType=${studentType}`,
       {
         cache: 'no-cache',
         headers: {
@@ -20,35 +20,13 @@ const getData = async (token: string, admissionYear: string, course: string, reg
     }
     else {
       const data = await response.json()
+      // [ { "regdNo": "2101289302", "currentYear": 1, "sessionId": "2025-2026" }, { "regdNo": "2101289309", "currentYear": 1, "sessionId": "2025-2026" } ]
       return { status: response.status, data: data }
     }
   } catch (error) {
 
   }
 }
-
-// const getDatum = async (token: string) => {
-//   try {
-//     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/get-not-promoted`,
-//       {
-//         cache: 'no-cache',
-//         headers: {
-//           'Authorization': `Bearer ${token}`
-//         }
-//       }
-//     )
-//     if (response.status !== 200) {
-//       return { status: response.status, data: null };
-//     }
-//     else {
-//       const data = await response.json()
-//       // [ { "regdNo": "2101289302", "currentYear": 1, "sessionId": "2025-2026" }, { "regdNo": "2101289309", "currentYear": 1, "sessionId": "2025-2026" } ]
-//       return { status: response.status, data: data }
-//     }
-//   } catch (error) {
-
-//   }
-// }
 
 const page = async ({
   params,
@@ -69,7 +47,7 @@ const page = async ({
   return (
     <div className='w-full flex flex-col gap-5 justify-center items-center'>
       <div className='w-full flex flex-row gap-2 p-2 bg-slate-200 rounded-lg font-bold'>
-        <Link href={`/office/initiatesession`} className='w-1/6 p-1 rounded-lg text-center flex justify-center items-center bg-white hover:scale-105'>
+        <Link href={`/office/demotedstudents`} className='w-1/6 p-1 rounded-lg text-center flex justify-center items-center bg-white hover:scale-105'>
           <ArrowLeft />
         </Link>
         <div className='w-full p-1 rounded-lg text-center'>
@@ -94,7 +72,7 @@ const page = async ({
           {searchParams.endDate ? searchParams.endDate : 'N/A'}
         </div>
       </div>
-      {studentData?.status === 200 ? studentData.data.length > 0 ? (<SessionwiseStudentTable type='promoted' studentData={studentData.data} />) : (<div className='w-full gap-2 p-2 bg-slate-200 rounded-lg font-bold text-center'>No data found</div>) : (
+      {studentData?.status === 200 ? studentData.data.length > 0 ? (<SessionwiseStudentTable type='demoted' studentData={studentData.data} />) : (<div className='w-full gap-2 p-2 bg-slate-200 rounded-lg font-bold text-center'>No data found</div>) : (
         <div className='w-full p-2 bg-slate-200 rounded-lg font-bold text-center'>Something went wrong</div>
       )}
     </div>

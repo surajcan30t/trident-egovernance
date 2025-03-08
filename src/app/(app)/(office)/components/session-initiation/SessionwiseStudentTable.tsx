@@ -13,9 +13,11 @@ interface SessionWiseStudentData {
 
 const SessionwiseStudentTable = (
   {
-    studentData
+    studentData,
+    type
   }: {
-    studentData: SessionWiseStudentData[]
+    studentData: SessionWiseStudentData[],
+    type: string
   }
 ) => {
 
@@ -29,7 +31,7 @@ const SessionwiseStudentTable = (
       {studentData && studentData.length > 0 &&
         <DataTable table={table} >
           <DataTableToolbar fileName='Session_Promotion-Data' table={table}>
-            <TableToolbarTasks table={table} />
+            <TableToolbarTasks type={type} table={table} />
           </DataTableToolbar>
         </DataTable>
       }

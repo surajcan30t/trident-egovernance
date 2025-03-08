@@ -45,6 +45,9 @@ const branches = [
   {
     value: 'MECH',
   },
+  {
+    value: 'CSIT',
+  },
 ];
 
 const years = [

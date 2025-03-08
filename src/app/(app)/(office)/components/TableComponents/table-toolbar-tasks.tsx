@@ -10,16 +10,19 @@ interface SessionWiseStudentData {
 }
 interface TableToolbarTasksProps {
   table: Table<any>
+  type: string
 }
 
 
 export function TableToolbarTasks({
   table,
+  type
 }: TableToolbarTasksProps) {
   return (
     <div className="flex items-center gap-2">
       {table.getFilteredSelectedRowModel().rows.length > 0 ? (
         <PromoteStudentsDialog
+          type={type}
           studentData={table
             .getFilteredSelectedRowModel()
             .rows.map((row) => row.original)}

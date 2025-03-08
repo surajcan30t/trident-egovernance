@@ -1,21 +1,25 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import React, { useState } from 'react'
+import React from 'react'
 import { useRouter } from 'next/navigation';
 import { parseCourse } from '@/lib/course-parser';
-import { Loader } from 'lucide-react';
 
 
 const OngoingSessions = ({
-  data
+  data,
+  type
 }: {
-  data: any
+  data: any,
+  type: string
   }) => {
-  const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   function onButtonClick(data: any){
-    router.push(`/office/initiatesession/${data.prevSessionId}?course=${parseCourse(data.course)}&admissionYear=${data.admissionYear}&regdYear=${data.regdYear}&startDate=${data.startDate}&studentType=${data.studentType}&sessionId=${data.sessionId}`)
+    if(type === 'promoted'){
+      router.push(`/office/initiatesession/${data.prevSessionId}?course=${parseCourse(data.course)}&admissionYear=${data.admissionYear}&regdYear=${data.regdYear}&startDate=${data.startDate}&studentType=${data.studentType}&sessionId=${data.sessionId}`)
+    }else{
+      router.push(`/office/demotedstudents/${data.prevSessionId}?course=${parseCourse(data.course)}&admissionYear=${data.admissionYear}&regdYear=${data.regdYear}&startDate=${data.startDate}&studentType=${data.studentType}&sessionId=${data.sessionId}`)
+    }
   }
 
   return (

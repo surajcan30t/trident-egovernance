@@ -26,6 +26,7 @@ interface SessionWiseStudentData {
 
 interface PromoteStudentDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
+  type: string,
   studentData: Row<SessionWiseStudentData>["original"][]
   unSelectedStudentData?: Row<SessionWiseStudentData>["original"][]
   showTrigger?: boolean
@@ -33,6 +34,7 @@ interface PromoteStudentDialogProps
 }
 
 export function PromoteStudentsDialog({
+  type,
   studentData,
   unSelectedStudentData,
   showTrigger = true,
@@ -52,6 +54,50 @@ export function PromoteStudentsDialog({
 
   const [isPromotePending, startPromoteTransition] = React.useTransition()
 
+  function onPromoteNonPromoted() {
+    startPromoteTransition(async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/promote-not-promoted-students`, {
+        body: JSON.stringify({
+          admYear,
+          prevSessionId,
+          startDate,
+          sessionId,
+          course,
+          regdNos: studentData.map(regdNo => regdNo.regdNo),
+          studentType,
+          currentYear,
+          promotionType: false,
+          notPromoted: unSelectedStudentData?.map(redgNo => redgNo.regdNo),
+        }),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+      })
+      if (response.status !== 200) {
+        toast(
+          {
+            variant: "destructive",
+            title: "Something went wrong.",
+            description: "Please try again later.",
+          }
+        )
+      }
+      else {
+
+        props.onOpenChange?.(false)
+        window.location.reload()
+        toast({
+          variant: "success",
+          title: "Promoted successfully.",
+          description: `Promoted ${studentData.length} students to new session.`,
+      })
+      onSuccess?.()
+      }
+    })
+  }
+
   function onPromote() {
     startPromoteTransition(async () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/office/initiate-session/initiate`, {
@@ -65,7 +111,6 @@ export function PromoteStudentsDialog({
           studentType,
           currentYear,
           promotionType: true,
-          // promotionType: false, ## if requesting to /office/initiate-session/promote-not-promoted-students
           notPromoted: unSelectedStudentData?.map(redgNo => redgNo.regdNo),
         }),
         method: 'POST',
@@ -123,7 +168,7 @@ export function PromoteStudentsDialog({
           <Button
             aria-label="Promote selected rows"
             variant="trident"
-            onClick={onPromote}
+            onClick={type === 'promoted' ? onPromote : onPromoteNonPromoted}
             disabled={isPromotePending}
           >
             {isPromotePending && (
