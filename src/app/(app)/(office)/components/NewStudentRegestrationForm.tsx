@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { string, z } from 'zod';
 
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { handleNewStudent } from '@/backend';
+
+const branhCodes = ['CSE', 'CST', 'CSAIML', 'CSIT', 'CSDS', 'EEE', 'ETC', 'IT', 'MECH', 'BME', 'CIVIL', 'EE', 'BIOTECH', 'EEVD', 'VLSI', 'EVT', 'ENVE', 'EENVE', 'AIML', 'DS', 'MCA', 'MBA']
 
 const FormSchema = z.object({
   jeeApplicationNo: z.string().min(10, {
@@ -59,7 +61,7 @@ const FormSchema = z.object({
   gender: z.enum(['MALE', 'FEMALE', 'OTHERS'], {
     required_error: 'You need to select the gender.',
   }),
-  branchCode: z.enum(['CSE', 'CST', 'CSAIML'], {
+  branchCode: z.enum(branhCodes as [string, ...string[]], {
     required_error: 'You need to select the gender.',
   }),
   ojeeCounsellingFeePaid: z.enum(['YES', 'NO'], {
@@ -67,7 +69,6 @@ const FormSchema = z.object({
   }),
   step: z.number().default(1),
 });
-
 const NewStudentRegestrationForm = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -75,7 +76,6 @@ const NewStudentRegestrationForm = () => {
       jeeApplicationNo: '',
       studentName: '',
       regdNo: '',
-      rank: 0,
     },
   });
 
@@ -263,9 +263,13 @@ const NewStudentRegestrationForm = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="CSE">CSE</SelectItem>
-                    <SelectItem value="CST">CST</SelectItem>
-                    <SelectItem value="CSAIML">CSAIML</SelectItem>
+                    {
+                      branhCodes.map((code) => {
+                        return (
+                          <SelectItem key={code} value={code}>{code}</SelectItem>
+                        )
+                      })
+                    }
                   </SelectContent>
                 </Select>
               </FormItem>
