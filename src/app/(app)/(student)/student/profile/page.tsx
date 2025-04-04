@@ -89,7 +89,7 @@ const page = async () => {
           ' p-2 gap-1'
         }
       >
-        <div className={'h-full w-fit flex flex-col '}>
+        <div className={'h-full w-fit flex flex-col items-center'}>
           <div
             className={
               'h-44 w-44 md:h-80 md:w-80 border relative overflow-hidden rounded-2xl'
