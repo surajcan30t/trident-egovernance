@@ -37,10 +37,8 @@ const studentData = async (): Promise<Student | null> => {
 };
 const page = async () => {
   if(!cookies().get('NSR-Authorization')){
-    console.log("Not logged in");
     redirect('/studentportal')
   }
-  console.log('oh you are authenticated!')
   const data = await studentData();
   console.log(data)
   return (
