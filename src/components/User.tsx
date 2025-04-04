@@ -2,14 +2,10 @@ import { cn } from '@/lib/utils';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface User {
   name: string;
@@ -34,7 +30,7 @@ interface User {
       presentAddress: string | null;
       phoneNo: string;
       email: string;
-      dob: string; // ISO 8601 format: YYYY-MM-DD
+      dob: string; // format: YYYY-MM-DD
     };
     parentsPersonalInformation: {
       motherName: string;
@@ -93,11 +89,12 @@ const User: React.FC<CardProps> =  ({ className, ...props }) => {
         <div className="flex flex-col space-x-4 items-center">
           <div className="relative w-[150px] h-[150px] rounded-full overflow-hidden shrink-0">
             {<></>}
-            <img
+            <Image
               className="object-cover"
               src={imageUrl || ''}
               alt="user"
-              sizes="50vw"
+              width={200}
+              height={200}
               // fill
             />
           </div>
