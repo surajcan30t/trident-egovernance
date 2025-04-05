@@ -7,7 +7,7 @@ const Unauthorized = () => {
         <h1 className="text-4xl text-center font-extrabold">Hold Up!</h1>
       </div>
       <div className="flex justify-center items-center text-8xl font-extrabold text-red-500">
-        4<div className="text-[10rem] mx-4 animate-spin">0</div>1
+        4<div className="text-[10rem] mx-4 ">0</div>1
       </div>
       <div>
         <h1 className="text-4xl text-center font-semibold">
