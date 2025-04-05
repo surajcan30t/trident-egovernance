@@ -8,6 +8,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'egov.tat.ac.in',
+      },
+      {
+        protocol: 'https',
         hostname: 'assets.aceternity.com',
       },
       {

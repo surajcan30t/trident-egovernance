@@ -21,6 +21,7 @@ import {
 } from './ui/sheet';
 import User from './User';
 import { Avatar, AvatarFallback } from './ui/avatar';
+import TridentLogo from '@/../public/tgilogo.webp';
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -34,12 +35,17 @@ const Navbar = () => {
               <div className="w-full flex justify-between items-center">
                 {/* Mobile Logo */}
                 <div className="w-auto md:hidden">
-                  <Image src="/tgi.png" alt="logo" width={80} height={80} />
+                  <Image src={TridentLogo} alt="logo" width={80} height={80} />
                 </div>
 
                 {/* Desktop Logo */}
                 <div className="hidden md:block">
-                  <Image src="/tgi.png" alt="logo" width={150} height={150} />
+                  <Image
+                    src={TridentLogo}
+                    alt="logo"
+                    width={150}
+                    height={150}
+                  />
                 </div>
 
                 {/* Center Title */}
@@ -118,35 +124,73 @@ const Navbar = () => {
     // 		</div>
     // 	</div>
     // </div>
-    <div className="sticky top-0 z-50">
-      <div className="mx-auto flex h-14 w-full items-center justify-center bg-white/0 backdrop-blur-lg">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between self-center px-1 md:px-8">
-          <div className="w-full rounded-b-sm text-white font-bold text-xl flex items-center md:px-14">
-            <div className="w-full flex justify-between items-center ">
-              {/* Mobile Logo */}
-              <div className="w-auto md:hidden">
-                <Image src="/tgi.png" alt="logo" width={80} height={80} />
-              </div>
+    <>
+      <div className="sticky top-0 z-50 hidden sm:block">
+        <div className="mx-auto flex h-14 w-full items-center justify-center bg-white/0 backdrop-blur-lg">
+          <div className="mx-auto flex w-full max-w-7xl items-center justify-between self-center px-1 md:px-8">
+            <div className="w-full rounded-b-sm text-white font-bold text-xl flex items-center md:px-14">
+              <div className="w-full flex justify-between items-center ">
+                {/* Mobile Logo */}
+                {/* <div className="w-auto md:hidden">
+                <Image src={TridentLogo} alt="logo" width={80} height={80} />
+              </div> */}
 
-              {/* Desktop Logo */}
-              <div className="hidden md:block">
-                <Image src="/tgi.png" alt="logo" width={150} height={150} />
-              </div>
+                {/* Desktop Logo */}
+                <div className="hidden md:block">
+                  <Image
+                    src={TridentLogo}
+                    alt="logo"
+                    width={150}
+                    height={150}
+                  />
+                </div>
 
-              {/* Center Title */}
-              <div className="text-xl md:text-3xl lg:text-4xl text-sky-500 drop-shadow-[0_1.2px_0.2px_rgb(0,0,0)] font-extrabold flex-grow-0">
-                Trident E-Governance
-              </div>
+                {/* Center Title */}
+                <div className="text-xl md:text-3xl lg:text-4xl text-sky-500 drop-shadow-[0_1.2px_0.2px_rgb(0,0,0)] font-extrabold flex-grow-0">
+                  Trident E-Governance
+                </div>
 
-              {/* Login Component */}
-              <div className="w-auto flex justify-end">
-                <Login />
+                {/* Login Component */}
+                <div className="w-auto flex justify-end">
+                  <Login />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      <div className="sticky top-0 z-50 sm:hidden">
+        <div className="mx-auto flex h-14 w-full items-center justify-center bg-white/0 backdrop-blur-lg">
+          <div className="mx-auto flex w-full max-w-7xl items-center justify-between self-center px-1 md:px-8">
+            <div className="w-full rounded-b-sm text-white font-bold text-xl flex items-center md:px-14">
+              <div className="w-full flex justify-between items-center px-3">
+                {/* Mobile Logo */}
+                <div className="flex items-center gap-2">
+                  <div className="w-auto h-fit flex">
+                    <Image
+                      src={TridentLogo}
+                      alt="logo"
+                      width={100}
+                      height={100}
+                    />
+                  </div>
+                  <div className="text-xl md:text-3xl lg:text-4xl text-sky-50 drop-shadow-[0_1.2px_0.2px_rgb(0,0,0)] font-extrabold flex-grow-0">
+                    E-Governance
+                  </div>
+                </div>
+
+                {/* Center Title */}
+
+                {/* Login Component */}
+                <div className="w-auto flex justify-end">
+                  <Login />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

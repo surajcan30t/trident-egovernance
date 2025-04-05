@@ -8,6 +8,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
+import LandingImg from '@/../public/landing.webp'
 
 const features = [
   {
@@ -55,7 +56,7 @@ export default function Home() {
         <Navbar />
         <div className="absolute top-0 w-full h-full">
           <Image
-            src="/tricol.jpg"
+            src={LandingImg}
             className="object-cover opacity-100"
             alt="logo"
             fill
