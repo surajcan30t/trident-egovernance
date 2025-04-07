@@ -45,6 +45,11 @@ interface UserType {
   };
 }
 
+interface MenuBlade {
+  redirectUrl: string;
+  allowedRoutes: string[];
+}
+
 interface RotatedTokens {
   access_token: string;
   refresh_token: string;
@@ -86,7 +91,7 @@ async function handleApiResponse<T>(
       .text()
       .catch(() => 'No error details available');
     throw new AuthenticationError(
-      `${errorMessage}. Status: ${response.status}. Details: ${errorDetail}`,
+      `${errorMessage}.\n Status: ${response.status}.\n Details: ${errorDetail}`,
       response.status,
     );
   }
@@ -146,13 +151,15 @@ async function fetchUserData(accessToken: string) {
 
   const [userType, menuBlade] = await Promise.all([
     handleApiResponse(userTypeResponse, 'Failed to fetch user information'),
-    handleApiResponse(menuBladeResponse, 'Failed to fetch menu blade'),
+    handleApiResponse<MenuBlade>(
+      menuBladeResponse,
+      'Failed to fetch menu blade',
+    ),
   ]);
 
   if (!userType) {
     throw new AuthenticationError('Failed to fetch user type', 401);
   }
-
   return { userType, menuBlade };
 }
 
@@ -188,36 +195,36 @@ export const authOptions: NextAuthOptions = {
             account.access_token!,
           );
 
-          let graphToken;
+          // let graphToken;
           // Handle Graph token for ACCOUNTS users
-          if (
-            (userType as UserType)?.userJobInformationDto?.jobTitle ===
-            'ACCOUNTS'
-          ) {
-            const graphTokenResponse = await fetchWithTimeout(
-              requiredEnvVars.AZURE_AD_TOKEN_URI!,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                  client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
-                  client_secret:
-                    requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
-                  grant_type: 'refresh_token',
-                  refresh_token: account.refresh_token!,
-                  scope: 'https://graph.microsoft.com/.default',
-                }),
-              },
-            );
+          // if (
+          //   (userType as UserType)?.userJobInformationDto?.jobTitle ===
+          //   'ACCOUNTS'
+          // ) {
+          //   const graphTokenResponse = await fetchWithTimeout(
+          //     requiredEnvVars.AZURE_AD_TOKEN_URI!,
+          //     {
+          //       method: 'POST',
+          //       headers: {
+          //         'Content-Type': 'application/x-www-form-urlencoded',
+          //       },
+          //       body: new URLSearchParams({
+          //         client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
+          //         client_secret:
+          //           requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
+          //         grant_type: 'refresh_token',
+          //         refresh_token: account.refresh_token!,
+          //         scope: 'https://graph.microsoft.com/.default',
+          //       }),
+          //     },
+          //   );
 
-            const graphTokenData = await handleApiResponse<GraphTokenResponse>(
-              graphTokenResponse,
-              'Failed to fetch Graph token',
-            );
-            graphToken = graphTokenData.access_token;
-          }
+          //   const graphTokenData = await handleApiResponse<GraphTokenResponse>(
+          //     graphTokenResponse,
+          //     'Failed to fetch Graph token',
+          //   );
+          //   graphToken = graphTokenData.access_token;
+          // }
 
           return {
             ...token,
@@ -225,11 +232,12 @@ export const authOptions: NextAuthOptions = {
             refreshToken: account.refresh_token,
             expiresAt: account.expires_at! * 1000,
             userType,
-            menuBlade,
-            graphToken,
+            menuBlade: {
+              redirectUrl: menuBlade.redirectUrl,
+              allowedRoutes: menuBlade.allowedRoutes,
+            },
           };
         } catch (error) {
-          console.error('Initial authentication error:', error);
           return {
             ...token,
             error: 'AuthenticationError',
@@ -260,35 +268,38 @@ export const authOptions: NextAuthOptions = {
         );
 
         token.userType = userType;
-        token.menuBlade = menuBlade;
+        token.menuBlade = {
+          redirectUrl: menuBlade.redirectUrl,
+          allowedRoutes: menuBlade.allowedRoutes,
+        };
 
         // Handle Graph token for ACCOUNTS users
-        if (
-          (userType as UserType)?.userJobInformationDto?.jobTitle === 'ACCOUNTS'
-        ) {
-          const graphTokenResponse = await fetchWithTimeout(
-            requiredEnvVars.AZURE_AD_TOKEN_URI!,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-              body: new URLSearchParams({
-                client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
-                client_secret: requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
-                grant_type: 'refresh_token',
-                refresh_token: rotatedTokens.refresh_token,
-                scope: 'https://graph.microsoft.com/.default',
-              }),
-            },
-          );
+        // if (
+        //   (userType as UserType)?.userJobInformationDto?.jobTitle === 'ACCOUNTS'
+        // ) {
+        //   const graphTokenResponse = await fetchWithTimeout(
+        //     requiredEnvVars.AZURE_AD_TOKEN_URI!,
+        //     {
+        //       method: 'POST',
+        //       headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded',
+        //       },
+        //       body: new URLSearchParams({
+        //         client_id: requiredEnvVars.AZURE_AD_CLIENT_ID as string,
+        //         client_secret: requiredEnvVars.AZURE_AD_CLIENT_SECRET as string,
+        //         grant_type: 'refresh_token',
+        //         refresh_token: rotatedTokens.refresh_token,
+        //         scope: 'https://graph.microsoft.com/.default',
+        //       }),
+        //     },
+        //   );
 
-          const graphToken = await handleApiResponse<GraphTokenResponse>(
-            graphTokenResponse,
-            'Failed to fetch Graph token',
-          );
-          token.graphToken = graphToken.access_token;
-        }
+        //   const graphToken = await handleApiResponse<GraphTokenResponse>(
+        //     graphTokenResponse,
+        //     'Failed to fetch Graph token',
+        //   );
+        // token.graphToken = graphToken.access_token;
+        // }
 
         return token;
       } catch (error) {
@@ -300,7 +311,7 @@ export const authOptions: NextAuthOptions = {
         delete token.expiresAt;
         delete token.userType;
         delete token.menuBlade;
-        delete token.graphToken;
+        // delete token.graphToken;
 
         return {
           ...token,
@@ -314,7 +325,7 @@ export const authOptions: NextAuthOptions = {
         session.user.userType = token.userType || undefined;
         session.user.menuBlade = token.menuBlade || null;
         session.user.accessToken = token.accessToken as string;
-        session.user.graphToken = token.graphToken as string;
+        // session.user.graphToken = token.graphToken as string;
         session.error = token.error;
       }
       return session;

@@ -43,7 +43,9 @@ export default withAuth(
     }
 
     if (requestedPath === '/') {
-      console.log(`User accessing base path while logged in. Redirecting to ${redirectUrl}.`);
+      console.log(
+        `User accessing base path while logged in. Redirecting to ${redirectUrl}.`,
+      );
       return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 
