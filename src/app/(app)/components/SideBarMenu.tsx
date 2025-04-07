@@ -2,18 +2,9 @@
 
 import * as React from 'react';
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
   Frame,
-  GalleryVerticalEnd,
   Map,
   PieChart,
-  ReceiptIndianRupee,
-  Settings2,
-  SquareTerminal,
-  UserRoundPen,
   type LucideIcon
 } from 'lucide-react';
 
@@ -34,11 +25,18 @@ import Image from 'next/image';
 
 
 type IconName = keyof typeof Icons;
+
 interface MenuItem {
   title: string;
   url: string;
-  logo?: FC<SVGProps<SVGSVGElement>>;
+  logo: string;
   children?: MenuItem[]; // Optional, no `null`
+}
+
+interface MenuBlade {
+  role: string,
+  icon: FC<SVGProps<SVGSVGElement>>,
+  urls: MenuItem[]
 }
 
 interface NavHead {
@@ -71,19 +69,8 @@ interface Token {
 
 // This is sample data.
 const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
-  teams: [
-    {
-      name: 'Student',
-      logo: PiStudentBold,
-      plan: 'Enterprise',
-    },
-  ],
-  navMain: [
+
+  urls: [
     {
       title: 'Orc Warrior Ground',
       url: '#',
@@ -209,13 +196,46 @@ type DynamicIconProps = {
 };
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
-  const menuBlade: any = session?.user?.menuBlade;
+  const [menuBlade, setMenuBlade] = React.useState<MenuBlade | null>(null);
+  
+  useEffect(() => {
+    const fetchMenublade = async (token:string) => {
+      if(!menuBlade && session){
+        try{
+          const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND}/api/get-menu-blade`, 
+            {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          )
+          if(!response.ok){
+            throw new Error('Failed to fetch menublade')
+          }
+          const data = await response.json();
+          setMenuBlade(data)
+          localStorage.setItem('munuBlade', JSON.stringify(data))
+        }catch(error){
+          
+        }
+      }
+    }
+    if(!menuBlade && !session){
+      const cachedMenublade = localStorage.getItem('menuBlade')
+      if(cachedMenublade) setMenuBlade(JSON.parse(cachedMenublade))
+    }
+    if(!menuBlade && session){
+      fetchMenublade(session.user.accessToken!)
+    }
+  },[session, menuBlade])
+
   const navHead: NavHead | undefined = React.useMemo(() => {
-    if (menuBlade?.urls) {
+    if (menuBlade) {
       return {role: menuBlade.role, icon: menuBlade.icon}
     }
-  }, [menuBlade?.urls]);
-  // Combine useEffect and useMemo to avoid double rendering
+  }, [menuBlade]);
+  
   const navMain = React.useMemo(() => {
     if (menuBlade?.urls) {
       return menuBlade.urls.map(({ title, url, logo, children }: MenuItem) => ({
@@ -229,11 +249,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             logo,
             children,
           }))
-          : null,
+          : undefined,
       }));
     }
     return [];
-  }, [menuBlade?.urls]);
+  }, [menuBlade]);
+
+  
 
   return (
     <Sidebar collapsible="icon" {...props}>
