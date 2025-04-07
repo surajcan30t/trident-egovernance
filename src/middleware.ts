@@ -19,7 +19,6 @@ interface MenuBlade {
 export default withAuth(
   async function middleware(req) {
     const token = req.nextauth.token; // Extract the token
-    // console.log('Token:', token);
 
     // If there's no token, redirect to login
     if (!token) {
@@ -39,12 +38,12 @@ export default withAuth(
     const imageAssets = ['.jpg', '.jpeg', '.png', '.avif'];
 
     if (imageAssets.some((ext: string) => requestedPath.endsWith(ext))) {
-      console.log(requestedPath);
+      // console.log(requestedPath);
       return NextResponse.next();
     }
 
     if (requestedPath === '/') {
-      console.log(`User accessing base path. Redirecting to ${redirectUrl}.`);
+      console.log(`User accessing base path while logged in. Redirecting to ${redirectUrl}.`);
       return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
 
