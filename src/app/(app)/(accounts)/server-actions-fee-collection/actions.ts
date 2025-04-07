@@ -4,6 +4,7 @@ import axios from 'axios';
 import { description } from '@/app/(app)/(student)/components/StudentAttendance';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import getGraphToken from '@/lib/auth/getGraphToken';
 
 let financialSession: string | null = null;
 
@@ -119,13 +120,17 @@ export const handleDuesFeePayment = async (formData: any) => {
   const session = await getServerSession(authOptions);
   const data = formData;
   const regdNo = formData.regdNo;
-  if (session) {
+  if (session !== null && session !== undefined && session.user.accessToken) {
+    const graphToken = await getGraphToken(session.user.accessToken);
+    if (graphToken.graphToken === undefined) {
+      console.log('Unable to get graphtoken for USER::', session.user.name);
+      return 401;
+    }
     if (!data) {
       console.log('No initial data found.');
       return;
     } else {
       try {
-        console.log(session.user);
         const responseGetNewMr = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/get-new-mrNo`,
           {
@@ -146,7 +151,7 @@ export const handleDuesFeePayment = async (formData: any) => {
               headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${session.user.accessToken}`,
-                oboToken: `Bearer ${session.user.graphToken}`,
+                oboToken: `Bearer ${graphToken.graphToken}`,
               },
             },
           );
