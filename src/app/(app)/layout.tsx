@@ -3,8 +3,7 @@ import { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/toaster';
-import { AppSidebar } from '@/app/(app)/components/SideBarMenu';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import AppSidebar from '@/app/(app)/components/SideBarMenu';
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const data = {
@@ -14,7 +13,7 @@ const data = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('http://localhost:3000/'),
+  metadataBase: new URL('https://egov.tat.ac.in/'),
   title: data.title,
   description: data.description,
 };
