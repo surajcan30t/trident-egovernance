@@ -18,7 +18,7 @@ import User from './User';
 import { SidebarTrigger } from './ui/sidebar';
 
 export default function Navbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const fallBackName = session?.user?.name
     ? session.user.name
       .split(/[\s-]+/)
@@ -58,7 +58,7 @@ export default function Navbar() {
       getProfilePicture();
     }
   }, [session?.user?.accessToken]);
-  if (session) {
+  if (status !== 'unauthenticated') {
     return (
       <div className="sticky top-0 z-50">
         <div className="mx-auto flex h-14 w-full items-center justify-center bg-orange-300/50 backdrop-blur-lg">
@@ -76,7 +76,7 @@ export default function Navbar() {
 
               {/* Center Title */}
               <div className="text-xl md:text-3xl lg:text-4xl text-[#39a3e5] font-extrabold flex-grow-0">
-                Trident E-Governance
+                E-Governance
               </div>
 
               {/* Avatar */}

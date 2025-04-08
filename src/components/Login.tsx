@@ -18,11 +18,16 @@ const Login = () => {
     // }
   };
 
+  const handleSignOut = async () => {
+    localStorage.clear()
+    signOut();
+  }
+
   const { data: session } = useSession();
   if (session) {
     return (
       <>
-        <div className="" onClick={() => signOut()}>
+        <div className="" onClick={() => handleSignOut()}>
           Sign Out
         </div>
       </>
