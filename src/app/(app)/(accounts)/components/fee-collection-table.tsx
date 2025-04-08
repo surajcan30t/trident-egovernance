@@ -54,7 +54,7 @@ const FeeCollectionTable = ({ query }: { query: { from: string | null, to: strin
 
   return (
     <>
-      <div className="flex flex-row-reverse justify-center gap-2 mx-auto w-full">
+      <div className="flex flex-col lg:flex-row-reverse justify-center gap-2 container mx-auto w-full">
         <div className="w-1/3">
           <h1 className='bg-gray-200 p-2 text-center text-lg font-semibold'>MR Headwise Collection</h1>
           <table className="w-full border-collapse border mb-4">

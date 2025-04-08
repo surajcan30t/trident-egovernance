@@ -65,14 +65,16 @@ const StudentDuesDetailsTable = ({ data }: { data: StudentDuesDetails[] }) => {
 
 	return (
 		<>
-			<div className="flex flex-row-reverse justify-center gap-2 mx-auto w-full">
+			<div className="flex flex-col justify-center container mx-auto w-full">
 				<React.Suspense
 					fallback=
 					{<DataTableSkeleton columnCount={5} searchableColumnCount={2} cellWidths={["5rem", "20rem", "12rem", "12rem", "8rem"]} shrinkZero />}>
 					{data ?
-						(<DataTable table={table} className="w-full">
+						(
+						<DataTable table={table}>
 							<DataTableToolbar table={table} filterFields={filterFields} />
-						</DataTable>) :
+						</DataTable>
+						) :
 						(
 							<div>
 								<p>No data available</p>

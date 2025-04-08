@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { IndianRupee, ReceiptIndianRupee } from 'lucide-react';
 import Image from 'next/image';
 import { createIcons, icons } from 'lucide';
-import { AppSidebar } from './SideBarMenu';
+import AppSidebar from './SideBarMenu';
 
 interface SecondaryLink {
   label: string;

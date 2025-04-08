@@ -22,12 +22,12 @@ export const fetchFeesDetailsBySession = async (
   sessionId: string | null,
 ) => {
   const session = await getServerSession(authOptions);
-  console.log('from:-', from);
-  console.log('to:-', to);
-  console.log('session:-', sessionId);
+  // console.log('from:-', from);
+  // console.log('to:-', to);
+  // console.log('session:-', sessionId);
   try {
     if (session) {
-      console.log('fetching data');
+      // console.log('fetching data');
       const request = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-collection-report`,
         {
@@ -100,10 +100,10 @@ export const feeCollectionSingleStudentDetails = async (
           },
         },
       );
-      console.log('registrationNo', registrationNo);
+      // console.log('registrationNo', registrationNo);
 
       if (response.status !== 200 || !(await response.json())) {
-        console.log('entered else block');
+        // console.log('entered else block');
         return { status: 400 };
       }
       return { status: 200 };
@@ -143,7 +143,7 @@ export const handleDuesFeePayment = async (formData: any) => {
         if (responseGetNewMr.status === 200) {
           const newMr = responseGetNewMr.data;
           formData.mrNo = newMr;
-          console.log(formData);
+          // console.log(formData);
           const request = await axios.post(
             `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
             formData,
@@ -238,7 +238,7 @@ export const handleOtherFeesPayment = async (formData: any) => {
         console.log('No initial data found.');
         return 400;
       } else {
-        console.log('Data in NSRALLOTMENTID function', data);
+        // console.log('Data in NSRALLOTMENTID function', data);
         const request = await axios.post(
           `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/other-fees-payment/${regdNo}`,
           data,
@@ -249,7 +249,7 @@ export const handleOtherFeesPayment = async (formData: any) => {
             },
           },
         );
-        console.log('Response: \n', request.data);
+        // console.log('Response: \n', request.data);
         return request.status;
       }
     } else return 401;
@@ -267,7 +267,7 @@ export const handleUpdateFeePayment = async (formData: any) => {
         console.log('No initial data found.');
         return;
       } else {
-        console.log('Data in NSRALLOTMENTID function', data);
+        // console.log('Data in NSRALLOTMENTID function', data);
         try {
           const request = await axios.put(
             `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/update-fee-collection`,
@@ -279,7 +279,7 @@ export const handleUpdateFeePayment = async (formData: any) => {
               },
             },
           );
-          console.log('Response: \n', request.data);
+          // console.log('Response: \n', request.data);
           return request.status;
         } catch (e) {
           console.error(e);
@@ -321,7 +321,7 @@ export const handleUpdateOtherFeePayment = async (formData: any) => {
         console.log('No initial data found.');
         return;
       } else {
-        console.log('Data in handleUpdateOtherFeePayment function', data);
+        // console.log('Data in handleUpdateOtherFeePayment function', data);
         try {
           const request = await axios.put(
             `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/update-fee-collection`,
@@ -333,7 +333,7 @@ export const handleUpdateOtherFeePayment = async (formData: any) => {
               },
             },
           );
-          console.log('Response: \n', request.data);
+          // console.log('Response: \n', request.data);
           return request.status;
         } catch (e) {
           console.error(e);
@@ -351,7 +351,7 @@ export const handleDiscount = async (formData: any) => {
   try {
     if (session) {
       const data = formData;
-      console.log('Data in handleDiscount function', data);
+      // console.log('Data in handleDiscount function', data);
       const request = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/insert-Discount-Data`,
         data,
@@ -361,7 +361,7 @@ export const handleDiscount = async (formData: any) => {
           },
         },
       );
-      console.log('Response: \n', request.data);
+      // console.log('Response: \n', request.data);
       if (request.status === 200) {
         return 200;
       } else {
@@ -379,7 +379,7 @@ export const handleAdjustment = async (formData: any) => {
   try {
     if (session) {
       const data = formData;
-      console.log('Data in handleDiscount function', data);
+      // console.log('Data in handleDiscount function', data);
       const request = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/apply-Adjustment`,
         data,
@@ -389,7 +389,7 @@ export const handleAdjustment = async (formData: any) => {
           },
         },
       );
-      console.log('Response: \n', request.data);
+      // console.log('Response: \n', request.data);
       if (request.status === 200) {
         return 200;
       } else {
@@ -407,10 +407,10 @@ export const deleteMrDetails = async (mrNo: string) => {
   try {
     if (session) {
       if (!mrNo) {
-        console.log('No Mr number found.');
+        // console.log('No Mr number found.');
         return;
       } else {
-        console.log('Delete request for MR No :- ', mrNo);
+        // console.log('Delete request for MR No :- ', mrNo);
         try {
           const request = await axios.delete(
             `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/delete-fee-collection/${mrNo}`,
@@ -420,7 +420,7 @@ export const deleteMrDetails = async (mrNo: string) => {
               },
             },
           );
-          console.log('Response: \n', request.data);
+          // console.log('Response: \n', request.data);
           return request.status;
         } catch (e) {
           console.error(e);
@@ -449,7 +449,7 @@ export const getStudentDuesDetails = async () => {
         },
       );
       const response = await request.json();
-      console.log('response', response);
+      // console.log('response', response);
       return response;
     } catch (error) {
       console.log(error);
@@ -497,7 +497,7 @@ export const handleFeeStructureGeneration = async (
       );
       const status = request.status;
       const message = request.data.message;
-      console.log('data', JSON.stringify(data, null, 2));
+      // console.log('data', JSON.stringify(data, null, 2));
       return { status, message };
     } catch (error) {
       console.log(error);
@@ -513,9 +513,9 @@ export const handleFeeStructureGeneration = async (
 //accounts-section/create-fee-type
 export const handleCreateNewFeeType = async (feeTypeData: any) => {
   const session = await getServerSession(authOptions);
-  console.log('process started');
+  // console.log('process started');
   if (session) {
-    console.log('Session available');
+    // console.log('Session available');
 
     const formattedFeeTypeData = feeTypeData.newFees.map(
       (feeTypeData: any) => ({
@@ -528,7 +528,7 @@ export const handleCreateNewFeeType = async (feeTypeData: any) => {
       }),
     );
     try {
-      console.log('inside try block');
+      // console.log('inside try block');
       const request = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/create-fee-types`,
         formattedFeeTypeData,
@@ -541,7 +541,7 @@ export const handleCreateNewFeeType = async (feeTypeData: any) => {
       );
       const status = request.status;
       const message = request.data.message;
-      console.log('data', JSON.stringify(formattedFeeTypeData, null, 2));
+      // console.log('data', JSON.stringify(formattedFeeTypeData, null, 2));
       return { status, message };
     } catch (error) {
       console.log(error);

@@ -41,7 +41,7 @@ export const studentDataFetcher = async (): Promise<Students[] | undefined> => {
 };
 
 export const getAdmissionYear = async (formData: string | null) => {
-  console.log(formData);
+  // console.log(formData);
   return 200;
 };
 
@@ -69,7 +69,7 @@ export const admissionReportFetcher = async (
         throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      console.log('response: ', data);
+      // console.log('response: ', data);
 
       return data;
     } else return;
@@ -104,7 +104,7 @@ export const totalAdmissionsReportFetcher = async (
         throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      console.log('response: ', data);
+      // console.log('response: ', data);
 
       return data;
     } else return;
@@ -138,7 +138,7 @@ export const sessionwiseContinuingReportFetcher = async (
         throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      console.log('response: ', data);
+      // console.log('response: ', data);
 
       return data;
     } else return;
@@ -172,7 +172,7 @@ export const sessionwiseAlumniReportFetcher = async (): Promise<
         throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      console.log('response: ', data);
+      // console.log('response: ', data);
 
       return data;
     } else return;
@@ -194,7 +194,7 @@ export const getAllBranches = async () => {
       value: branchCode,
     }));
 
-    console.log(branchCodeHeader);
+    // console.log(branchCodeHeader);
     return branchCodeHeader;
   } catch (err) {
     console.log(err);

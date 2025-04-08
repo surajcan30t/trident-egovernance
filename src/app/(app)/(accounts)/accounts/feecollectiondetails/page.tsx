@@ -32,14 +32,14 @@ const page = (props: any) => {
           </h1>
         </div>
         <div className="">
-          <div className="flex justify-end gap-2 m-2 bg-blue-100 rounded-md p-2">
+          <div className="grid grid-rows-1 lg:flex justify-center lg:justify-end gap-2 m-2 bg-blue-100 rounded-md p-2 w-[calc(100vw-20vw)]">
             <FeeCollectionToday />
             <FeeCollectionThisMonth />
             <FeeCollectionDateRange />
             <FeeCollectionFY />
             <SessionWiseSelector />
           </div>
-          <div className="flex flex-row justify-center">
+          <div className="flex flex-row justify-center w-[calc(100vw-20vw)]">
             <FeeCollectionTable query={query} />
           </div>
         </div>

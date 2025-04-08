@@ -17,7 +17,7 @@ export const studentDetailsUpdateAction = async (
 ) => {
   const session = await getServerSession(authOptions);
   const regdno = formData.regdNo;
-  console.log('regd no', regdno);
+  // console.log('regd no', regdno);
   try {
     if (session) {
       const response = await fetch(
@@ -32,7 +32,7 @@ export const studentDetailsUpdateAction = async (
         },
       );
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       if (result === true) return 200;
       else return 400;
     } else return 401;
@@ -47,7 +47,7 @@ export const studentPersonalDetailsUpdateAction = async (
 ) => {
   const session = await getServerSession(authOptions);
   const regdno = formData.regdNo;
-  console.log('regd no', regdno);
+  // console.log('regd no', regdno);
   try {
     if (session) {
       const response = await fetch(
@@ -62,7 +62,7 @@ export const studentPersonalDetailsUpdateAction = async (
         },
       );
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       if (result === true) return 200;
       else return 400;
     } else return 401;
@@ -77,7 +77,7 @@ export const studentAdmissionDetailsUpdateAction = async (
 ) => {
   const session = await getServerSession(authOptions);
   const regdno = formData.regdNo;
-  console.log('regd no', regdno);
+  // console.log('regd no', regdno);
   try {
     if (session) {
       const response = await fetch(
@@ -92,7 +92,7 @@ export const studentAdmissionDetailsUpdateAction = async (
         },
       );
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       if (result === true) return 200;
       else return 400;
     } else return 401;
@@ -107,7 +107,7 @@ export const studentCareerDetailsUpdateAction = async (
 ) => {
   const session = await getServerSession(authOptions);
   const regdno = formData.regdNo;
-  console.log('regd no', regdno);
+  // console.log('regd no', regdno);
   try {
     if (session) {
       const response = await fetch(
@@ -122,7 +122,7 @@ export const studentCareerDetailsUpdateAction = async (
         },
       );
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       if (result === true) return 200;
       else return 400;
     } else return 401;
@@ -270,7 +270,7 @@ type FormSch = {
   docId: number;
 };
 export const singleUpload = async (inputIndex: number, payload: FormSch) => {
-  console.log('Form Data-', payload);
+  // console.log('Form Data-', payload);
   const formData = payload.formData;
   const registrationNo = payload.registrationNo;
   const docId = payload.docId;
@@ -288,37 +288,37 @@ export const singleUpload = async (inputIndex: number, payload: FormSch) => {
     const file = formData.get(`file${inputIndex}`) as File;
     const size = file.size;
     const type = file.type;
-    console.log(size, type);
+    // console.log(size, type);
     if (size >= FILE_SIZE && !FILE_EXTENSIONS.includes(type)) {
-      console.log('executed2');
+      // console.log('executed2');
       return { status: 400, message: 'File size is too large' };
     } else if (size === 0 && FILE_EXTENSIONS.includes(type)) {
-      console.log('executed3');
+      // console.log('executed3');
       return { status: 400, message: 'Please select a file' };
     } else if (
       size > 0 &&
       size < FILE_SIZE &&
       !FILE_EXTENSIONS.includes(type)
     ) {
-      console.log('executed4');
+      // console.log('executed4');
       return { status: 400, message: 'Please select a PDF or image file' };
     } else if (size > 0 && size < FILE_SIZE && FILE_EXTENSIONS.includes(type)) {
-      console.log('executed5');
+      // console.log('executed5');
       const awsRequest = await upLoadToS3(
         inputIndex,
         file,
         registrationNo,
         docId,
       );
-      console.log('----------------globalMap----------------\n', globalMap);
+      // console.log('----------------globalMap----------------\n', globalMap);
       // const awsRequest = {status: 200}
-      console.log('upload1 executed\n', awsRequest);
+      // console.log('upload1 executed\n', awsRequest);
       if (awsRequest.status !== 200) {
         return { status: 400, message: 'Upload failed' };
       }
       return { status: 200, message: 'File uploaded' };
     } else {
-      console.log('executed6');
+      // console.log('executed6');
       return { status: 400, message: 'Something went wrong' };
     }
   } catch (error) {
@@ -347,7 +347,7 @@ export const upLoadToS3 = async (
   registrationNo: string,
   docId: number,
 ): Promise<S3Response> => {
-  console.log('regdn o', registrationNo);
+  // console.log('regdn o', registrationNo);
   if (registrationNo === null || registrationNo === undefined) {
     return {
       status: 404,
@@ -366,7 +366,7 @@ export const upLoadToS3 = async (
     };
   }
   let fileName = fetchFileName.name;
-  console.log('fileName', fileName);
+  // console.log('fileName', fileName);
 
   const fileBuffer = Buffer.from(await userFile.arrayBuffer());
   const params = {
@@ -380,7 +380,7 @@ export const upLoadToS3 = async (
   try {
     const awsRequest = await awsS3Client.send(command);
     if (!awsRequest) {
-      console.log('Something went wrong');
+      // console.log('Something went wrong');
       return {
         status: 502,
         message: 'Failed to communicate with AWS S3',
@@ -439,9 +439,9 @@ export const studentDocsUpdateForm = async (
       console.log(`Error fetching url for index ${index}: ${url.message}`);
     }
   }
-  console.log('Docements', documents);
+  // console.log('Docements', documents);
   if (documents.length === 0) {
-    console.log('this one executed');
+    // console.log('this one executed');
     return { status: 400, message: 'No documents found' };
   }
   try {
@@ -459,14 +459,14 @@ export const studentDocsUpdateForm = async (
       if (response.status === 200) {
         documents.length = 0;
         clearUrlMap(registrationNo);
-        console.log('request', response);
+        // console.log('request', response);
         console.log(globalMap);
         return { status: response.status, message: response.statusText };
       }
       return { status: response.status, message: response.statusText };
     } else return { status: 401, message: 'Unauthorized' };
   } catch (error: any) {
-    console.log(error);
+    // console.log(error);
     return { status: 500, message: 'Something went wrong' };
   }
 };

@@ -5,9 +5,11 @@ import StudentDataTable from '../../components/StudentDataTable';
 import { Students } from '../../components/TableComponents/schema';
 import authValidator from '@/lib/auth/role-validator';
 import Unauthorized from '@/components/Unauthorized';
+import { DataTableSkeleton } from '@/components/data-table-skeleton';
 
-const studentDataFetcher = async (token: string): Promise<Students[] | undefined> => {
-
+const studentDataFetcher = async (
+  token: string,
+): Promise<Students[] | undefined> => {
   try {
     if (token) {
       const response = await fetch(
@@ -37,7 +39,6 @@ const studentDataFetcher = async (token: string): Promise<Students[] | undefined
   }
 };
 const page = async () => {
-
   const { session, role, token } = await authValidator();
   if (!session || !token) {
     return <Unauthorized />;
@@ -56,7 +57,18 @@ const page = async () => {
         <TotoalAlum />
       </div>
       <div className="w-[calc(100vw-20vw)]">
-        <StudentDataTable studentData={data} />
+        <React.Suspense
+          fallback={
+            <DataTableSkeleton
+              columnCount={5}
+              searchableColumnCount={2}
+              cellWidths={['5rem', '20rem', '12rem', '12rem', '8rem']}
+              shrinkZero
+            />
+          }
+        >
+          <StudentDataTable studentData={data} />
+        </React.Suspense>
       </div>
     </div>
   );

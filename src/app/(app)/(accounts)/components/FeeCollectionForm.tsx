@@ -100,11 +100,11 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
           title: 'Success',
           description: 'Form submitted successfully',
         });
-        router.refresh()
       }
     } catch (e) {
       setLoading(false);
     } finally {
+      window.location.reload()
       setLoading(false);
     }
   }

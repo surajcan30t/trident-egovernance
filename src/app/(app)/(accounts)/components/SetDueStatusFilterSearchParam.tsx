@@ -51,7 +51,7 @@ export const SetDueStatusFilterSearchParam = () => {
     let course = data.course;
     let branch = data.branch;
     
-    router.push(`/feecollection/duestatusreport?regdYr=${regdYr}&course=${course}&branch=${branch}`)
+    router.push(`/accounts/duestatusreport?regdYr=${regdYr}&course=${course}&branch=${branch}`)
   }
   return (
     <>

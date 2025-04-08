@@ -3,13 +3,14 @@ import GetReportBySessionForm from '@/app/(app)/(office)/components/GetReportByS
 import AdmissionReportTable from '@/app/(app)/(office)/components/AdmissionReportTable';
 
 export default async function page() {
-
   return (
     <>
       <div className="mx-auto w-full flex flex-col gap-2 justify-center items-center">
-        <span className='text-2xl font-bold'>Admission Report</span>
+        <span className="text-2xl font-bold">Admission Report</span>
         <GetReportBySessionForm />
-        <AdmissionReportTable />
+        <div className="w-[calc(100vw-20vw)]">
+          <AdmissionReportTable />
+        </div>
       </div>
     </>
   );
