@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en">
       <body className={exo2.className}>
         <SessionWrapper>
           <div className="flex flex-col min-h-screen">
