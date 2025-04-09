@@ -50,8 +50,8 @@ export const newStudentLogin = async (formData: any) => {
 
 export const nsrSignout = async () => {
   cookies().delete('NSR-Authorization');
-  cookies().delete('applicationNo')
-  
+  cookies().delete('applicationNo');
+
   return true;
 };
 
