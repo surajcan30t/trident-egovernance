@@ -8,6 +8,7 @@ import {
   PersonStanding,
   Award,
   BookMarked,
+  Loader,
 } from 'lucide-react';
 import { FaVenusMars } from 'react-icons/fa';
 import { PiRankingBold, PiStudentBold } from 'react-icons/pi';
@@ -25,7 +26,7 @@ const NewStudentRegistrationData = (data: any) => {
   const [inputData, setInputData] = useState({ allotmentId: '' });
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    !isLoggedIn && router.push('/studentportal')
+    !isLoggedIn && router.push('/studentportal');
   }, [isLoggedIn]);
   useEffect(() => {
     if (data?.allotmentId) {
@@ -175,7 +176,10 @@ const NewStudentRegistrationData = (data: any) => {
             </p>
             <Button variant="trident">
               {loading ? (
-                <PulseLoader color="#ffffff" size={5} />
+                <Loader
+                  className="mr-2 size-4 animate-spin"
+                  aria-hidden="true"
+                />
               ) : (
                 'Save & Next'
               )}

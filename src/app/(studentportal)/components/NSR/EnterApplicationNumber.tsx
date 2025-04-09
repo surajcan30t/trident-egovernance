@@ -22,6 +22,7 @@ import {
   newStudentLogin,
 } from '../../nsractions/nsractions';
 import { useAuth } from '@/app/(studentportal)/provider/NSRAuthContext';
+import { Loader } from 'lucide-react';
 
 const FormSchema = z.object({
   applicationNo: z.string().min(2, {
@@ -30,7 +31,7 @@ const FormSchema = z.object({
   rank: z.coerce.number(),
 });
 const EnterApplicationNumber = () => {
-  const { setIsLoggedIn } = useAuth()
+  const { setIsLoggedIn } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -76,8 +77,7 @@ const EnterApplicationNumber = () => {
           default:
             break;
         }
-      }
-      else {
+      } else {
         setError(response?.message || 'An error occurred during login');
       }
     } catch (error: any) {
@@ -89,11 +89,9 @@ const EnterApplicationNumber = () => {
 
   async function multiReg(data: number) {
     const response = await multiStudentRegistration();
-
   }
   async function multiSub(data: number) {
     const response = await multiFinalSubmit();
-
   }
 
   return (
@@ -129,19 +127,30 @@ const EnterApplicationNumber = () => {
                 <FormItem>
                   <FormLabel>Rank</FormLabel>
                   <FormControl>
-                    <Input type='number' placeholder="Enter you rank" {...field} />
+                    <Input
+                      type="number"
+                      placeholder="Enter you rank"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
             />
             <Button size={'lg'} variant="trident" type="submit">
-              {loading ? <PulseLoader color="#ffffff" size={5} /> : 'Submit'}
+              {loading ? (
+                <Loader
+                  className="mr-2 size-4 animate-spin"
+                  aria-hidden="true"
+                />
+              ) : (
+                'Submit'
+              )}
             </Button>
           </form>
         </Form>
         {error && <p className="text-red-600 font-semibold">{error}</p>}
       </div>
-      <div>
+      {/* <div>
         <h1>Multi Student Registration</h1>
         <button
           className="border bg-blue-200"
@@ -162,7 +171,7 @@ const EnterApplicationNumber = () => {
         >
           Multi Submit
         </button>
-      </div>
+      </div> */}
     </>
   );
 };

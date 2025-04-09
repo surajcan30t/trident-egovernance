@@ -19,7 +19,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import { FileText, UploadCloud } from 'lucide-react';
+import { FileText, Loader, UploadCloud } from 'lucide-react';
 import PulseLoader from 'react-spinners/PulseLoader';
 
 const ACCEPTED_FILE_TYPES = ['image/jpg', 'image/jpeg', 'application/pdf'];
@@ -728,7 +728,8 @@ const NsrUploadFile = (initial: any) => {
                       onClick={() => handleSingleUpload(value, 9)}
                     >
                       {isUploading[9] ? (
-                        <PulseLoader color="white" size={5} />
+                        <Loader className="mr-2 size-4 animate-spin"
+                        aria-hidden="true"/>
                       ) : (
                         'Upload'
                       )}

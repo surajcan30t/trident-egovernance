@@ -14,6 +14,7 @@ const page = async () => {
   }
   return (
     <div className='flex flex-col items-center justify-center gap-y-4'>
+      <h1 className="text-xl text-slate-700 font-semibold">Create New Fee Structure</h1>
       <GenerateFeeStructureMultistepForm token={token}/>
     </div>
   )

@@ -24,8 +24,33 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { handleNewStudent } from '@/backend';
+import { useState } from 'react';
+import { Loader } from 'lucide-react';
 
-const branhCodes = ['CSE', 'CST', 'CSAIML', 'CSIT', 'CSDS', 'EEE', 'ETC', 'IT', 'MECH', 'BME', 'CIVIL', 'EE', 'BIOTECH', 'EEVD', 'VLSI', 'EVT', 'ENVE', 'EENVE', 'AIML', 'DS', 'MCA', 'MBA']
+const branhCodes = [
+  'CSE',
+  'CST',
+  'CSAIML',
+  'CSIT',
+  'CSDS',
+  'EEE',
+  'ETC',
+  'IT',
+  'MECH',
+  'BME',
+  'CIVIL',
+  'EE',
+  'BIOTECH',
+  'EEVD',
+  'VLSI',
+  'EVT',
+  'ENVE',
+  'EENVE',
+  'AIML',
+  'DS',
+  'MCA',
+  'MBA',
+];
 
 const FormSchema = z.object({
   jeeApplicationNo: z.string().min(10, {
@@ -70,6 +95,7 @@ const FormSchema = z.object({
   step: z.number().default(1),
 });
 const NewStudentRegestrationForm = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -81,6 +107,7 @@ const NewStudentRegestrationForm = () => {
 
   const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setLoading(true);
     const status = await handleNewStudent(data);
     if (status !== 200) {
       toast({
@@ -94,6 +121,7 @@ const NewStudentRegestrationForm = () => {
         title: 'Your registration has been successfully submitted.',
       });
     }
+    setLoading(false);
   }
 
   return (
@@ -263,13 +291,13 @@ const NewStudentRegestrationForm = () => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {
-                      branhCodes.map((code) => {
-                        return (
-                          <SelectItem key={code} value={code}>{code}</SelectItem>
-                        )
-                      })
-                    }
+                    {branhCodes.map((code) => {
+                      return (
+                        <SelectItem key={code} value={code}>
+                          {code}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </FormItem>
@@ -393,14 +421,18 @@ const NewStudentRegestrationForm = () => {
           />
         </div>
 
-        <Button
-          variant={'trident'}
-          className="w-1/3 m-3"
-          size="lg"
-          type="submit"
-        >
-          Submit
-        </Button>
+        {loading ? (
+          <Loader className="mr-2 size-4 animate-spin" aria-hidden="true" />
+        ) : (
+          <Button
+            variant={'trident'}
+            className="w-1/3 m-3"
+            size="lg"
+            type="submit"
+          >
+            Submit
+          </Button>
+        )}
       </form>
     </Form>
   );

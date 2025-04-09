@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { handleBulkStudentUpload } from '@/backend';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { Loader } from 'lucide-react';
 
 // Function to download the CSV template
 const downloadCsvTemplate = () => {
@@ -35,6 +36,7 @@ const downloadCsvTemplate = () => {
 };
 
 const NSRBulkUploadForm = () => {
+  const [converting, setConverting] = useState<boolean>(false);
   interface Err422 {
     description?: string[];
   }
@@ -70,6 +72,7 @@ const NSRBulkUploadForm = () => {
     }
 
     return new Promise<Response>((resolve, reject) => {
+      setConverting(true);
       try {
         // Use Papa Parse to read the CSV file
         Papa.parse(file, {
@@ -130,6 +133,7 @@ const NSRBulkUploadForm = () => {
           data: [],
         });
       }
+      setConverting(false);
     });
   };
 
@@ -225,7 +229,8 @@ const NSRBulkUploadForm = () => {
       <Button variant={'trident'} onClick={handleUpload}>
         {loading ? (
           <div className="flex gap-2 items-center justify-center">
-            In Progress <PulseLoader color="#ffffff" size={5} />
+            In Progress{' '}
+            <Loader className="mr-2 size-4 animate-spin" aria-hidden="true" />
           </div>
         ) : (
           'Upload'

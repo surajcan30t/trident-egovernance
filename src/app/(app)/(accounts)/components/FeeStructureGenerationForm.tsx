@@ -203,7 +203,7 @@ function FeeStructureFormYearwise({ index, form, feeTypeListData }: { index: num
                 <FormLabel className=''>
                   Description
                   <span className="text-red-500">*</span>
-                  <Link className='cursor-pointer underline' href={'/feecollection/createnewdescription'}>
+                  <Link className='cursor-pointer underline' href={'/accounts/createnewdescription'}>
                     &nbsp;Create description
                   </Link>
                 </FormLabel>

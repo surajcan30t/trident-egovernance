@@ -26,6 +26,7 @@ import { handleNsrOptionalFacility } from '../../nsractions/nsractions';
 import { useRouter } from 'next/navigation';
 import PulseLoader from 'react-spinners/PulseLoader';
 import { useEffect, useState } from 'react';
+import { Loader } from 'lucide-react';
 
 const FormSchema = z.object({
   cfPayMode: z.enum(['YEARLY', 'SEMESTER'], {
@@ -78,9 +79,9 @@ const NsrOptionalFacilityForm = (initial: any) => {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      setLoading(true)
+      setLoading(true);
       const status = await handleNsrOptionalFacility(data);
-      setLoading(false)
+      setLoading(false);
       if (status !== 200) {
         toast({
           variant: 'destructive',
@@ -100,7 +101,7 @@ const NsrOptionalFacilityForm = (initial: any) => {
         description: 'Please try again later.',
       });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -276,7 +277,9 @@ const NsrOptionalFacilityForm = (initial: any) => {
             name="indortrng"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel>Do you want to opt for Industrial Training</FormLabel>
+                <FormLabel>
+                  Do you want to opt for Industrial Training
+                </FormLabel>
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
@@ -301,14 +304,13 @@ const NsrOptionalFacilityForm = (initial: any) => {
               </FormItem>
             )}
           />
-
         </div>
         <Button variant={'trident'} className="w-1/3" size="lg" type="submit">
-          {loading ? (<PulseLoader
-            color="#ffffff"
-            size={5}
-          />) :
-            'Save & Next'}
+          {loading ? (
+            <Loader className="mr-2 size-4 animate-spin" aria-hidden="true" />
+          ) : (
+            'Save & Next'
+          )}
         </Button>
       </form>
     </Form>

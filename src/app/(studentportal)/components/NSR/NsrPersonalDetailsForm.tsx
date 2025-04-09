@@ -28,6 +28,7 @@ import { handleNsPersonal } from '../../nsractions/nsractions';
 import { useRouter } from 'next/navigation';
 import PulseLoader from 'react-spinners/PulseLoader';
 import { useState } from 'react';
+import { Loader } from 'lucide-react';
 
 const capitalizeWords = (str: string) =>
   str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -69,18 +70,9 @@ const FormSchema = z.object({
   parentEmailId: z.string().toLowerCase().min(1, {
     message: 'Please enter your parent email ID',
   }),
-  caste: z.enum(
-    [
-      'GENERAL',
-      'SC',
-      'ST',
-      'OBC',
-      'OTHERS',
-    ],
-    {
-      required_error: 'You need to select the religion.',
-    },
-  ),
+  caste: z.enum(['GENERAL', 'SC', 'ST', 'OBC', 'OTHERS'], {
+    required_error: 'You need to select the religion.',
+  }),
   permanentPincode: z
     .string() // Expect a string from the input
     .transform((val) => parseInt(val, 10)) // Convert it to a number
@@ -140,9 +132,9 @@ const NsrPersonalDetailsForm = (initial: any) => {
   const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      setLoading(true)
+      setLoading(true);
       const status = await handleNsPersonal(data);
-      setLoading(false)
+      setLoading(false);
       if (status !== 200) {
         toast({
           variant: 'destructive',
@@ -162,7 +154,7 @@ const NsrPersonalDetailsForm = (initial: any) => {
         description: 'Please try again later.',
       });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -239,7 +231,7 @@ const NsrPersonalDetailsForm = (initial: any) => {
                 <FormLabel>Date of Birth</FormLabel>
                 <FormControl>
                   <Input
-                    type='date'
+                    type="date"
                     className=""
                     placeholder="Enter your date of birth"
                     {...field}
@@ -502,14 +494,14 @@ const NsrPersonalDetailsForm = (initial: any) => {
         </div>
 
         <Button variant={'trident'} className="w-1/3" size="lg" type="submit">
-          {loading ? (<PulseLoader
-            color="#ffffff"
-            size={5}
-          />) :
-            'Save & Next'}
+          {loading ? (
+            <Loader className="mr-2 size-4 animate-spin" aria-hidden="true" />
+          ) : (
+            'Save & Next'
+          )}
         </Button>
       </form>
     </Form>
   );
-}
+};
 export default NsrPersonalDetailsForm;

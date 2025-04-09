@@ -29,6 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PulseLoader from 'react-spinners/PulseLoader';
+import { Loader } from 'lucide-react';
 
 const FormSchema = z.object({
   tenthPercentage: z.string().min(1, {
@@ -68,9 +69,9 @@ const NsrAcademicDetailsForm = (initial: any) => {
   const { toast } = useToast();
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      setLoading(true)
+      setLoading(true);
       const status = await handleNsrAcademic(data);
-      setLoading(false)
+      setLoading(false);
       if (status !== 200) {
         toast({
           variant: 'destructive',
@@ -91,7 +92,7 @@ const NsrAcademicDetailsForm = (initial: any) => {
         description: 'Please try again later.',
       });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -139,8 +140,6 @@ const NsrAcademicDetailsForm = (initial: any) => {
             )}
           />
 
-
-
           {/* Inter Year */}
 
           <FormField
@@ -178,8 +177,6 @@ const NsrAcademicDetailsForm = (initial: any) => {
             )}
           />
 
-
-
           {/* Diploma Year */}
 
           <FormField
@@ -216,8 +213,6 @@ const NsrAcademicDetailsForm = (initial: any) => {
               </FormItem>
             )}
           />
-
-
 
           {/* Graduation Year */}
           <FormField
@@ -257,11 +252,11 @@ const NsrAcademicDetailsForm = (initial: any) => {
         </div>
 
         <Button variant={'trident'} className="w-1/3" size="lg" type="submit">
-          {loading ? (<PulseLoader
-            color="#ffffff"
-            size={5}
-          />) :
-            'Save & Next'}
+          {loading ? (
+            <Loader className="mr-2 size-4 animate-spin" aria-hidden="true" />
+          ) : (
+            'Save & Next'
+          )}
         </Button>
       </form>
     </Form>
