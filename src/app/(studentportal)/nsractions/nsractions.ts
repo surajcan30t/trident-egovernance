@@ -50,6 +50,8 @@ export const newStudentLogin = async (formData: any) => {
 
 export const nsrSignout = async () => {
   cookies().delete('NSR-Authorization');
+  cookies().delete('applicationNo')
+  
   return true;
 };
 
@@ -430,28 +432,28 @@ export const singleUpload = async (inputIndex: Number, formData: any) => {
     const size = file.size;
     const type = file.type;
     // const buffer = Buffer.from(await file.arrayBuffer());
-    console.log(size, type);
+    // console.log(size, type);
     if (size >= FILE_SIZE && !FILE_EXTENSIONS.includes(type)) {
-      console.log('executed2');
+      // console.log('executed2');
       return { status: 400, message: 'File size is too large' };
     } else if (size === 0 && FILE_EXTENSIONS.includes(type)) {
-      console.log('executed3');
+      // console.log('executed3');
       return { status: 400, message: 'Please select a file' };
     } else if (
       size > 0 &&
       size < FILE_SIZE &&
       !FILE_EXTENSIONS.includes(type)
     ) {
-      console.log('executed4');
+      // console.log('executed4');
       return { status: 400, message: 'Please select a PDF or image file' };
     } else if (size > 0 && size < FILE_SIZE && FILE_EXTENSIONS.includes(type)) {
-      console.log('executed5');
+      // console.log('executed5');
       const awsRequest = await upLoadToS3(inputIndex, file);
-      console.log('upload1 executed\n', awsRequest);
+      // console.log('upload1 executed\n', awsRequest);
 
       return { status: 200, message: 'File uploaded' };
     } else {
-      console.log('executed6');
+      // console.log('executed6');
       return { status: 400, message: 'Something went wrong' };
     }
   } catch (error) {

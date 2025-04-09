@@ -93,7 +93,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       });
     }
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({timeout: 0, headless: true});
     const page = await browser.newPage();
 
     await page.setContent(htmlContent, { waitUntil: 'load' });
