@@ -1,6 +1,8 @@
 import { NextResponse, NextRequest } from 'next/server';
-import puppeteer from 'puppeteer';
+import path from 'path';
+import puppeteer, { Puppeteer } from 'puppeteer';
 import QRCode from 'qrcode';
+import fs from 'fs/promises'
 
 interface PersonalDetails {
   regdNo?: string;
@@ -75,7 +77,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const body: RequestBody = await req.json();
     const { personalDetails, mrDetails, url, paymentReceiver } = body;
-    console.log('body', body);
     // Generate HTML content before launching browser
     const htmlContent = url
       ? await htmlEContentGenerator(
@@ -90,13 +91,20 @@ export async function POST(req: NextRequest, res: NextResponse) {
       return NextResponse.json({
         status: 400,
         message: 'HTML content is required',
-      });
+      }, {status: 400});
     }
 
-    const browser = await puppeteer.launch({ timeout: 0, headless: true });
+    const browser = await puppeteer.launch(
+      { 
+        timeout: 0,
+        headless: true,
+        args: ['--no-sandbox'],
+      });
     const page = await browser.newPage();
 
-    await page.setContent(htmlContent, { waitUntil: 'load' });
+    page.setDefaultTimeout(100000)
+
+    await page.setContent(htmlContent, { waitUntil: 'domcontentloaded', timeout: 0 });
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
@@ -111,12 +119,22 @@ export async function POST(req: NextRequest, res: NextResponse) {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=money_receipt.pdf',
       },
-    });
+    },
+  );
   } catch (error) {
     console.error('Error generating PDF:', error);
-    return NextResponse.json({ status: 500, message: 'Error generating PDF' });
+    return NextResponse.json({ status: 500, message: 'Error generating PDF' }, { status: 500});
   }
 }
+
+const getBase64Image = async (relativePath: string): Promise<string> => {
+  const imagePath = path.join(process.cwd(), 'public', relativePath);
+  const imageBuffer = await fs.readFile(imagePath);
+  const base64 = imageBuffer.toString('base64');
+  return `data:image/jpeg;base64,${base64}`;
+};
+
+const tatlogo = await getBase64Image('tat-logo.jpg');
 
 const generateQRCode = async (url: string) => {
   try {
@@ -350,7 +368,7 @@ const htmlEContentGenerator = async (
             border-style: solid;
             border-width: 1px;
             background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
-                url('https://tridentpublicdata.s3.ap-south-1.amazonaws.com/logos/tat-logo.jpg');
+                url(${tatlogo});
             background-repeat: no-repeat;
             background-size: 50%;
         }
@@ -366,7 +384,7 @@ const htmlEContentGenerator = async (
                     <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
                         <div width="30%" align="center">
                             <img id="Image1"
-                                src="https://tridentpublicdata.s3.ap-south-1.amazonaws.com/logos/tat-logo.jpg"
+                                src=${tatlogo}
                                 style="height:89px;width:100px;border-width:0px;text-align: center" />
                         </div>
                         <div width="70%" align="center">
@@ -747,7 +765,7 @@ const htmlContentGenerator = (
           border-style: solid;
           border-width: 1px;
           background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
-                    url('https://tridentpublicdata.s3.ap-south-1.amazonaws.com/logos/tat-logo.jpg');
+                    url(${tatlogo});
           background-repeat: no-repeat;
           background-size: 50%;
           position: relative;
@@ -764,7 +782,7 @@ const htmlContentGenerator = (
               <div style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
                 <div width="30%" align="center">
                   <img id="Image1"
-                       src="https://tridentpublicdata.s3.ap-south-1.amazonaws.com/logos/tat-logo.jpg"
+                       src=${tatlogo}
                        style="height:89px;width:100px;border-width:0px;text-align: center;position:relative;z-index:2;" />
                 </div>
                 <div width="70%" align="center">
