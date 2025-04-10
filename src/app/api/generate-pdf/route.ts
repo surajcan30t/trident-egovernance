@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import path from 'path';
 import puppeteer, { Puppeteer } from 'puppeteer';
 import QRCode from 'qrcode';
-import fs from 'fs/promises'
+import fs from 'fs/promises';
 
 interface PersonalDetails {
   regdNo?: string;
@@ -88,23 +88,28 @@ export async function POST(req: NextRequest, res: NextResponse) {
       : htmlContentGenerator(personalDetails, mrDetails);
 
     if (!htmlContent) {
-      return NextResponse.json({
-        status: 400,
-        message: 'HTML content is required',
-      }, {status: 400});
+      return NextResponse.json(
+        {
+          status: 400,
+          message: 'HTML content is required',
+        },
+        { status: 400 },
+      );
     }
 
-    const browser = await puppeteer.launch(
-      { 
-        timeout: 0,
-        headless: true,
-        args: ['--no-sandbox'],
-      });
+    const browser = await puppeteer.launch({
+      timeout: 0,
+      headless: true,
+      args: ['--no-sandbox'],
+    });
     const page = await browser.newPage();
 
-    page.setDefaultTimeout(100000)
+    page.setDefaultTimeout(100000);
 
-    await page.setContent(htmlContent, { waitUntil: 'domcontentloaded', timeout: 0 });
+    await page.setContent(htmlContent, {
+      waitUntil: 'domcontentloaded',
+      timeout: 0,
+    });
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
@@ -119,11 +124,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename=money_receipt.pdf',
       },
-    },
-  );
+    });
   } catch (error) {
     console.error('Error generating PDF:', error);
-    return NextResponse.json({ status: 500, message: 'Error generating PDF' }, { status: 500});
+    return NextResponse.json(
+      { status: 500, message: 'Error generating PDF' },
+      { status: 500 },
+    );
   }
 }
 
