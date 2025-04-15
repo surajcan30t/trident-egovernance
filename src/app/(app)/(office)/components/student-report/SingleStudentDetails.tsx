@@ -338,7 +338,7 @@ const StudentDocumentsComponent = ({ documents, registrationNo }: { documents: D
               <DialogTitle>Update Documents</DialogTitle>
             </DialogHeader>
             <ScrollArea>
-              <StudentDocsForm table={'dashboard-docs'} data={documents} registrationNo={registrationNo} />
+              <StudentDocsForm table={'student-docs'} data={documents} registrationNo={registrationNo} />
             </ScrollArea>
           </DialogContent>
         </Dialog>

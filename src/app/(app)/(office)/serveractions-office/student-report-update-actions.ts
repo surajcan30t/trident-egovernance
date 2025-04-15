@@ -446,6 +446,7 @@ export const studentDocsUpdateForm = async (
   }
   try {
     if (session) {
+      // console.log(globalMap);
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_BACKEND}/office/update-student-data/${table}/${registrationNo}`,
         documents,
@@ -460,7 +461,7 @@ export const studentDocsUpdateForm = async (
         documents.length = 0;
         clearUrlMap(registrationNo);
         // console.log('request', response);
-        console.log(globalMap);
+        // console.log(globalMap);
         return { status: response.status, message: response.statusText };
       }
       return { status: response.status, message: response.statusText };

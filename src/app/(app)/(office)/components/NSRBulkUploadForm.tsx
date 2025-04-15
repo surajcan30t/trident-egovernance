@@ -171,6 +171,13 @@ const NSRBulkUploadForm = () => {
             `Values must be of [${response.message}]\n Please check in the ${response.description} column`,
           );
           return;
+        } else if (response.status === 500) {
+          setUploadStatus(null);
+          setError422(null);
+          setError(
+            `Something went wrong`,
+          );
+          return;
         } else {
           setUploadStatus(response.message);
           setLoading(false);
