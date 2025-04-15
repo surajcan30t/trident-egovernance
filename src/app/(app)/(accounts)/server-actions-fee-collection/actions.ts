@@ -525,7 +525,7 @@ export const handleCreateNewFeeType = async (feeTypeData: any) => {
         mrHead: feeTypeData.mrHead,
         partOf: feeTypeData.partOf,
         semester: parseInt(feeTypeData.semester),
-        deductionOrder: parseInt(feeTypeData.deductionOrder)
+        deductionOrder: parseInt(feeTypeData.deductionOrder),
       }),
     );
     try {
