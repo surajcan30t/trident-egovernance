@@ -104,7 +104,7 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
     } catch (e) {
       setLoading(false);
     } finally {
-      window.location.reload()
+      // window.location.reload()
       setLoading(false);
     }
   }

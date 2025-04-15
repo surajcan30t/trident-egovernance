@@ -18,10 +18,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { feeCollectionSingleStudentDetails } from '@/app/(app)/(accounts)/server-actions-fee-collection/actions';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-
+import { Loader } from 'lucide-react';
 
 interface StudentData {
   regdNo?: string;
@@ -47,7 +47,7 @@ const StudentDetails = () => {
             `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-basic-student-details/${regdNo}`,
             {
               headers: {
-                'Authorization': `Bearer ${session.user.accessToken}`,
+                Authorization: `Bearer ${session.user.accessToken}`,
               },
             },
           );
@@ -104,6 +104,7 @@ export const RedirectOtherFeeCollectionForm = () => {
   const router = useRouter();
   const [registrationNo, setRegistrationNo] = useState('');
   const [render, setRender] = useState<boolean>(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -122,14 +123,17 @@ export const RedirectOtherFeeCollectionForm = () => {
           description: 'Please check the registration number',
         });
       } else {
-        router.push(
-          '/accounts/otherfeecollection?registrationNo=' + data.regdNo,
-        );
+        startTransition(() => {
+          router.push(
+            '/accounts/otherfeecollection?registrationNo=' + data.regdNo,
+          );
+        });
       }
     } catch (e) {
       setRender(false);
     }
   }
+  console.log(isPending);
 
   return (
     <>
@@ -156,7 +160,13 @@ export const RedirectOtherFeeCollectionForm = () => {
                 )}
               />
               <Button variant={'trident'} type="submit">
-                Search
+                {isPending ? (
+                  <>
+                    Searching <Loader className="animate-spin" />
+                  </>
+                ) : (
+                  'Search'
+                )}
               </Button>
             </form>
           </Form>
@@ -167,10 +177,11 @@ export const RedirectOtherFeeCollectionForm = () => {
   );
 };
 
-
 export function RedirectStudentFeeCollectionForm() {
+  const [isPending, startTransition] = useTransition();
+  const searchParams = useSearchParams();
   const [render, setRender] = useState<boolean>(false);
-  const router = useRouter()
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -188,9 +199,11 @@ export function RedirectStudentFeeCollectionForm() {
           description: 'Please check the registration number',
         });
       } else {
-        router.push(
-          '/accounts/studentfeecollection?registrationNo=' + data.regdNo,
-        );
+        startTransition(() => {
+          router.push(
+            '/accounts/studentfeecollection?registrationNo=' + data.regdNo,
+          );
+        });
       }
     } catch (e) {
       setRender(false);
@@ -199,11 +212,11 @@ export function RedirectStudentFeeCollectionForm() {
 
   return (
     <>
-      <div className="w-4/5 flex flex-row gap-x-2 items-start ">
+      <div className="w-full flex flex-row gap-x-2 items-center">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="w-2/5 flex flex-row items-end space-x-2"
+            className="w-full flex flex-row justify-center items-end space-x-2"
           >
             <FormField
               control={form.control}
@@ -221,13 +234,18 @@ export function RedirectStudentFeeCollectionForm() {
               )}
             />
             <Button variant={'trident'} type="submit">
-              Search
+              {isPending ? (
+                <>
+                  Searching <Loader className="animate-spin" />
+                </>
+              ) : (
+                'Search'
+              )}
             </Button>
           </form>
         </Form>
-        <StudentDetails />
+        {searchParams.get('registrationNo') && <StudentDetails />}
       </div>
-
     </>
   );
 }

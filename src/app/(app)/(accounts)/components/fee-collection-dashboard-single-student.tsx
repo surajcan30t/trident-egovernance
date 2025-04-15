@@ -146,10 +146,18 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
   const { data: duesData, error: duesError } = useSWR(
     regdNo ? `/getDuesDetails/${regdNo}` : null,
     () => fetchDuesDetails(regdNo!, session),
+    {
+      refreshInterval: 10000,
+      revalidateOnFocus: true,
+    }
   );
   const { data: collectionData, error: collectionError } = useSWR(
     regdNo ? `/get-fee-collection-history/${regdNo}/COMPULSORY%20FEES` : null,
     () => fetchCollectionDetails(regdNo!, session),
+    {
+      refreshInterval: 10000,
+      revalidateOnFocus: true,
+    }
   );
 
   if (duesError || collectionError) {
@@ -403,7 +411,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                             <PiFilePdfBold />
                                           </Button>
                                         </td>
-                                        <td className="border p2">
+                                        {/* <td className="border p2">
                                           <Dialog>
                                             <DialogTrigger>
                                               <div className="bg-amber-600 text-stone-50 shadow hover:bg-slate-800 dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded px-2 py-1">
@@ -423,7 +431,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                               </ScrollArea>
                                             </DialogContent>
                                           </Dialog>
-                                        </td>
+                                        </td> */}
                                         <td className="border p2">
                                           <MRDeleteAction
                                             mrNo={entry.feeCollection.mrNo}

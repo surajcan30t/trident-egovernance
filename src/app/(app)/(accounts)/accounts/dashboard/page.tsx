@@ -9,8 +9,8 @@ const page = () => {
       <div className="flex flex-row gap-4">
         <DailyCollection />
       </div>
-      <div className='w-3/4 flex flex-col justify-start items-start'>
-        <h1 className="text-xl font-semibold text-left">Collect fee of a student</h1>
+      <div className='w-3/4 flex flex-col justify-center items-center '>
+        <h1 className="text-xl font-semibold text-center">Collect fee of a student</h1>
         <RedirectStudentFeeCollectionForm />
       </div>
     </div>
