@@ -213,7 +213,11 @@ export const handleBulkStudentUpload = async (
       const response = await request.json();
       console.log('Response:', response);
 
-      if (response.status === 400 || response.status === 422) {
+      if (
+        response.status === 400 ||
+        response.status === 422 ||
+        response.status === 500
+      ) {
         console.log('This block executed');
         const serverResponse = {
           status: response.status,
