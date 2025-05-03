@@ -44,8 +44,8 @@ const FormSchema = z
   })
   .refine(
     (data) => {
-      // If paymentMode is 'DD', then ddNo, ddDate, and ddBank must be filled
-      if (data.paymentMode === 'DD') {
+      // If paymentMode is 'DD' or 'UPI' or 'CHEQUE' then ddNo, ddDate, and ddBank must be filled
+      if (data.paymentMode === 'DD' || data.paymentMode === 'CHEQUE' || data.paymentMode === 'UPI' || data.paymentMode === 'CARD') {
         return data.ddNo && data.ddDate && data.ddBank;
       }
       return true; // other payment modes don't require these fields
@@ -57,7 +57,6 @@ const FormSchema = z
   );
 
 export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
-  const router = useRouter();
   const [showDDFields, setShowDDFields] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -75,7 +74,7 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
   const paymentModeSelected = form.watch('paymentMode');
   useEffect(() => {
 
-    if (paymentModeSelected === 'DD') {
+    if (paymentModeSelected === 'DD' || paymentModeSelected=== 'CHEQUE' || paymentModeSelected === 'UPI' || paymentModeSelected === 'CARD') {
       setShowDDFields(true);
     } else {
       setShowDDFields(false);
@@ -175,7 +174,7 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
                     Collected Fee<span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="&#8377;" {...field} />
+                    <Input placeholder="e.g. 20000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,10 +215,10 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      DD Number<span className="text-red-500">*</span>
+                      DD/UPI/Cheque Number<span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="" {...field} />
+                      <Input placeholder="e.g. 1234" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -233,10 +232,10 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      DD Date<span className="text-red-500">*</span>
+                      DD/UPI/Cheque Date<span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input type={'date'} placeholder="fee" {...field} />
+                      <Input type={'date'} placeholder="mm/dd/yyyy" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -250,10 +249,10 @@ export function FeeCollectionForm({ regdNo }: { regdNo: string }) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      DD Bank<span className="text-red-500">*</span>
+                      DD/UPI/Cheque Bank<span className="text-red-500">*</span>
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="fee" {...field} />
+                      <Input placeholder="e.g. SBI" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

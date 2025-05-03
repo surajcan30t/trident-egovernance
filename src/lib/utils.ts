@@ -14,3 +14,12 @@ export function toSentenceCase(str: string) {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+export function formatCurrency(amount: number): string {
+  // Format as Indian Rupees
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount)
+}

@@ -1,46 +1,46 @@
-"use client"
+'use client';
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, type LucideIcon } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from '@/components/ui/collapsible';
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
-
+} from '@/components/ui/sidebar';
+import { usePathname } from 'next/navigation';
 
 type IconName = keyof typeof Icons;
 export function NavMain({
   items,
-  }: {
+}: {
   items: {
-    title: string
-    url: string
-    logo?: string
-    isActive?: boolean
+    title: string;
+    url: string;
+    logo?: string;
+    isActive?: boolean;
     children?: {
-      title: string
-      url: string
-      logo?: string
-      isActive?: boolean
+      title: string;
+      url: string;
+      logo?: string;
+      isActive?: boolean;
       children?: {
-        title: string
-        url: string
-        logo?: string
-      }[]
-    }[]
-  }[]
+        title: string;
+        url: string;
+        logo?: string;
+      }[];
+    }[];
+  }[];
 }) {
+  const path = usePathname()
   return (
     <SidebarGroup>
       {/*<SidebarGroupLabel></SidebarGroupLabel>*/}
@@ -57,7 +57,7 @@ export function NavMain({
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton tooltip={item.title}>
-                  {item.logo && (
+                    {item.logo && (
                       <span
                         className="icon"
                         dangerouslySetInnerHTML={{ __html: item.logo }}
@@ -81,12 +81,14 @@ export function NavMain({
                           <SidebarMenuSubItem>
                             <CollapsibleTrigger asChild>
                               <SidebarMenuSubButton>
-                              {subItem.logo && (
-                              <span
-                                className="icon"
-                                dangerouslySetInnerHTML={{ __html: subItem.logo }}
-                              />
-                            )}
+                                {subItem.logo && (
+                                  <span
+                                    className="icon"
+                                    dangerouslySetInnerHTML={{
+                                      __html: subItem.logo,
+                                    }}
+                                  />
+                                )}
                                 <span>{subItem.title}</span>
                                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/inner-collapsible:rotate-90 text-white" />
                               </SidebarMenuSubButton>
@@ -94,9 +96,7 @@ export function NavMain({
                             <CollapsibleContent>
                               <SidebarMenuSub>
                                 {subItem.children.map((nestedItem) => (
-                                  <SidebarMenuSubItem
-                                    key={nestedItem.title}
-                                  >
+                                  <SidebarMenuSubItem key={nestedItem.title}>
                                     <SidebarMenuSubButton asChild>
                                       <a href={nestedItem.url}>
                                         <span>{nestedItem.title}</span>
@@ -117,7 +117,7 @@ export function NavMain({
                             </a>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
-                      )
+                      ),
                     )}
                   </SidebarMenuSub>
                 </CollapsibleContent>
@@ -125,10 +125,13 @@ export function NavMain({
             </Collapsible>
           ) : (
             // Render a simple link for top-level items with no nested items
-            <SidebarMenuItem key={item.title}>
+            <SidebarMenuItem
+              className={`${path === item.url && 'bg-white rounded-md text-black'}`}
+              key={item.title}
+            >
               <SidebarMenuButton asChild>
                 <a href={item.url}>
-                {item.logo && (
+                  {item.logo && (
                     <span
                       className="icon"
                       dangerouslySetInnerHTML={{ __html: item.logo }}
@@ -138,9 +141,9 @@ export function NavMain({
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          )
+          ),
         )}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

@@ -43,15 +43,13 @@ const FeeCollectionTable = ({ regdNo }: { regdNo: string | null }) => {
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-fee-collection-history/${regdNo}`,
-
         );
         const result = await response.json();
         const sortedResult = result.sort((a: any, b: any) => a.mrNo - b.mrNo);
         setData(sortedResult);
 
         return result;
-      } catch (e) {
-      }
+      } catch (e) {}
     };
     getCollectionDetails(regdNo);
   }, [regdNo]);
@@ -115,10 +113,10 @@ const fetchDuesDetails = async (regdNo: string, session: any) => {
     {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${session.user.accessToken}`,
+        Authorization: `Bearer ${session.user.accessToken}`,
       },
       cache: 'no-cache',
-    }
+    },
   );
   return response.json();
 };
@@ -129,10 +127,10 @@ const fetchCollectionDetails = async (regdNo: string, session: any) => {
     {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${session.user.accessToken}`,
+        Authorization: `Bearer ${session.user.accessToken}`,
       },
       cache: 'no-cache',
-    }
+    },
   );
   return response.json();
 };
@@ -141,7 +139,10 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
   const { data: session } = useSession();
   const openModalInNewTab = (mrNo: number) => {
     // Open a new tab with the specified URL
-    window.open(`studentfeecollection/mr?registrationNo=${regdNo}&mrNo=${mrNo}`, '_blank');
+    window.open(
+      `studentfeecollection/mr?registrationNo=${regdNo}&mrNo=${mrNo}`,
+      '_blank',
+    );
   };
   const { data: duesData, error: duesError } = useSWR(
     regdNo ? `/getDuesDetails/${regdNo}` : null,
@@ -149,7 +150,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
     {
       refreshInterval: 10000,
       revalidateOnFocus: true,
-    }
+    },
   );
   const { data: collectionData, error: collectionError } = useSWR(
     regdNo ? `/get-fee-collection-history/${regdNo}/COMPULSORY%20FEES` : null,
@@ -157,7 +158,7 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
     {
       refreshInterval: 10000,
       revalidateOnFocus: true,
-    }
+    },
   );
 
   if (duesError || collectionError) {
@@ -173,6 +174,8 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
 
   const years = duesData ? Object.keys(duesData) : [];
   const defaultYear = years[years.length - 1];
+  const date = new Date();
+  const today = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
   return (
     <>
       <div className="w-[51vw] p-2 rounded-lg shadow-lg border">
@@ -231,7 +234,6 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="space-y-2">
-
                             <table className="w-full uppercase text-start text-sm">
                               <thead className={'bg-amber-600/60 text-left'}>
                                 <tr>
@@ -261,15 +263,29 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                         {item.amountPaidToJee.toFixed(2)}
                                       </td>
                                       <td className="border p-1">
-                                        <div className='flex justify-between items-center gap-1'>
+                                        <div className="flex justify-between items-center gap-1">
                                           {item.discount.toFixed(2)}
-                                          {item.dueYear.toString() === defaultYear && regdNo && <DiscountForm regdNo={regdNo} description={item.description} />}
+                                          {item.dueYear.toString() ===
+                                            defaultYear &&
+                                            regdNo && (
+                                              <DiscountForm
+                                                regdNo={regdNo}
+                                                description={item.description}
+                                              />
+                                            )}
                                         </div>
                                       </td>
                                       <td className="border p-1">
-                                        <div className='flex justify-between items-center gap-1'>
+                                        <div className="flex justify-between items-center gap-1">
                                           {item.adjustment.toFixed(2)}
-                                          {item.dueYear.toString() === defaultYear && regdNo && <AdjustmentForm regdNo={regdNo} description={item.description} />}
+                                          {item.dueYear.toString() ===
+                                            defaultYear &&
+                                            regdNo && (
+                                              <AdjustmentForm
+                                                regdNo={regdNo}
+                                                description={item.description}
+                                              />
+                                            )}
                                         </div>
                                       </td>
                                       <td className="border p-1">
@@ -305,7 +321,6 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                 </tr>
                               </tfoot>
                             </table>
-
                           </CardContent>
                         </Card>
                       );
@@ -314,7 +329,9 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                       <table className="w-[46vw] uppercase text-start text-sm bg-teal-600 text-white">
                         <thead className={'text-xs'}>
                           <tr>
-                            <th colSpan={2} className="border">Total Amount Due</th>
+                            <th colSpan={2} className="border">
+                              Total Amount Due
+                            </th>
                             <th className="border">Total Amount Paid</th>
                             <th className="border">Total AMT Paid At OJEE</th>
                             <th className="border">Total Discount</th>
@@ -346,7 +363,6 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                         </tbody>
                       </table>
                     </div>
-
 
                     {/* Collection Table for the Year */}
                     <div className="mt-4">
@@ -405,13 +421,15 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                             className="bg-lime-600 py-0"
                                             size={'sm'}
                                             onClick={() => {
-                                              openModalInNewTab(entry.feeCollection.mrNo);
+                                              openModalInNewTab(
+                                                entry.feeCollection.mrNo,
+                                              );
                                             }}
                                           >
                                             <PiFilePdfBold />
                                           </Button>
                                         </td>
-                                        {/* <td className="border p2">
+                                        <td className="border p2">
                                           <Dialog>
                                             <DialogTrigger>
                                               <div className="bg-amber-600 text-stone-50 shadow hover:bg-slate-800 dark:bg-[#fb923c] dark:text-stone-950 dark:hover:bg-[#f97316] font-bold rounded px-2 py-1">
@@ -431,8 +449,13 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
                                               </ScrollArea>
                                             </DialogContent>
                                           </Dialog>
-                                        </td> */}
-                                        <td className="border p2">
+                                        </td>
+                                        <td
+                                          hidden={
+                                            entry.feeCollection.paymentDate !== today
+                                          }
+                                          className="border p2"
+                                        >
                                           <MRDeleteAction
                                             mrNo={entry.feeCollection.mrNo}
                                           />
@@ -463,21 +486,26 @@ const FeeCollectionDashboardSingleStudent = () => {
   const registrationNo = searchParams.get('registrationNo');
   return (
     <>
-      {registrationNo && <div className="w-full flex flex-row gap-x-0">
-        <div className="w-2/3 flex flex-col space-y-6">
-          <FeeDuesDetailsTable regdNo={registrationNo} />
-        </div>
-        <div className="w-1/3 h-fit rounded-lg px-3 py-0">
-          <div className="w-full flex flex-col space-y-5">
-            {registrationNo && <FeeCollectionForm regdNo={registrationNo} />}
+      {registrationNo && (
+        <div className="w-full flex flex-row gap-x-0">
+          <div className="w-2/3 flex flex-col space-y-6">
+            <FeeDuesDetailsTable regdNo={registrationNo} />
+          </div>
+          <div className="w-1/3 h-fit rounded-lg px-3 py-0">
+            <div className="w-full flex flex-col space-y-5">
+              {registrationNo && <FeeCollectionForm regdNo={registrationNo} />}
+            </div>
           </div>
         </div>
-      </div>}
-      {
-        !registrationNo && <div className="w-full flex flex-col space-y-6">
-          <p className="text-center text-lg text-red-500 font-semibold">Please enter the registration number to view the fee collection details</p>
+      )}
+      {!registrationNo && (
+        <div className="w-full flex flex-col space-y-6">
+          <p className="text-center text-lg text-red-500 font-semibold">
+            Please enter the registration number to view the fee collection
+            details
+          </p>
         </div>
-      }
+      )}
     </>
   );
 };

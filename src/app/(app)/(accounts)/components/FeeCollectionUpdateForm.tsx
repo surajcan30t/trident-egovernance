@@ -30,6 +30,9 @@ const FormSchema = z
     mrNo: z.number({
       required_error: 'Mr number can not be null',
     }),
+    refNo: z.string().min(1, {
+      message: 'Mr number can not be null',
+    }),
     feeProcessingMode: z.enum(['AUTO', 'COURSEFEES', 'OPTIONALFEES'], {
       required_error: 'Must choose payment processing mode',
     }),
@@ -65,12 +68,13 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       mrNo: data.feeCollection.mrNo,
+      refNo: '',
       feeProcessingMode: data?.feeCollection.feeProcessingMode,
-      collectedFee: data?.feeCollection?.collectedFee?.toString(),
+      collectedFee: data.feeCollection?.collectedFee?.toString(),
       paymentMode: data.feeCollection.paymentMode,
-      ddNo: data?.feeCollection.ddNo,
-      ddDate: data?.feeCollection.ddDate,
-      ddBank: data?.feeCollection.bank,
+      ddNo: data.feeCollection.ddNo,
+      ddDate: data.feeCollection.ddDate,
+      ddBank: data.feeCollection.bank,
     },
   });
   const { reset } = form;
@@ -89,9 +93,9 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
     }
   }, [paymentModeSelected]);
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(value: z.infer<typeof FormSchema>) {
     try {
-      const response = await handleUpdateFeePayment(data);
+      const response = await handleUpdateFeePayment(value);
       if (response !== 200) {
         toast({
           variant: 'destructive',
@@ -113,7 +117,7 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
 
   return (
     <>
-      <div className="mb-8 rounded-lg p-2 h-[60vh]">
+      <div className="mb-8 rounded-lg p-2 h-fit">
         <h1 className="font-extrabold text-lg">Fees Payment</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
@@ -130,6 +134,25 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
                       readOnly={true}
                       disabled={true}
                       placeholder="MR Number"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Reference Number */}
+            <FormField
+              control={form.control}
+              name="refNo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Update Reference Number <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Reference Number"
                       {...field}
                     />
                   </FormControl>
@@ -177,7 +200,7 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
                     Collected Fee<span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input placeholder="" {...field} />
+                    <Input disabled placeholder="" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -193,6 +216,7 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    disabled
                   >
                     <FormControl>
                       <SelectTrigger>

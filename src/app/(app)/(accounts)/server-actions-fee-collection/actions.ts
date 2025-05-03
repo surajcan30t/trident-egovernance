@@ -233,7 +233,12 @@ export const handleOtherFeesPayment = async (formData: any) => {
     };
 
     console.log(data);
-    if (session) {
+    if (session?.user.accessToken) {
+      const graphToken = await getGraphToken(session.user.accessToken);
+      if (graphToken.graphToken === undefined) {
+        console.log('Unable to get graphtoken for USER::', session.user.name);
+        return 401;
+      }
       if (!data) {
         console.log('No initial data found.');
         return 400;
@@ -246,6 +251,7 @@ export const handleOtherFeesPayment = async (formData: any) => {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${session.user.accessToken}`,
+              oboToken: `Bearer ${graphToken.graphToken}`,
             },
           },
         );
@@ -267,10 +273,9 @@ export const handleUpdateFeePayment = async (formData: any) => {
         console.log('No initial data found.');
         return;
       } else {
-        // console.log('Data in NSRALLOTMENTID function', data);
         try {
-          const request = await axios.put(
-            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/update-fee-collection`,
+          const request = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/edit-fee-collection`,
             data,
             {
               headers: {
@@ -279,7 +284,6 @@ export const handleUpdateFeePayment = async (formData: any) => {
               },
             },
           );
-          // console.log('Response: \n', request.data);
           return request.status;
         } catch (e) {
           console.error(e);

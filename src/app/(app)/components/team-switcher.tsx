@@ -24,7 +24,7 @@ export function TeamSwitcher({
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className='border-b'>
         <SidebarMenuButton
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
@@ -37,8 +37,8 @@ export function TeamSwitcher({
                       />
                     )}
           </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{activeTeam.role}</span>
+          <div className="grid flex-1 text-left text-md leading-tight">
+            <span className="truncate text-lg font-bold">{activeTeam.role}</span>
           </div>
           {/*<ChevronsUpDown className="ml-auto" />*/}
         </SidebarMenuButton>

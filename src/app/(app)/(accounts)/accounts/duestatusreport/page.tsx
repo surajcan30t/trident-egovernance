@@ -60,7 +60,7 @@ const page = async (props: any) => {
         <div className="flex justify-end gap-2 m-2 bg-blue-100 rounded-md p-2">
           <SetDueStatusFilterSearchParam />
         </div>
-        <div className="flex flex-row justify-center w-[calc(100vw-20vw)] border-8">
+        <div className="flex flex-row justify-center w-[calc(100vw-20vw)]">
           {response ? (
             // <div className="w-[calc(100vw-20vw)]">
               <StudentDuesDetailsTable data={response} />
