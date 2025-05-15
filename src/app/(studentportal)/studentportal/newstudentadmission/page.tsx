@@ -18,7 +18,7 @@ interface Student {
 const studentData = async (): Promise<Student | null> => {
   try {
     const NSR_token = cookies().get("NSR-Authorization");
-    const response: AxiosResponse<Student> = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND}/NSR/get`, {
+    const response: AxiosResponse<Student> = await axios.get(`${process.env.LOCAL_BACKEND_URL}/NSR/get`, {
       headers: {
         'NSR-Authorization': `Bearer ${NSR_token?.value}`,
       },

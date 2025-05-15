@@ -60,7 +60,7 @@ const SignIn = () => {
       {isLoggedIn ? (
         <Button
           variant="secondary"
-          onClick={signOut}
+          onClick={()=>signOut()}
           className="rounded-full float-right"
         >
           Sign Out

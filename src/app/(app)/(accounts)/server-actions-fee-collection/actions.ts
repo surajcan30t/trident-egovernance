@@ -29,7 +29,7 @@ export const fetchFeesDetailsBySession = async (
     if (session) {
       // console.log('fetching data');
       const request = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-collection-report`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/get-collection-report`,
         {
           method: 'POST',
           body: JSON.stringify({
@@ -65,7 +65,7 @@ export const getOptionalValues = async (): Promise<
   try {
     if (session) {
       const request = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-list-of-headers`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/get-list-of-headers`,
         {
           method: 'GET',
           headers: {
@@ -93,7 +93,7 @@ export const feeCollectionSingleStudentDetails = async (
   try {
     if (session) {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-basic-student-details/${registrationNo}`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/get-basic-student-details/${registrationNo}`,
         {
           headers: {
             Authorization: `Bearer ${session.user.accessToken}`,
@@ -132,7 +132,7 @@ export const handleDuesFeePayment = async (formData: any) => {
     } else {
       try {
         const responseGetNewMr = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/get-new-mrNo`,
+          `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/get-new-mrNo`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ export const handleDuesFeePayment = async (formData: any) => {
           formData.mrNo = newMr;
           // console.log(formData);
           const request = await axios.post(
-            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/fees-payment/${regdNo}`,
+            `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/fees-payment/${regdNo}`,
             formData,
             {
               headers: {
@@ -184,7 +184,7 @@ export const handleExcessFeeRefund = async (formData: any) => {
       } else {
         try {
           const request = await axios.post(
-            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/refund-excess-fee`,
+            `${process.env.LOCAL_BACKEND_URL}/accounts-section/refund-excess-fee`,
             data,
             {
               headers: {
@@ -224,12 +224,13 @@ export const handleOtherFeesPayment = async (formData: any) => {
       amount: parseFloat(fee.amount),
     }));
 
-    const data = {
+    let data = {
       feeCollection: {
         collectedFee: totalFee,
         paymentMode: paymentMode,
       },
       otherMrDetails: dynamicFields,
+      mrNo: null
     };
 
     console.log(data);
@@ -244,8 +245,22 @@ export const handleOtherFeesPayment = async (formData: any) => {
         return 400;
       } else {
         // console.log('Data in NSRALLOTMENTID function', data);
+        const responseGetNewMr = await axios.get(
+          `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/get-new-mrNo`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.user.accessToken}`,
+            },
+          },
+        );
+        if (responseGetNewMr.status !== 200) {
+          return 500
+        }
+        const newMr = responseGetNewMr.data;
+        data.mrNo = newMr;
         const request = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/other-fees-payment/${regdNo}`,
+          `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/other-fees-payment/${regdNo}`,
           data,
           {
             headers: {
@@ -275,7 +290,7 @@ export const handleUpdateFeePayment = async (formData: any) => {
       } else {
         try {
           const request = await axios.post(
-            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/edit-fee-collection`,
+            `${process.env.LOCAL_BACKEND_URL}/accounts-section/edit-fee-collection`,
             data,
             {
               headers: {
@@ -328,7 +343,7 @@ export const handleUpdateOtherFeePayment = async (formData: any) => {
         // console.log('Data in handleUpdateOtherFeePayment function', data);
         try {
           const request = await axios.put(
-            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/update-fee-collection`,
+            `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/update-fee-collection`,
             data,
             {
               headers: {
@@ -357,7 +372,7 @@ export const handleDiscount = async (formData: any) => {
       const data = formData;
       // console.log('Data in handleDiscount function', data);
       const request = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/insert-Discount-Data`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/insert-Discount-Data`,
         data,
         {
           headers: {
@@ -385,7 +400,7 @@ export const handleAdjustment = async (formData: any) => {
       const data = formData;
       // console.log('Data in handleDiscount function', data);
       const request = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/apply-Adjustment`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/apply-Adjustment`,
         data,
         {
           headers: {
@@ -417,7 +432,7 @@ export const deleteMrDetails = async (mrNo: string) => {
         // console.log('Delete request for MR No :- ', mrNo);
         try {
           const request = await axios.delete(
-            `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/payment/delete-fee-collection/${mrNo}`,
+            `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/delete-fee-collection/${mrNo}`,
             {
               headers: {
                 Authorization: `Bearer ${session.user.accessToken}`,
@@ -445,7 +460,7 @@ export const getStudentDuesDetails = async () => {
   if (session) {
     try {
       const request = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/get-due-status-report?${regdYear && `regdYear=${regdYear}`}`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/get-due-status-report?${regdYear && `regdYear=${regdYear}`}`,
         {
           headers: {
             Authorization: `Bearer ${session.user.accessToken}`,
@@ -491,7 +506,7 @@ export const handleFeeStructureGeneration = async (
     };
     try {
       const request = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/create-fees`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/create-fees`,
         data,
         {
           headers: {
@@ -535,7 +550,7 @@ export const handleCreateNewFeeType = async (feeTypeData: any) => {
     try {
       // console.log('inside try block');
       const request = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND}/accounts-section/create-fee-types`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/create-fee-types`,
         formattedFeeTypeData,
         {
           headers: {

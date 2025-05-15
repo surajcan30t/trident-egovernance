@@ -2,6 +2,7 @@ import React from 'react'
 import NsrPersonalDetailsForm from '../../components/NSR/NsrPersonalDetailsForm'
 import { cookies } from 'next/headers';
 import axios, { AxiosResponse } from 'axios';
+import { redirect } from 'next/navigation';
 
 
 interface Student {
@@ -19,7 +20,7 @@ interface Student {
 const studentData = async (): Promise<Student | null> => {
   try {
     const NSR_token = cookies().get("NSR-Authorization");
-    const response: AxiosResponse<Student> = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND}/NSR/get`, {
+    const response: AxiosResponse<Student> = await axios.get(`${process.env.LOCAL_BACKEND_URL}/NSR/get`, {
       headers: {
         'NSR-Authorization': `Bearer ${NSR_token?.value}`,
       },
@@ -38,6 +39,9 @@ const studentData = async (): Promise<Student | null> => {
 };
 
 const page = async () => {
+  if (!cookies().get('NSR-Authorization')) {
+      redirect('/studentportal')
+    }
   const data = await studentData();
   return (
     <div className='w-full h-full my-5 p-0 flex flex-col justify-center items-center'>

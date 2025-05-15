@@ -130,7 +130,7 @@ export const handleNewStudent = async (formData: any) => {
   if (session) {
     try {
       const request = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/post`,
+        `${process.env.LOCAL_BACKEND_URL}/NSR/post`,
         formData,
         {
           headers: {
@@ -198,7 +198,7 @@ export const handleBulkStudentUpload = async (
     try {
       // Get the CSV file from FormData using the correct key
       const request = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/bulk-post`,
+        `${process.env.LOCAL_BACKEND_URL}/NSR/bulk-post`,
         {
           method: 'POST',
 
@@ -262,7 +262,7 @@ export const handleBulkSectionUpload = async (
     try {
       // Get the CSV file from FormData using the correct key
       const request = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/office/sections/${method}`,
+        `${process.env.LOCAL_BACKEND_URL}/office/sections/${method}`,
         {
           method: 'POST',
 

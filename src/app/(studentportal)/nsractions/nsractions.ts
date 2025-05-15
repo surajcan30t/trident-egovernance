@@ -7,7 +7,7 @@ export const newStudentLogin = async (formData: any) => {
   console.log(formData);
   try {
     const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND}/public/login`,
+      `${process.env.LOCAL_BACKEND_URL}/public/login`,
       formData,
     );
     const token = response.data.token;
@@ -24,7 +24,7 @@ export const newStudentLogin = async (formData: any) => {
     if (response.status === 200) {
       const status = response.status;
       const getStudentDetails = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND}/NSR/get`,
+        `${process.env.LOCAL_BACKEND_URL}/NSR/get`,
         {
           headers: {
             'NSR-Authorization': `Bearer ${token}`,
@@ -143,7 +143,7 @@ const initialStudentData = async (formData: any) => {
   try {
     const NSR_token = cookies().get('NSR-Authorization');
     const response: AxiosResponse<Student> = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/get`,
+      `${process.env.LOCAL_BACKEND_URL}/NSR/get`,
       {
         headers: {
           'NSR-Authorization': `Bearer ${NSR_token?.value}`,
@@ -241,7 +241,7 @@ export const nsrSendAllotmentID = async (formData: any) => {
     console.log('Data in NSRALLOTMENTID function', data);
     const authToken = cookies().get('NSR-Authorization');
     const request = axios.put(
-      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
+      `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent`,
       data,
       {
         headers: {
@@ -273,7 +273,7 @@ export const handleNsPersonal = async (formData: any) => {
     // Send data to API
     const authToken = cookies().get('NSR-Authorization');
     const request = axios.put(
-      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
+      `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent`,
       data,
       {
         headers: {
@@ -309,7 +309,7 @@ export const handleNsrAcademic = async (formData: any) => {
     // Send data to API
     const authToken = cookies().get('NSR-Authorization');
     const request = axios.put(
-      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
+      `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent`,
       data,
       {
         headers: {
@@ -349,7 +349,7 @@ export const handleNsrOptionalFacility = async (formData: any) => {
     // Send data to API
     const authToken = cookies().get('NSR-Authorization');
     const request = axios.put(
-      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
+      `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent`,
       data,
       {
         headers: {
@@ -580,7 +580,7 @@ export const saveDocumentToDB = async (ind: Number) => {
   try {
     const authToken = cookies().get('NSR-Authorization');
     const request = await axios.put(
-      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent`,
+      `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent`,
       data,
       {
         headers: {
@@ -603,7 +603,7 @@ export const nsrFinalSubmit = async () => {
     const applicationNo = cookies().get('applicationNo');
     const authToken = cookies().get('NSR-Authorization');
     const request = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent/${applicationNo?.value}`,
+      `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent/${applicationNo?.value}`,
       {},
       {
         headers: {
@@ -705,7 +705,7 @@ const randomNameGenerator = (len: number) => {
 const getStudentDetailsFromBackend = async () => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND}/test/get-student-test/BTECH/CSIT`,
+      `${process.env.LOCAL_BACKEND_URL}/test/get-student-test/BTECH/CSIT`,
     );
     const data = response.data;
     return data;
@@ -893,7 +893,7 @@ export const multiStudentRegistration = async () => {
       console.log(student);
       try {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND}/NSR/post`,
+          `${process.env.LOCAL_BACKEND_URL}/NSR/post`,
           student,
         );
         console.log(response.status);
@@ -912,7 +912,7 @@ export const multiFinalSubmit = async () => {
       for (let i = 0; i < 5; i++) {
         const regdNum = dataFromDB[i].regdNo;
         const request = await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND}/NSR/postByStudent/${regdNum}`,
+          `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent/${regdNum}`,
         );
         console.log('request for student', regdNum, 'status:', request.status);
       }
