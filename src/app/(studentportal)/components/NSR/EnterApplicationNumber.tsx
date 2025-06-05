@@ -87,12 +87,12 @@ const EnterApplicationNumber = () => {
     }
   }
 
-  async function multiReg(data: number) {
-    const response = await multiStudentRegistration();
-  }
-  async function multiSub(data: number) {
-    const response = await multiFinalSubmit();
-  }
+  // async function multiReg(data: number) {
+  //   const response = await multiStudentRegistration();
+  // }
+  // async function multiSub(data: number) {
+  //   const response = await multiFinalSubmit();
+  // }
 
   return (
     <>

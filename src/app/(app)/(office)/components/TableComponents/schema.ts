@@ -8,7 +8,7 @@ export const studentSchema = z.object({
   phNo: z.string(),
   email: z.string(),
   studentType: z.string(),
-  currentYear: z.string(),
+  currentYear: z.number(),
 });
 
 export const admissionReportSchema = z.object({

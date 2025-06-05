@@ -38,6 +38,18 @@ const branches = [
   {
     value: 'MECH',
   },
+  {
+    value: 'CSIT',
+  },
+  {
+    value: 'IT',
+  },
+  {
+    value: 'CIVIL',
+  },
+  {
+    value: 'EE',
+  },
 ];
 
 console.log(branches)

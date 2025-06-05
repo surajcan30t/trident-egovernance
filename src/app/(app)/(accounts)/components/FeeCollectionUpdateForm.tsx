@@ -49,7 +49,7 @@ const FormSchema = z
   .refine(
     (data) => {
       // If paymentMode is 'DD', then ddNo, ddDate, and ddBank must be filled
-      if (data.paymentMode === 'DD') {
+      if (data.paymentMode === 'DD' || data.paymentMode === 'CHEQUE' || data.paymentMode === 'UPI' || data.paymentMode === 'CARD') {
         return data.ddNo && data.ddDate && data.ddBank;
       }
       return true; // other payment modes don't require these fields
@@ -86,7 +86,7 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
   const paymentModeSelected = form.watch('paymentMode');
   useEffect(() => {
 
-    if (paymentModeSelected === 'DD') {
+    if (paymentModeSelected === 'DD' || paymentModeSelected === 'CHEQUE' || paymentModeSelected === 'UPI' || paymentModeSelected === 'CARD') {
       setShowDDFields(true);
     } else {
       setShowDDFields(false);
@@ -200,7 +200,7 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
                     Collected Fee<span className="text-red-500">*</span>
                   </FormLabel>
                   <FormControl>
-                    <Input disabled placeholder="" {...field} />
+                    <Input placeholder="" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,7 +216,6 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                    disabled
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -286,10 +285,7 @@ export function FeeCollectionUpdateForm({ data }: { data: any }) {
                 )}
               />
             )}
-            <div className="flex justify-between">
-              <Button variant={'destructive'} size={'lg'}>
-                Delete
-              </Button>
+            <div className="flex justify-end">
               <Button variant={'trident'} size={'lg'} type="submit">
                 Update
               </Button>

@@ -730,46 +730,48 @@ function generateRandomStudentData(data: any, index: number): Student {
   const randomNumber = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;
   const hostelOption = Math.random() > 0.5 ? 'YES' : 'NO';
+  const transportOption =
+    hostelOption === 'YES' ? 'NO' : Math.random() > 0.5 ? 'YES' : 'NO';
   const Caste = ['GENERAL', 'OBC', 'SC', 'ST'];
   const Religion = ['HINDU', 'MUSLIM', 'CHRISTIAN'];
   return {
-    jeeApplicationNo: data.regdNo,
-    regdNo: data.regdNo,
+    jeeApplicationNo: data.jeeApplicationNo,
+    regdNo: data.jeeApplicationNo,
     ojeeCouncellingFeePaid: Math.random() > 0.5 ? 'YES' : 'NO',
-    studentName: data.name,
+    studentName: data.studentName,
     gender: data.gender,
     branchCode: data.branchCode,
-    admissionYear: new Date().getFullYear().toString(),
-    degreeYop: new Date().getFullYear() + 4,
-    phNo: data.phone,
-    email: data.email,
-    dob: data.dob,
-    hostelier: data.hostelier,
-    hostelOption: data.hostelier,
-    hostelChoice: data.hostelier === 'YES' ? 'ONCAMPUS' : 'NONE',
-    transportAvailed: data.transportAvailed,
-    status: data.status,
-    batchId: data.batchId,
-    currentYear: data.currentYear,
-    aadhaarNo: data.aadhaarNo,
-    indortrng: data.indOrTrng,
-    plpoolm: data.plPoolM,
-    cfPayMode: data.cfPayMode,
+    admissionYear: '2025',
+    degreeYop: 2029,
+    phNo: `97654${randomNumber(10000, 99999)}`,
+    email: `${data.studentName.replace(/\s+/g, '').toLowerCase()}@gmail.com`,
+    dob: '12/11/2005',
+    hostelier: 'NO',
+    hostelOption: hostelOption,
+    hostelChoice: hostelOption === 'YES' ? 'ONCAMPUS' : 'NONE',
+    transportAvailed: 'NO',
+    status: 'CONTINUING',
+    batchId: null,
+    currentYear: 1,
+    aadhaarNo: randomNumber(100000000099, 999999999999),
+    indortrng: 'YES',
+    plpoolm: 'YES',
+    cfPayMode: 'SEMESTER',
     religion: Religion[Math.floor(Math.random() * Religion.length)],
-    rank: randomNumber(1, 1000000),
-    rankType: 'JEE',
+    rank: data.rank,
+    rankType: data.rankType,
     course: data.course,
-    tfw: Math.random() > 0.5 ? 'TFW' : 'NTFW',
-    admissionType: 'JEEMAIN',
+    tfw: data.tfw,
+    admissionType: data.admissionType,
     studentType: data.studentType,
     tenthPercentage: randomNumber(60, 100),
-    tenthYOP: randomNumber(2015, 2020),
+    tenthYOP: 2023,
     twelvthPercentage: randomNumber(60, 100),
-    twelvthYOP: randomNumber(2017, 2022),
-    diplomaPercentage: randomNumber(60, 100),
-    diplomaYOP: randomNumber(2017, 2022),
-    graduationPercentage: randomNumber(60, 100),
-    graduationYOP: randomNumber(2019, 2023),
+    twelvthYOP: 2025,
+    diplomaPercentage: null,
+    diplomaYOP: null,
+    graduationPercentage: null,
+    graduationYOP: null,
     fname: `Father${index}`,
     mname: `Mother${index}`,
     lgName: `Guardian${index}`,
@@ -781,7 +783,7 @@ function generateRandomStudentData(data: any, index: number): Student {
     parentEmailId: `parent${index}@example.com`,
     presentAddress: null,
     district: `District${randomNumber(1, 50)}`,
-    ojeeCounsellingFeePaid: 'YES',
+    ojeeCounsellingFeePaid: data.ojeeCounsellingFeePaid,
     ojeeRollNo: null,
     ojeeRank: null,
     aieeeRank: String(randomNumber(1, 1000)),
@@ -789,8 +791,8 @@ function generateRandomStudentData(data: any, index: number): Student {
     categoryCode: null,
     categoryRank: null,
     allotmentId: `Allot${index}`,
-    transportOpted: data.transportAvailed,
-    pickUpPoint: data.transportAvailed === 'YES' ? 'BBSR' : 'N/A',
+    transportOpted: transportOption,
+    pickUpPoint: transportOption === 'YES' ? 'BBSR' : 'N/A',
     studentDocsData: Array.from({ length: 1 }, () => ({
       docLink: `https://images.unsplash.com/photo-1633526543814-9718c8922b7a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fGRvY3VtZW50fGVufDB8fDB8fHwy`,
       docType: 'PassportPhoto',
@@ -883,41 +885,93 @@ function generateRandomStudentData(data: any, index: number): Student {
 //   };
 // }
 
-export const multiStudentRegistration = async () => {
-  const dataFromDB = await getStudentDetailsFromBackend();
-  if (dataFromDB.length < 0) return;
-  else {
-    for (let i = 0; i < 5; i++) {
-      const data = dataFromDB[i];
-      const student: Student = generateRandomStudentData(data, i);
-      console.log(student);
-      try {
-        const response = await axios.post(
-          `${process.env.LOCAL_BACKEND_URL}/NSR/post`,
-          student,
-        );
-        console.log(response.status);
-      } catch (error: any) {
-        console.error(error.message);
-      }
-    }
+export const multiStudentRegistration = async (student: any) => {
+  // const dataFromDB = await getStudentDetailsFromBackend();
+  // if (dataFromDB.length < 0) return;
+  // else {
+  //   for (let i = 0; i < 5; i++) {
+  //     const data = dataFromDB[i];
+  //     const student: Student = generateRandomStudentData(data, i);
+  //     console.log(student);
+  try {
+    const authToken = cookies().get('NSR-Authorization');
+    const response = await axios.put(
+      `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent`,
+      student,
+      {
+        headers: {
+          'NSR-Authorization': `Bearer ${authToken?.value}`,
+        },
+      },
+    );
+    console.log(response.status);
+    return response.status;
+  } catch (error: any) {
+    console.error('error for registration\n', error);
+    return 900;
   }
+  // }
+  // }
 };
 
-export const multiFinalSubmit = async () => {
-  const dataFromDB = await getStudentDetailsFromBackend();
-  if (dataFromDB.length < 0) return;
-  else {
+export const multiFinalSubmit = async (formData: FormData) => {
+  // const dataFromDB = await getStudentDetailsFromBackend();
+  // if (dataFromDB.length < 0) return;
+  // else {
+  //   try {
+  //     for (let i = 0; i < 5; i++) {
+  //       const regdNum = dataFromDB[i].regdNo;
+  //       const request = await axios.post(
+  //         `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent/${regdNum}`,
+  //       );
+  //       console.log('request for student', regdNum, 'status:', request.status);
+  //     }
+  //   } catch (error: any) {
+  //     console.log(error);
+  //   }
+  // }
+  const dataField = formData.get('data'); // Get the 'data' field (as a string)
+  if (!dataField) return 400;
+
+  const students = JSON.parse(dataField.toString()); // Parse the JSON string into an array
+
+  let i = 0;
+  for (const student of students) {
+    const loginData = {
+      applicationNo: student.jeeApplicationNo,
+      rank: student.rank,
+    };
     try {
-      for (let i = 0; i < 5; i++) {
-        const regdNum = dataFromDB[i].regdNo;
-        const request = await axios.post(
-          `${process.env.LOCAL_BACKEND_URL}/NSR/postByStudent/${regdNum}`,
-        );
-        console.log('request for student', regdNum, 'status:', request.status);
+      const loginResp = await newStudentLogin(loginData);
+      console.log(`Login success for ${student.studentName}`, loginResp);
+      i++;
+      const initialData = {
+        jeeApplicationNo: student.jeeApplicationNo,
+        studentName: student.studentName,
+        rank: student.rank,
+        rankType: student.rankType,
+        course: student.course,
+        tfw: student.tfw,
+        admissionType: student.admissionType,
+        studentType: student.studentType,
+        gender: student.gender,
+        branchCode: student.branchCode,
+        ojeeCounsellingFeePaid: student.ojeeCounsellingFeePaid,
+      };
+      const generateFullStudetInfo = generateRandomStudentData(initialData, i);
+      const stepSubmitResp = await multiStudentRegistration(
+        generateFullStudetInfo,
+      );
+      if(stepSubmitResp === 200){
+        const finalResp = await nsrFinalSubmit()
+        console.log(finalResp)
       }
-    } catch (error: any) {
-      console.log(error);
+    } catch (error) {
+      console.error(`Login failed for ${student.studentName}`, error);
     }
   }
+
+  return 200;
 };
+// { applicationNo: '2101289365', rank: 12345 }
+// {"jeeApplicationNo":"2101289181","studentName":"SURYA KANTA PRUSTY","rank":"411","rankType":"JEE","course":"BTECH","tfw":"NTFW","admissionType":"COLLEGE","studentType":"REGULAR","gender":"MALE","branchCode":"CSE","ojeeCounsellingFeePaid":"YES"}

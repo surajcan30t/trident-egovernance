@@ -79,6 +79,10 @@ const FeeDuesDetailsTable = ({ regdNo }: { regdNo: string | null }) => {
   const { data: collectionData, error: collectionError } = useSWR(
     regdNo ? `/get-fee-collection-history/${regdNo}/OTHER%20FEES` : null,
     () => fetchCollectionDetails(regdNo!, session),
+    {
+      refreshInterval: 10000,
+      revalidateOnFocus: true,
+    },
   );
   const { data: curYear, error: curYearError } = useSWR(
     regdNo ? `/get-basic-student-details/${regdNo}` : null,

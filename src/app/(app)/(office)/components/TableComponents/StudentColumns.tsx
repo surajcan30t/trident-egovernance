@@ -7,6 +7,24 @@ import { Students } from './schema';
 import { DataTableColumnHeader } from '@/components/data-table-column-header';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useParticulars } from '@/app/(app)/(accounts)/components/FeeDetailsFilterProvider';
+
+type FilterFields = {
+  [key: string]: number[] | string[]
+}
+
+function FilterFields() {
+  const { branches } = useParticulars();
+  const filterFields: FilterFields = {
+    'currentYear': ['1', '2', '3', '4'],
+    'studentTypes': ['LE', 'REGULAR'],
+    'course': Array.from(Object.keys(branches)),
+    'branchCode': Array.from(Object.values(branches).flatMap(branchObj =>
+      Object.values(branchObj).map(b => b.branchCode)
+    ))
+  }
+  return filterFields
+}
 
 const courses = [
   {
@@ -40,6 +58,9 @@ const branches = [
     value: 'CST',
   },
   {
+    value: 'CSDS',
+  },
+  {
     value: 'CSAIML',
   },
   {
@@ -47,6 +68,15 @@ const branches = [
   },
   {
     value: 'CSIT',
+  },
+  {
+    value: 'IT',
+  },
+  {
+    value: 'CIVIL',
+  },
+  {
+    value: 'EE',
   },
 ];
 
@@ -126,17 +156,13 @@ export const columns: ColumnDef<Students>[] = [
       <DataTableColumnHeader column={column} title="Course" />
     ),
     cell: ({ row }) => {
-      const course = courses.find(
-        (course) => course.value === row.getValue('course'),
-      );
-
-      if (!course) {
-        return null;
-      }
-
+      const course = FilterFields()['course'].find(
+        (singleCourse) => singleCourse === row.getValue('course')
+      )
+      if (!course) return null;
       return (
         <div className="flex items-center">
-          <span>{course.value}</span>
+          <span>{course}</span>
         </div>
       );
     },
@@ -150,17 +176,13 @@ export const columns: ColumnDef<Students>[] = [
       <DataTableColumnHeader column={column} title="Branch" />
     ),
     cell: ({ row }) => {
-      const branch = branches.find(
-        (branch) => branch.value === row.getValue('branchCode'),
+      const branch = FilterFields()['branchCode'].find(
+        (branch) => branch === row.getValue('branchCode')
       );
-
-      if (!branch) {
-        return null;
-      }
-
+      if (!branch) return null;
       return (
         <div className="flex items-center">
-          <span>{branch.value}</span>
+          <span>{branch}</span>
         </div>
       );
     },
@@ -174,22 +196,18 @@ export const columns: ColumnDef<Students>[] = [
       <DataTableColumnHeader column={column} title="Year" />
     ),
     cell: ({ row }) => {
-      const year = years.find(
-        (year) => year.value === row.getValue('currentYear'),
+      const currentYear = FilterFields()['currentYear'].find(
+        (currentYear) => currentYear === String(row.getValue('currentYear'))
       );
-
-      if (!year) {
-        return null;
-      }
-
+      if (!currentYear) return null;
       return (
         <div className="flex items-center">
-          <span>{year.value}</span>
+          <span>{currentYear}</span>
         </div>
       );
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+      return value.includes(String(row.getValue(id)));
     },
   },
   {
@@ -198,17 +216,14 @@ export const columns: ColumnDef<Students>[] = [
       <DataTableColumnHeader column={column} title="Student Type" />
     ),
     cell: ({ row }) => {
-      const type = stypes.find(
-        (type) => type.value === row.getValue('studentType'),
+      const filterFields = FilterFields(); // Store the result in a variable
+      const filteredStudentType = filterFields['studentTypes'].find(
+        (studentType) => (studentType) === (row.original.studentType)
       );
-
-      if (!type) {
-        return null;
-      }
-
+      if (!filteredStudentType) return null;
       return (
         <div className="flex items-center">
-          <span>{type.value}</span>
+          <span>{filteredStudentType}</span>
         </div>
       );
     },

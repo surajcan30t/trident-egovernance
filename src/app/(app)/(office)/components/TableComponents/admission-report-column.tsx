@@ -46,6 +46,18 @@ const branches = [
   {
     value: 'MECH',
   },
+  {
+    value: 'CSIT',
+  },
+  {
+    value: 'IT',
+  },
+  {
+    value: 'CIVIL',
+  },
+  {
+    value: 'EE',
+  },
 ];
 
 export const columns: ColumnDef<AdmissionReport>[] = [

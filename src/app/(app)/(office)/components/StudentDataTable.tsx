@@ -11,11 +11,11 @@ import { DataTableFilterField } from '../../../../../types-global/types';
 
 const StudentDataTable = ({ studentData }: { studentData: Students[] | undefined }) => {
   let data: Students[] = studentData ? studentData : [];
-
+  console.log(data)
   const { branches } = useParticulars();
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const studentType = ['REGULAR', 'LE']
-  const currentYear = ['1', '2', '3', '4']
+  const currentYear = [1, 2, 3, 4]
   const filterFields: DataTableFilterField<Students>[] = [
     {
       id: 'course',
@@ -41,8 +41,8 @@ const StudentDataTable = ({ studentData }: { studentData: Students[] | undefined
       id: 'currentYear',
       label: 'Current Year',
       options: currentYear.map((currentYear) => ({
-        value: currentYear,
-        label: currentYear
+        value: currentYear.toString(),
+        label: currentYear.toString()
       }))
     },
     {

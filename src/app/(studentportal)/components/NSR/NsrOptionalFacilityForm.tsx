@@ -46,7 +46,20 @@ const FormSchema = z.object({
     required_error: 'You need to select the indoor option.',
   }),
   step: z.number().default(5),
-});
+}).superRefine((data, ctx) => {
+  if(data.hostelOption === 'YES' && data.transportOpted === 'YES'){
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'You cannot opt for both hostel and transport at the same time.',
+      path: ['hostelOption'],
+    });
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'You cannot opt for both hostel and transport at the same time.',
+      path: ['transportOpted'],
+    });
+  }
+})
 
 const NsrOptionalFacilityForm = (initial: any) => {
   const router = useRouter();

@@ -230,7 +230,7 @@ export const handleOtherFeesPayment = async (formData: any) => {
         paymentMode: paymentMode,
       },
       otherMrDetails: dynamicFields,
-      mrNo: null
+      mrNo: null,
     };
 
     console.log(data);
@@ -255,7 +255,7 @@ export const handleOtherFeesPayment = async (formData: any) => {
           },
         );
         if (responseGetNewMr.status !== 200) {
-          return 500
+          return 500;
         }
         const newMr = responseGetNewMr.data;
         data.mrNo = newMr;
@@ -372,7 +372,7 @@ export const handleDiscount = async (formData: any) => {
       const data = formData;
       // console.log('Data in handleDiscount function', data);
       const request = await axios.post(
-        `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/insert-Discount-Data`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/insert-discount-data`,
         data,
         {
           headers: {
@@ -400,7 +400,7 @@ export const handleAdjustment = async (formData: any) => {
       const data = formData;
       // console.log('Data in handleDiscount function', data);
       const request = await axios.post(
-        `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/apply-Adjustment`,
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/apply-adjustment`,
         data,
         {
           headers: {
@@ -572,4 +572,185 @@ export const handleCreateNewFeeType = async (feeTypeData: any) => {
     status: 401,
     message: 'Your session has expired. Please login again.',
   };
+};
+
+
+export const handleBulkAdjustmentUpload = async (
+  formData: FormData,
+): Promise<object | void> => {
+  interface Response {
+    status: number;
+    message: string;
+    description: string;
+  }
+  const jsonRecords = formData.get('data');
+  console.log('Formdata', formData);
+  console.log('Uploading FormData:', jsonRecords);
+  const session = await getServerSession(authOptions);
+  if (session) {
+    try {
+      // Get the CSV file from FormData using the correct key
+      const request = await fetch(
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/apply-bulk-adjustment`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+
+          body: jsonRecords,
+        },
+      );
+      const response = await request.json();
+      console.log('Response:', response);
+
+      if (
+        response.status === 400 ||
+        response.status === 422 ||
+        response.status === 500
+      ) {
+        console.log('This block executed');
+        const serverResponse = {
+          status: response.status,
+          message: response.detail,
+          description: response.description,
+        } as Response;
+        return serverResponse;
+      }
+      const serverResponse = {
+        status: 200,
+        message: 'Upload Successful',
+      } as Response;
+      return serverResponse;
+    } catch (error) {
+      console.error('Error in handleBulkAdjustmentUpload:', error);
+    }
+  } else {
+    const serverResponse = {
+      status: 401,
+      message: 'Unauthorized',
+    } as Response;
+    return serverResponse;
+  }
+};
+
+export const handleBulkDiscountUpload = async (
+  formData: FormData,
+): Promise<object | void> => {
+  interface Response {
+    status: number;
+    message: string;
+    description: string;
+  }
+  const jsonRecords = formData.get('data');
+  console.log('Formdata', formData);
+  console.log('Uploading FormData:', jsonRecords);
+  const session = await getServerSession(authOptions);
+  if (session) {
+    try {
+      // Get the CSV file from FormData using the correct key
+      const request = await fetch(
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/insert-bulk-discount-data`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+
+          body: jsonRecords,
+        },
+      );
+      const response = await request.json();
+      console.log('Response:', response);
+
+      if (
+        response.status === 400 ||
+        response.status === 422 ||
+        response.status === 500
+      ) {
+        console.log('This block executed');
+        const serverResponse = {
+          status: response.status,
+          message: response.detail,
+          description: response.description,
+        } as Response;
+        return serverResponse;
+      }
+      const serverResponse = {
+        status: 200,
+        message: 'Upload Successful',
+      } as Response;
+      return serverResponse;
+    } catch (error) {
+      console.error('Error in handleBulkAdjustmentUpload:', error);
+    }
+  } else {
+    const serverResponse = {
+      status: 401,
+      message: 'Unauthorized',
+    } as Response;
+    return serverResponse;
+  }
+};
+
+export const handleBulkCouncellingFeeUpload = async (
+  formData: FormData,
+): Promise<object | void> => {
+  interface Response {
+    status: number;
+    message: string;
+    description: string;
+  }
+  const jsonRecords = formData.get('data');
+  console.log('Formdata', formData);
+  console.log('Uploading FormData:', jsonRecords);
+  const session = await getServerSession(authOptions);
+  if (session) {
+    try {
+      // Get the CSV file from FormData using the correct key
+      const request = await fetch(
+        `${process.env.LOCAL_BACKEND_URL}/accounts-section/payment/process-bulk-councelling-fee`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+
+          body: jsonRecords,
+        },
+      );
+      const response = await request.json();
+      console.log('Response:', response);
+
+      if (
+        response.status === 400 ||
+        response.status === 422 ||
+        response.status === 500
+      ) {
+        console.log('This block executed');
+        const serverResponse = {
+          status: response.status,
+          message: response.detail,
+          description: response.description,
+        } as Response;
+        return serverResponse;
+      }
+      const serverResponse = {
+        status: 200,
+        message: 'Upload Successful',
+      } as Response;
+      return serverResponse;
+    } catch (error) {
+      console.error('Error in handleBulkAdjustmentUpload:', error);
+    }
+  } else {
+    const serverResponse = {
+      status: 401,
+      message: 'Unauthorized',
+    } as Response;
+    return serverResponse;
+  }
 };
