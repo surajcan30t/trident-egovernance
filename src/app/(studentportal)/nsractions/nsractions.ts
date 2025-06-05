@@ -962,9 +962,9 @@ export const multiFinalSubmit = async (formData: FormData) => {
       const stepSubmitResp = await multiStudentRegistration(
         generateFullStudetInfo,
       );
-      if(stepSubmitResp === 200){
-        const finalResp = await nsrFinalSubmit()
-        console.log(finalResp)
+      if (stepSubmitResp === 200) {
+        const finalResp = await nsrFinalSubmit();
+        console.log(finalResp);
       }
     } catch (error) {
       console.error(`Login failed for ${student.studentName}`, error);

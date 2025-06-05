@@ -574,7 +574,6 @@ export const handleCreateNewFeeType = async (feeTypeData: any) => {
   };
 };
 
-
 export const handleBulkAdjustmentUpload = async (
   formData: FormData,
 ): Promise<object | void> => {
